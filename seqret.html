@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.16.7 (2026-09-27) - Pulseq sequence viewer
+  Seqret 1.17.0 (2026-09-27) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.16.7">
-<meta name="description" content="Seqret 1.16.7: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.17.0">
+<meta name="description" content="Seqret 1.17.0: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -128,7 +128,7 @@ header{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:
 .plotwrap canvas{position:absolute;inset:0;width:100%;height:100%}
 .diag{position:absolute;right:8px;top:6px;z-index:3;font:500 11px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line);border-radius:6px;padding:4px 7px;color:var(--ink);pointer-events:none;white-space:pre}
 .diag[hidden]{display:none}
-.diag.sel{pointer-events:auto;user-select:text;-webkit-user-select:text;cursor:text}
+.diag.sel{pointer-events:auto;user-select:text;-webkit-user-select:text;cursor:text;white-space:pre-wrap;max-width:min(780px,calc(100% - 16px));max-height:calc(100% - 12px);overflow:auto}
 #ovl{cursor:crosshair}
 #ovl.panning{cursor:grab}
 #ovl.grabbing{cursor:grabbing}
@@ -328,7 +328,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.16.7</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.17.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -375,7 +375,8 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
               <label>RF <select id="rfUnit" aria-label="RF unit"><option value="uT">µT</option><option value="Hz">Hz</option></select></label></div>
             <div class="prow"><label title="Real and imaginary parts show the RF shape with its sign (a sinc's negative lobes); the phase and frequency offsets are not included">RF as <select id="rfMode" aria-label="RF shown as"><option value="mag">magnitude</option><option value="complex">real and imaginary</option></select></label></div>
             <div class="prow"><label title="Draw Gx, Gy and Gz on one shared axis, told apart by colour"><input type="checkbox" id="combG" checked> Gradients on one axis</label></div>
-            <div class="prow"><label title="Scale each channel to the visible time window"><input type="checkbox" id="autoY"> Fit Y to view</label></div></section>
+            <div class="prow"><label title="Scale each channel to the visible time window"><input type="checkbox" id="autoY"> Fit Y to view</label></div>
+            <div class="prow"><label title="Fast draws the diagram at 1× pixel density on high-density screens: a quarter of the pixels at 2×, for browsers or computers where drawing limits the frame rate (see ⋯ › Run frame-rate test). Lines and text are slightly softer. PNG export is always sharp.">Diagram resolution <select id="diagRes" aria-label="Diagram resolution"><option value="sharp">sharp</option><option value="fast">fast</option></select></label></div></section>
           <section><h6>Shots and volumes</h6>
             <div class="pgrid"><label for="shotSel">Shots</label>
               <select id="shotSel"><option value="exc">One per excitation</option><option value="prep">Split at prep. pulses</option><option value="off">Hidden</option></select>
@@ -7744,7 +7745,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.16.7", "date": "2026-09-27", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.16.7", "date": "2026-09-27", "notes": ["Frame-rate test: new cases that separate where the time goes: without page updates (cursor readout, steppers, legend), a blank diagram (nothing drawn, page still updated), a blank diagram without page updates (what the browser needs for an empty frame), and, on high-density screens, the diagram at 1× pixel density (a quarter of the pixels at 2×, same shapes).", "Seqret time now includes all of Seqret's work in a frame (the diagram, the overview, the cursor overlay, page updates and the k-space when shown), and the header says which tab was open."]}, {"version": "1.16.6", "date": "2026-09-27", "notes": ["Frame-rate test: the columns are named by quantity (frame rate, frame time, Seqret time), with their units (fps, ms) on a second header line. The frame-time panel says 'Seqret time' in the same way."]}, {"version": "1.16.5", "date": "2026-09-27", "notes": ["Fixed (from 1.16.4): in the Image tab, a rotated slice stack whose readout has no FOV in the definition had its phase-encoding axis 0.8 % too long (221.8 instead of 220 mm for 64 lines), because the line spacing was estimated from positions rounded to a coarse step. It is now the median step between the actual line positions, and the FOV definition is used for each image axis on its own, so the phase-encoding axis of a stack rotated about it gets its FOV from the definition.", "Checked across 11 stacks rotated about the phase-encoding axis: slice normals and positions exact, the pixel size the same in every stack, each image matches the phantom in the plane it claims to show (better than any mirrored or rotated version), and the profile along the phase-encoding axis through the isocentre, which lies in the central slice of every stack, agrees between stacks (correlation 0.992). Images of the demo, the PyPulseq test sequences and the stress sequences are unchanged."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.17.0", "date": "2026-09-27", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.17.0", "date": "2026-09-27", "notes": ["Display › Diagram resolution: sharp (default) or fast. Fast draws the diagram and the overview at 1× pixel density on high-density screens (a quarter of the pixels at 2×) and lets the browser scale them up, for computers or browsers where drawing limits the frame rate; lines and text are slightly softer. The cursor overlay, k-space and image stay sharp, PNG export is always at full density, and the setting is remembered. On a 1× screen it changes nothing.", "Frame-rate test: when the browser's drawing limits the frame rate (a blank diagram much faster than the normal one), the result says so and suggests the fast diagram resolution (with the rate it gave) and Chrome's Skia Graphite renderer. With fast resolution on, the test compares against full pixel density instead."]}, {"version": "1.16.7", "date": "2026-09-27", "notes": ["Frame-rate test: new cases that separate where the time goes: without page updates (cursor readout, steppers, legend), a blank diagram (nothing drawn, page still updated), a blank diagram without page updates (what the browser needs for an empty frame), and, on high-density screens, the diagram at 1× pixel density (a quarter of the pixels at 2×, same shapes).", "Seqret time now includes all of Seqret's work in a frame (the diagram, the overview, the cursor overlay, page updates and the k-space when shown), and the header says which tab was open."]}, {"version": "1.16.6", "date": "2026-09-27", "notes": ["Frame-rate test: the columns are named by quantity (frame rate, frame time, Seqret time), with their units (fps, ms) on a second header line. The frame-time panel says 'Seqret time' in the same way."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -10791,7 +10792,7 @@ const $ = s => document.querySelector(s);
 const TAU = 2 * Math.PI;
 const S = {
   seq: null, name: '', t0: 0, t1: 1, sel: -1, hoverT: null, autoY: false,
-  gUnit: 'mT', rfUnit: 'uT', tab: 'seq',
+  gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'sharp',
   vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, pns: false, cns: false },
   stimNorm: true, combineG: true, rfMode: 'mag', kColor: 'order', linkMode: 'off',
   sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, crop: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
@@ -10881,22 +10882,28 @@ const plot = $('#plot'), ovl = $('#ovl'), ov = $('#ov'), kc = $('#kc'), ic = $('
 const pctx = plot.getContext('2d'), octx = ovl.getContext('2d'), vctx = ov.getContext('2d'), kctx = kc.getContext('2d'), ictx = ic.getContext('2d'), i3ctx = i3.getContext('2d');
 let IW = 0, I3W = 0, I3H = 0;
 let W = 0, H = 0, OW = 0, OH = 0, KW = 0, dpr = 1;
+/* pixel density of the diagram and the overview (pdpr): the screen's (dpr) when sharp; at most 1 when fast (Display ›
+   Diagram resolution), which on a high-density screen draws a quarter of the pixels at 2× and lets the browser scale
+   them up. For browsers whose drawing is limited by the number of pixels. The cursor overlay, k-space and image stay at
+   the screen's density. PNG export always draws at the screen's density (PNG_FULL). */
+let pdpr = 1, PNG_FULL = false;
 const GUT = 84, AXH = 26, SHOTH = 20;
 const shotsOn = () => S.seq && S.shotMode !== 'off' && S.seq.shots.length > 0;
 const volsOn = () => S.seq && S.volMode !== 'off' && S.vols.length > 0;
 const volY = () => 4, shotY = () => 4 + (volsOn() ? SHOTH + 4 : 0);
 const topH = () => (shotsOn() ? shotY() + SHOTH + 8 : volsOn() ? volY() + SHOTH + 8 : 6);
-function sizeCanvas(cv, ctx, w, h) { // only touch the canvas when its size really changes (resizing clears it)
-  const W2 = Math.round(w * dpr), H2 = Math.round(h * dpr);
+function sizeCanvas(cv, ctx, w, h, d = dpr) { // only touch the canvas when its size really changes (resizing clears it)
+  const W2 = Math.round(w * d), H2 = Math.round(h * d);
   if (cv.width !== W2 || cv.height !== H2) { cv.width = W2; cv.height = H2; }
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.setTransform(d, 0, 0, d, 0, 0);
 }
 function resize() {
-  dpr = BENCH.dpr || window.devicePixelRatio || 1;
+  dpr = window.devicePixelRatio || 1;
+  pdpr = BENCH.dpr || (PNG_FULL || S.diagRes !== 'fast' ? dpr : Math.min(1, dpr));
   const r = $('#plotwrap').getBoundingClientRect(); W = r.width; H = r.height;
-  sizeCanvas(plot, pctx, W, H); sizeCanvas(ovl, octx, W, H);
+  sizeCanvas(plot, pctx, W, H, pdpr); sizeCanvas(ovl, octx, W, H);
   const o = ov.parentElement.getBoundingClientRect(); OW = o.width; OH = o.height;
-  sizeCanvas(ov, vctx, OW, OH);
+  sizeCanvas(ov, vctx, OW, OH, pdpr);
   const kk = kc.parentElement.getBoundingClientRect(); KW = kk.width;
   if (KW > 0) sizeCanvas(kc, kctx, KW, KW);
   const ii = ic.parentElement.getBoundingClientRect(); if (ii.width > 0 && Math.abs(ii.width - IW) > 0.5) { IW = ii.width; sizeCanvas(ic, ictx, IW, IW); drawImg(); }
@@ -11033,7 +11040,7 @@ let cN = new Float64Array(0), cX = new Float64Array(0);
    cost up to ten times more to draw (bands of one-device-pixel slivers). This replaced a timing-based switch that
    flipped back and forth between frames (a slow frame made it coarse, the fast coarse frame made it fine again). */
 let traceR = 1;
-function chooseTraceR(t0, t1, pw) { const bs = S.seq.blockStart, nVis = ub(bs, t1) - lb(bs, t0); return nVis <= pw / 2 ? Math.min(2, Math.max(1, dpr || 1)) : 1; }
+function chooseTraceR(t0, t1, pw) { const bs = S.seq.blockStart, nVis = ub(bs, t1) - lb(bs, t0); return nVis <= pw / 2 ? Math.min(2, Math.max(1, pdpr || 1)) : 1; }
 function traceChan(key, t0, t1, x0, w) {
   const s = S.seq, bs = s.blockStart, pyr = s.pyr[key], pts = [];
   // columns per device pixel (up to 2 per CSS px); one per CSS px while frames are slow (very large files)
@@ -11147,7 +11154,7 @@ function rectRun(ctx) {
   let x = 0, y = 0, w = 0, h = 0, on = false, path = new Path2D(), n = 0;
   // left and right edges on whole device pixels, so that neighbouring rectangles meet exactly as in one path; else both
   // cover the shared pixel partly and the colour underneath shows through as a faint seam (at 1.25× or 1.75× pixels)
-  const direct = !BENCH.pathRects, d = dpr || 1, sn = v => Math.round(v * d) / d;
+  const direct = !BENCH.pathRects, d = pdpr || 1, sn = v => Math.round(v * d) / d;
   const put = direct ? () => { const xa = sn(x); let xb = sn(x + w); if (xb <= xa) xb = xa + 1 / d; ctx.fillRect(xa, y, xb - xa, h); } : () => path.rect(x, y, w, h); // never thinner than one device pixel
   return {
     add(ax, ay, aw, ah) { if (on && ay === y && ah === h && Math.abs(ax - (x + w)) < 1e-9) { w += aw; return; } if (on) { put(); n++; } x = ax; y = ay; w = aw; h = ah; on = true; },
@@ -11468,7 +11475,7 @@ function diagText() {
   const lan = Object.entries(lanes || {}).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v.toFixed(1)}`).join(', ');
   $('#diag').textContent = `Seqret time: ${js.toFixed(1)} ms per frame (${traceR} column${traceR > 1 ? 's' : ''} per pixel)\n` +
     `lanes: ${lan}\nframe rate while moving: ${fps}\nredraws while moving: every ${med ? med.toFixed(0) + ' ms (median; also set by how fast you scroll or drag)' : '–'}\n` +
-    `${Math.round(W)}×${Math.round(H)} CSS px, ${dpr}× pixels, ${S.seq ? S.seq.nb.toLocaleString() + ' blocks' : ''}`;
+    `${Math.round(W)}×${Math.round(H)} CSS px, ${pdpr}× pixels${pdpr !== dpr ? ` (screen ${dpr}×, diagram resolution fast)` : ''}, ${S.seq ? S.seq.nb.toLocaleString() + ' blocks' : ''}`;
 }
 function diagToggle() { $('#diag').classList.remove('sel'); DIAG.on = !DIAG.on; DIAG.times = []; DIAG.fr = []; DIAG.lastT = 0; $('#diag').hidden = !DIAG.on; $('#diagBtn').textContent = DIAG.on ? 'Hide frame times' : 'Show frame times'; request(); }
 $('#diagBtn').onclick = diagToggle;
@@ -11486,7 +11493,7 @@ async function diagBench() {
     ['without area under RF', 'pan', { skip: { area: 1 } }], ['without labels lane', 'pan', { skip: { labels: 1 } }],
     ['without overview', 'pan', { skip: { ov: 1 } }], ['without page updates', 'pan', { skip: { dom: 1 } }],
     ['blank diagram', 'pan', { skip: { draw: 1 } }], ['blank diagram, no page updates', 'pan', { skip: { draw: 1, dom: 1, ov: 1 } }],
-    ...(window.devicePixelRatio > 1.01 ? [['diagram at 1× pixel density', 'pan', { dpr: 1 }]] : []),
+    ...(window.devicePixelRatio > 1.01 ? (S.diagRes === 'fast' ? [['diagram at full pixel density', 'pan', { dpr: window.devicePixelRatio }]] : [['diagram at 1× pixel density', 'pan', { dpr: 1 }]]) : []),
     ['rectangles as one path, panning', 'pan', { pathRects: true }], ['rectangles as one path, zooming', 'zoom', { pathRects: true }]];
   const frame = () => new Promise(r => requestAnimationFrame(r));
   const q = (a, f) => { const b = [...a].sort((x, y) => x - y); return b.length ? b[Math.min(b.length - 1, Math.floor(f * b.length))] : 0; };
@@ -11514,15 +11521,23 @@ async function diagBench() {
   }
   const pad = (x, n) => String(x).padStart(n), nm = Math.max(...rows.map(r => r.name.length));
   const txt = `Seqret ${APP.version} frame-rate test · ${S.name} · ${S.seq.nb.toLocaleString()} blocks · ${(v0[1] - v0[0] >= S.seq.totalDur * 0.9) ? 'whole file' : 'span ' + fmt((v0[1] - v0[0]) * 1e3, 3) + ' ms'} in view\n` +
-    `plot ${Math.round(W)}×${Math.round(H)} CSS px at ${window.devicePixelRatio}× · ${{ seq: 'Sequence', blk: 'Selection', k: 'k-space', img: 'Image', defs: 'Defs' }[S.tab] || S.tab} tab${S.tab === 'k' ? ` (${S.kRange})` : ''} · ${navigator.userAgent.replace(/^.*?\) /, '').slice(0, 60)}\n` +
+    `plot ${Math.round(W)}×${Math.round(H)} CSS px at ${window.devicePixelRatio}×${pdpr !== dpr ? ` (diagram resolution fast: ${pdpr}×)` : ''} · ${{ seq: 'Sequence', blk: 'Selection', k: 'k-space', img: 'Image', defs: 'Defs' }[S.tab] || S.tab} tab${S.tab === 'k' ? ` (${S.kRange})` : ''} · ${navigator.userAgent.replace(/^.*?\) /, '').slice(0, 60)}\n` +
     // quantity names on the first header line, their units on the second
     `${'case'.padEnd(nm)}  ${pad('frame rate', 10)}  ${pad('frame time', 16)}  ${pad('Seqret time', 16)}\n` +
     `${''.padEnd(nm)}  ${pad('fps', 10)}  ${pad('ms, median / 95%', 16)}  ${pad('ms, median / 95%', 16)}\n` +
     rows.map(r => `${r.name.padEnd(nm)}  ${pad(r.fps.toFixed(0), 10)}  ${pad(`${pad(r.med.toFixed(1), 6)} / ${pad(r.p95.toFixed(1), 5)}`, 16)}  ${pad(`${pad(r.js.toFixed(1), 6)} / ${pad(r.jsMax.toFixed(1), 5)}`, 16)}`).join('\n');
-  BENCH.last = txt; console.log(txt);
-  el.textContent = txt + '\n\nCopied to the clipboard. Press Shift+D to close.';
+  // a suggestion when the browser's drawing, not Seqret, limits the frame rate
+  const row = n => rows.find(r => r.name === n), nrm = row('normal, panning'), blank = row('blank diagram'), lo = row('diagram at 1× pixel density');
+  let tip = '';
+  if (nrm && blank && blank.fps > 1.25 * nrm.fps) {
+    tip = `\n\nThe browser's drawing limits the frame rate here: a blank diagram runs at ${blank.fps.toFixed(0)} fps, the diagram at ${nrm.fps.toFixed(0)} fps, while Seqret needs ${nrm.js.toFixed(1)} ms per frame.`;
+    if (lo && lo.fps > 1.25 * nrm.fps) tip += ` Display › Diagram resolution › fast gave ${lo.fps.toFixed(0)} fps (lines and text slightly softer).`;
+    tip += ' In Chrome or Edge, check chrome://gpu: if Skia Graphite is disabled, enabling it (chrome://flags/#skia-graphite) may give the full frame rate at full sharpness.';
+  }
+  BENCH.last = txt; console.log(txt + tip);
+  el.textContent = txt + tip + '\n\nCopied to the clipboard. Press Shift+D to close.';
   el.classList.add('sel');
-  try { await navigator.clipboard.writeText(txt); } catch (_) { el.textContent = txt + '\n\nSelect this text to copy it. Press Shift+D to close.'; }
+  try { await navigator.clipboard.writeText(txt + tip); } catch (_) { el.textContent = txt + tip + '\n\nSelect this text to copy it. Press Shift+D to close.'; }
 }
 $('#benchBtn').onclick = () => { $('#morePop').hidden = true; $('#moreBtn').setAttribute('aria-expanded', 'false'); diagBench(); };
 function shotOfBlock(b) { const sh = S.seq.shots; if (!sh.length || b < 0) return -1; let lo = 0, hi = sh.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (sh[m].b0 <= b) lo = m; else hi = m - 1; } return lo; }
@@ -11663,8 +11678,8 @@ let ovCache = null;
 function drawOverview() {
   const s = S.seq; if (!s || OW <= 0) return;
   if (!ovCache) {
-    ovCache = document.createElement('canvas'); ovCache.width = Math.round(OW * dpr); ovCache.height = Math.round(OH * dpr);
-    const c = ovCache.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ovCache = document.createElement('canvas'); ovCache.width = Math.round(OW * pdpr); ovCache.height = Math.round(OH * pdpr);
+    const c = ovCache.getContext('2d'); c.setTransform(pdpr, 0, 0, pdpr, 0, 0);
     const T = s.totalDur || 1, mg = Math.max(...s.stats.maxG) || 1, mr = s.stats.maxRF || 1;
     const mid = OH * 0.62, hh = OH * 0.34;
     for (const k of ['gx', 'gy', 'gz']) {
@@ -11997,6 +12012,7 @@ $('#gUnit').onchange = e => { S.gUnit = e.target.value; request(); renderSeqInfo
 $('#rfUnit').onchange = e => { S.rfUnit = e.target.value; request(); renderSeqInfo(); renderBlock(); };
 $('#rfMode').onchange = e => { S.rfMode = e.target.value; request(); };
 $('#autoY').onchange = e => { S.autoY = e.target.checked; request(); };
+$('#diagRes').onchange = e => { S.diagRes = e.target.value; resize(); };
 $('#fitBtn').onclick = () => { if (S.seq) { pushHist(); fitAll(); } };
 $('#backBtn').onclick = () => S.seq && back();
 $('#combG').onchange = e => { S.combineG = e.target.checked; request(); };
@@ -12024,7 +12040,11 @@ function applyShots() {
 }
 $('#zoomIn').onclick = () => S.seq && zoomAt((S.t0 + S.t1) / 2, 0.6);
 $('#zoomOut').onclick = () => S.seq && zoomAt((S.t0 + S.t1) / 2, 1 / 0.6);
-$('#pngBtn').onclick = () => { if (!S.seq) return; savePNG(plot, `${S.name.replace(/\.seq$/i, '')}_diagram.png`); };
+$('#pngBtn').onclick = () => {
+  if (!S.seq) return; const name = `${S.name.replace(/\.seq$/i, '')}_diagram.png`;
+  if (pdpr === dpr) { savePNG(plot, name); return; }
+  PNG_FULL = true; resize(); render(); savePNG(plot, name); PNG_FULL = false; resize(); // always at the screen's density
+};
 $('#kPng').onclick = () => { if (kData) savePNG(kc, `${S.name.replace(/\.seq$/i, '')}_kspace.png`); };
 function savePNG(cv, name) {
   const foot = Math.round(18 * dpr), c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height + foot; // footer strip for the stamp
@@ -13207,7 +13227,7 @@ window.addEventListener('drop', e => {
 });
 
 /* ---------- settings kept between sessions (browser local storage) ---------- */
-const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kColor', 'kTraj'];
+const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kColor', 'kTraj'];
 const DEFAULTS = JSON.parse(JSON.stringify({ vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) }));
 function saveSettings() {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ v: 1, app: APP.version, vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) })); } catch (_) { }
@@ -13220,6 +13240,7 @@ function applySettings(o) {
   if (ok('gUnit', ['mT', 'Hz'])) S.gUnit = o.gUnit;
   if (ok('rfUnit', ['uT', 'Hz'])) S.rfUnit = o.rfUnit;
   if (ok('rfMode', ['mag', 'complex'])) S.rfMode = o.rfMode;
+  if (ok('diagRes', ['sharp', 'fast'])) S.diagRes = o.diagRes; // takes effect at the next resize()
   for (const k of ['autoY', 'combineG', 'labelsPref', 'kTraj', 'stimNorm']) if (typeof o[k] === 'boolean') S[k] = o[k];
   if (ok('shotMode', ['exc', 'prep', 'off'])) S.shotMode = o.shotMode;
   if (typeof o.volPref === 'string' && /^(auto|off|label:.+)$/.test(o.volPref)) S.volPref = S.volMode = o.volPref;
@@ -13237,7 +13258,7 @@ function applySettings(o) {
   }
   syncSimControls();
   // reflect in the controls
-  $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#rfMode').value = S.rfMode; $('#autoY').checked = S.autoY; $('#combG').checked = S.combineG;
+  $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#rfMode').value = S.rfMode; $('#diagRes').value = S.diagRes; $('#autoY').checked = S.autoY; $('#combG').checked = S.combineG;
   $('#shotSel').value = S.shotMode; $('#kTraj').checked = S.kTraj;
   segPress('#kRange', S.kRange); segPress('#kProj', S.kProj); segPress('#kColor', S.kColor);
   buildChips();
@@ -13245,6 +13266,7 @@ function applySettings(o) {
 function resetSettings() {
   try { localStorage.removeItem(SETTINGS_KEY); } catch (_) { }
   applySettings(JSON.parse(JSON.stringify(DEFAULTS)));
+  resize();
   if (S.seq) { S.vis.labels = S.seq.labels.length > 0 && S.labelsPref; buildChips(); applyShots(); fillVolMenu(); applyVols(); kInvalidate(); ovCache = null; renderSeqInfo(); renderBlock(); request(); requestK(); }
 }
 try { const o = JSON.parse(lsGet('settings') || 'null'); if (o && typeof o === 'object') applySettings(o); } catch (_) { }

@@ -2,6 +2,11 @@
 
 All versions, newest first. The About dialog of the page shows the latest 3.
 
+## 1.17.0 (2026-09-27)
+
+- Display › Diagram resolution: sharp (default) or fast. Fast draws the diagram and the overview at 1× pixel density on high-density screens (a quarter of the pixels at 2×) and lets the browser scale them up, for computers or browsers where drawing limits the frame rate; lines and text are slightly softer. The cursor overlay, k-space and image stay sharp, PNG export is always at full density, and the setting is remembered. On a 1× screen it changes nothing.
+- Frame-rate test: when the browser's drawing limits the frame rate (a blank diagram much faster than the normal one), the result says so and suggests the fast diagram resolution (with the rate it gave) and Chrome's Skia Graphite renderer. With fast resolution on, the test compares against full pixel density instead.
+
 ## 1.16.7 (2026-09-27)
 
 - Frame-rate test: new cases that separate where the time goes: without page updates (cursor readout, steppers, legend), a blank diagram (nothing drawn, page still updated), a blank diagram without page updates (what the browser needs for an empty frame), and, on high-density screens, the diagram at 1× pixel density (a quarter of the pixels at 2×, same shapes).
