@@ -2,6 +2,15 @@
 
 All versions, newest first. The About dialog of the page shows the latest 3.
 
+## 1.16.7 (2026-09-27)
+
+- Frame-rate test: new cases that separate where the time goes: without page updates (cursor readout, steppers, legend), a blank diagram (nothing drawn, page still updated), a blank diagram without page updates (what the browser needs for an empty frame), and, on high-density screens, the diagram at 1× pixel density (a quarter of the pixels at 2×, same shapes).
+- Seqret time now includes all of Seqret's work in a frame (the diagram, the overview, the cursor overlay, page updates and the k-space when shown), and the header says which tab was open.
+
+## 1.16.6 (2026-09-27)
+
+- Frame-rate test: the columns are named by quantity (frame rate, frame time, Seqret time), with their units (fps, ms) on a second header line. The frame-time panel says 'Seqret time' in the same way.
+
 ## 1.16.5 (2026-09-27)
 
 - Fixed (from 1.16.4): in the Image tab, a rotated slice stack whose readout has no FOV in the definition had its phase-encoding axis 0.8 % too long (221.8 instead of 220 mm for 64 lines), because the line spacing was estimated from positions rounded to a coarse step. It is now the median step between the actual line positions, and the FOV definition is used for each image axis on its own, so the phase-encoding axis of a stack rotated about it gets its FOV from the definition.
