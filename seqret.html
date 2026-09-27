@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.13.3 (2026-09-26) - Pulseq sequence viewer
+  Seqret 1.16.2 (2026-09-27) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.13.3">
-<meta name="description" content="Seqret 1.13.3: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.16.2">
+<meta name="description" content="Seqret 1.16.2: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -126,6 +126,9 @@ header{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:
 .stepper .of{color:var(--muted);margin-left:7px}
 .plotwrap{position:relative;flex:1;min-height:380px;background:var(--plot);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none}
 .plotwrap canvas{position:absolute;inset:0;width:100%;height:100%}
+.diag{position:absolute;right:8px;top:6px;z-index:3;font:500 11px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line);border-radius:6px;padding:4px 7px;color:var(--ink);pointer-events:none;white-space:pre}
+.diag[hidden]{display:none}
+.diag.sel{pointer-events:auto;user-select:text;-webkit-user-select:text;cursor:text}
 #ovl{cursor:crosshair}
 #ovl.panning{cursor:grab}
 #ovl.grabbing{cursor:grabbing}
@@ -325,7 +328,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.13.3</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.16.2</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -340,6 +343,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
           <span id="linkInfo" class="linkinfo"></span></div>
           <p class="note">Mirrors zoom, position and cursor between Seqret tabs in this browser.</p></section>
         <section><button class="btn menuitem" id="specMenuBtn">System specifications (PNS, CNS)…</button></section>
+        <section><button class="btn menuitem" id="diagBtn" title="Frame times of the diagram (Shift+D), for reporting performance">Show frame times</button><button class="btn menuitem" id="benchBtn" title="Moves the view on every frame for about half a minute and measures the frame rate, also with parts of the drawing left out. For reporting performance.">Run frame-rate test</button></section>
         <section><button class="btn menuitem" id="themeBtn">Dark theme</button></section>
       </div>
     </div>
@@ -369,6 +373,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
           <section><h6>Axes</h6>
             <div class="prow"><label>Gradients <select id="gUnit" aria-label="Gradient unit"><option value="mT">mT/m</option><option value="Hz">kHz/m</option></select></label>
               <label>RF <select id="rfUnit" aria-label="RF unit"><option value="uT">µT</option><option value="Hz">Hz</option></select></label></div>
+            <div class="prow"><label title="Real and imaginary parts show the RF shape with its sign (a sinc's negative lobes); the phase and frequency offsets are not included">RF as <select id="rfMode" aria-label="RF shown as"><option value="mag">magnitude</option><option value="complex">real and imaginary</option></select></label></div>
             <div class="prow"><label title="Draw Gx, Gy and Gz on one shared axis, told apart by colour"><input type="checkbox" id="combG" checked> Gradients on one axis</label></div>
             <div class="prow"><label title="Scale each channel to the visible time window"><input type="checkbox" id="autoY"> Fit Y to view</label></div></section>
           <section><h6>Shots and volumes</h6>
@@ -385,6 +390,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
       </div>
     </div>
     <div class="plotwrap" id="plotwrap">
+      <div class="diag" id="diag" hidden aria-live="off"></div>
       <canvas id="plot"></canvas><canvas id="ovl" tabindex="0" aria-label="Sequence diagram. Arrow keys pan, plus and minus zoom, brackets step through blocks."></canvas>
       <div class="busy" id="busy"><div class="busybox"><div id="busyTxt">Reading sequence…</div><div class="pbar"><i id="busyBar"></i></div></div></div>
       <div class="empty" id="empty">
@@ -461,6 +467,8 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
           <label class="inl" title="Residual eddy currents: decaying exponentials driven by the gradient slew (1 ms and 50 ms), plus a B0 term. Illustrative values, not measured.">Eddy <select id="simEddy" class="sel" aria-label="Eddy currents"><option value="off">off</option><option value="typical">typical</option><option value="poor">poor</option></select></label></div>
         <span class="lab">Recon</span>
         <div class="row"><div class="seg" id="simFill" title="Lines not acquired (acceleration, partial Fourier): filled as by an ideal parallel-imaging or partial-Fourier reconstruction, or left as zeros"><button data-v="fill" aria-pressed="true">Ideal</button><button data-v="zero" aria-pressed="false">Zero-filled</button></div></div>
+        <span class="lab">Oversampling</span>
+        <div class="row"><div class="seg" id="simCrop" title="Readout oversampling: show the prescribed FOV (cropped, as a scanner does) or the whole sampled FOV. The image is always reconstructed from all samples, so nothing outside the prescribed FOV folds in."><button data-v="crop" aria-pressed="true">Crop to FOV</button><button data-v="all" aria-pressed="false">Show all</button></div></div>
       </div>
       <button class="btn small" id="imPng">Save image as PNG</button>
       </div>
@@ -7736,7 +7744,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.13.3", "date": "2026-09-26", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.13.3", "date": "2026-09-26", "notes": ["Icon: the mark is centred on its tile at every size (it sat up to 4 % to the right and 3 % low), and the dashed line starts and ends with a full dash."]}, {"version": "1.13.2", "date": "2026-09-26", "notes": ["New icon: the viewer's mark (gradient trapezoid over a dashed RF line) on a rounded tile, as seqret.ico (Windows, 16–256 px), seqret.icns (macOS) and PNG; the page uses it as its favicon, so shortcuts created from the browser get it too."]}, {"version": "1.13.1", "date": "2026-09-26", "notes": ["The M0 lane is renamed k-vector and is always shown in 1/m (the values are unchanged: the zeroth moment of gradients in Hz/m is k). The cursor readout and the Selection tab say k."]}, {"version": "1.13.0", "date": "2026-09-26", "notes": ["New M0 lane (switch it on under Display): the zeroth gradient moment on x, y and z in the gradient colours, reset at each excitation and sign-flipped at each refocusing pulse (at the RF centres, as Pulseq's calculateKspacePP), from the physical gradients. It is shown at full strength from each excitation to the end of the last readout before the next one and faded elsewhere; a stretch without a readout is faded throughout.", "Units follow the gradient unit: mT·ms/m with gradients in mT/m, or 1/m (the same as k) with gradients in kHz/m. The lane scales to the largest moment in the visible active stretches, since moments differ by orders of magnitude between imaging, diffusion encoding and spoiling.", "The cursor readout shows M0 when the lane is on, and the Selection tab shows M0 at the end of the selected block.", "Checked against a reference built from PyPulseq (gradients, their integral and the RF times) over whole trajectories: agreement to 1e-7 relative or better, including a turbo spin echo with many refocusing pulses."]}, {"version": "1.12.3", "date": "2026-09-26", "notes": ["Faster with the PNS and CNS lanes on. The lanes are drawn as the upper envelope of each trace (one line per trace, the norm with a faint area under it) at one column per screen pixel: on a high-resolution screen this halved the drawing time of the whole file and cut panning at shot scale about threefold.", "The stimulation pass runs in a background worker, so the page stays responsive while it computes; the lanes show its progress. Closing the specifications dialog no longer restarts the pass when nothing changed. Results are bit-identical to before."]}, {"version": "1.12.2", "date": "2026-09-26", "notes": ["About: link to the source code repository (github.com/filip-szczepankiewicz/Seqret), also included in the citation.", "About: acknowledgements for PyPulseq, used to validate the viewer, and for safe_pns_prediction, the implementation of the SAFE model used for nerve stimulation."]}, {"version": "1.12.1", "date": "2026-09-26", "notes": ["New built-in demo (Load demo): seqret_default.seq, a diffusion-weighted spin-echo EPI (mdfwf-seepi, Pulseq 1.5.1) with three slices and three volumes, supplied by F. Szczepankiewicz and embedded unchanged."]}, {"version": "1.12.0", "date": "2026-09-26", "notes": ["Renamed from SeqView to Seqret. The page is now seqret.html and the MATLAB helper seqret.m. Settings, the theme and the stimulation parameters saved by SeqView in this browser are carried over; tabs of SeqView and Seqret do not link to each other.", "Entries below this one describe SeqView."]}, {"version": "1.11.0", "date": "2026-09-26", "notes": ["Peripheral (PNS) and cardiac (CNS) nerve stimulation predicted with the SAFE model (Hebrank and Gebhardt, ISMRM 2000) as implemented in safe_pns_prediction by F. Szczepankiewicz and T. Witzel: two new lanes, switched on under Display, with x, y and z in the gradient colours, the L2 norm in grey (optional) and the 100 % limit.", "System specifications (Display panel or the ⋯ menu): load MP_GPA_*.asc or MP_GradSys_*.asc files (a file with $INCLUDE together with the file it includes), type the parameters in, or load the example hardware of safe_pns_prediction (not a real scanner). The parameters are checked as in safe_hw_check, compared with the library of known systems (SHA-256, as in safe_hw_verify), and kept only in this browser.", "Computed in the background over the whole sequence from the physical gradients on the gradient raster; the Sequence tab gives the peak of the norm and of each axis with a link to its time, block, shot and volume cards give their own peaks, and the cursor readout the values at the cursor.", "Checked against safe_gwf_to_pns running in Octave on five sequences (agreement about 1e-15 relative) and against PyPulseq's gradient waveforms."]}, {"version": "1.10.0", "date": "2026-09-26", "notes": ["Reload button (↻, key R) next to Open: reads the current file again and keeps the zoom, selection, history, tab and settings. The header says when it was reloaded, and whether the file had changed on disk.", "In Chrome and Edge, Open and drag-and-drop keep a handle to the file on disk, so a sequence rewritten by MATLAB or Python is picked up by Reload. Other browsers keep the file as it was given: Reload works while it is unchanged, and after a change asks for it to be opened again. The demo and files embedded by seqview.m have no reload.", "On narrow screens the Open button is labelled 'Open' so the header stays on one row."]}, {"version": "1.9.0", "date": "2026-09-26", "notes": ["Decluttered layout: above the diagram only the Volume, Shot and Block steppers and the zoom buttons remain; channels, units, shots and volumes rules and Save as PNG moved to a Display panel. New tab, linked tabs and the theme moved to a menu (⋯) next to Open .seq, which shows a green dot while tabs are linked.", "k-space and Image tabs: path, colours, the explanation and Save as PNG, and the simulation settings, are behind an options button. While folded away, the Image tab shows a one-line summary of the simulation settings; click it to open them.", "Floating panels close on a click outside or on Escape; keys pressed inside a panel no longer step or zoom the diagram."]}, {"version": "1.8.0", "date": "2026-09-26", "notes": ["Selection tab: RF blocks show the slice they select: slice gradient, normal and orientation, position from isocentre and slice centre (x, y, z), thickness (FWHM of the small-tip profile), bandwidth and time–bandwidth product, fat shift, and for pulses after the excitation (refocusing) the comparison with the excited slice, including the separation of the fat slices when the slice gradients have opposite signs. A warning when the gradient varies during the pulse.", "Pulseq 1.5 ppm frequency offsets (freqPPM) are now used: the total frequency at the Image tab's B0 is shown, and the simulation places ppm-specified pulses correctly. Before, a fat saturation written the PyPulseq 1.5 way (0 Hz, −3.45 ppm) saturated water instead of fat.", "Inversion recovery in the simulation follows the actual inversion cycle (all pulses acting on the slice until the next inversion, in the steady state). The previous formula could give a longitudinal magnetization above 1 (MPRAGE); it now agrees with a step-by-step calculation over the whole file.", "Pulse purpose inference and block descriptions treat a ppm offset as off-resonance."]}, {"version": "1.7.3", "date": "2026-09-25", "notes": ["Smoother waveforms when zoomed out: traces are computed per device pixel, and where many samples fall into one pixel the min/max band is drawn as a filled envelope with thin edges instead of vertical strokes."]}, {"version": "1.7.2", "date": "2026-09-25", "notes": ["Fixed: the block shading flickered on and off while panning. It is now decided per block from its width on screen (fading in between 2 and 6 px), so it no longer depends on how many blocks happen to be in view."]}, {"version": "1.7.1", "date": "2026-09-25", "notes": ["Fixed: switching a non-Cartesian (e.g. spiral) image to coronal or sagittal could lock the page. Where the nose, neck and brainstem overlap the head, the overlap correction was a direct sum over tens of thousands of patches times all samples; it now uses FFT maps read at the samples (within 1 % of the exact sum, about 700× faster).", "The far-field maps of the air bubble are at most 1024², and their FFTs run as parallel tasks, with the page yielding between them."]}, {"version": "1.7.0", "date": "2026-09-25", "notes": ["Image simulation on the graphics card (WebGL2): the phantom evaluation, the exact inverse Fourier sum and the air bubble's direct sum run as GPU kernels when a hardware GPU is available. Checked against the CPU: images agree within one grey level.", "Falls back to the CPU workers automatically without WebGL2, with software-emulated WebGL, without floating-point render targets, or if the GPU fails during a calculation. The info line says which was used."]}, {"version": "1.6.0", "date": "2026-09-25", "notes": ["Image simulation in parallel background workers: the phantom evaluation, the exact inverse Fourier sum for non-Cartesian data and the bubble's direct sum are split over the processor cores; the page itself does only the setup and never freezes.", "Recent images are kept (up to 12): stepping back to a volume or echo just seen shows it at once.", "Faster loading: the md5 signature check runs in its own worker in parallel with parsing, and shots are handed to the page as packed arrays (about 1 s less for an 82 MB file).", "3D view rendered on the graphics card (WebGL2) with the same algorithm; the CPU renderer remains as a fallback."]}, {"version": "1.5.3", "date": "2026-09-25", "notes": ["Fixed: with the air bubble on, spiral (and other non-Cartesian) images could freeze the page for tens of seconds: the calculation now yields to the browser within long readouts and while building the field patches.", "Non-Cartesian images with the bubble use the same near/far split as Cartesian ones (exact sum near the sphere, power series through oversampled FFT maps elsewhere): about 3× faster for a spiral, 60× for radial, within 2 % of the exact sum on the radial example.", "Non-Cartesian images are reconstructed with the exact inverse Fourier sum up to much larger sizes (spirals previously fell back to nearest-neighbour gridding)."]}, {"version": "1.5.2", "date": "2026-09-24", "notes": ["Stepping through volumes or shots with the arrows keeps the zoom level: zoomed inside an item, the view keeps the same offset into the next one; otherwise it centres on the next one. A first selection still shows the whole item."]}, {"version": "1.5.1", "date": "2026-09-24", "notes": ["Image tab: multiple echoes per shot. A readout that revisits a k-space line already acquired starts a new echo (split at the largest time gap, e.g. at the refocusing pulse), so two full EPI trains around a refocusing pulse give two images; arrows above the image step between them and show each echo's TE. Turbo spin echo, whose lines are all different, stays one image.", "Fixed: when a grid point was acquired in several shots (3D partitions, averages), its timing was averaged in absolute time, so T2 decay could be evaluated seconds away from the right time (MPRAGE images had absurd intensities). Timing is now averaged relative to each sample's own excitation.", "T1 steady state for spin echoes now follows the magnetization through every refocusing pulse (each at its own flip angle) instead of using only the last one; identical to the textbook formula for a single spin echo, and correct for double echoes and turbo spin echo."]}, {"version": "1.5.0", "date": "2026-09-24", "notes": ["Rotation extension (Pulseq 1.5 ROTATIONS): a block's gradient events are played rotated, G_physical = R·G_logical with R from the unit quaternion (w, x, y, z), as in Pulseq's own code. The diagram, slew, statistics, k-space, volume detection and image simulation all use the rotated (physical) gradients.", "The Selection tab shows a block's rotation as an angle about an axis; the Sequence tab summarises the rotated blocks.", "Checked with a demo whose shots are rotated in 30° steps: the k-space of every ADC sample equals the rotated k-space of the unrotated demo (differences at the level of the quaternion's rounding)."]}, {"version": "1.4.3", "date": "2026-09-24", "notes": ["Fixed: grouping volumes by a label for shots without a readout (dummy scans). Such a shot is now read where its readout would have been (its excitation plus the typical excitation-to-ADC time), so labels set after the excitation, as in mdfwf, are taken into account."]}, {"version": "1.4.2", "date": "2026-09-24", "notes": ["Fixed: grouping volumes by a label (e.g. SET) now includes shots without a readout (dummy scans): each shot takes the label value at its first ADC, or at its excitation if it has none.", "Image tab: a shot without a readout (e.g. a dummy scan) is no longer imaged with data borrowed from other shots; the tab says there is no data to reconstruct. A selected volume is imaged from its shots that have data."]}, {"version": "1.4.1", "date": "2026-09-24", "notes": ["Image tab: tidier controls — a toolbar with the view, the 3D toggle and PNG export above the image, and the settings grouped in a compact panel (phantom, slices, contrast, artefacts, reconstruction) with toggle chips; full explanations in tooltips."]}, {"version": "1.4.0", "date": "2026-09-24", "notes": ["Image tab: optional residual eddy currents (typical or poorly compensated, illustrative): exponential responses (1 ms and 50 ms) to the gradient slew on each axis plus a B0 term. The signal is taken at the actual k-space position, so diffusion directions show their own shift, shear and scaling; the info line gives the k-space error in pixels."]}, {"version": "1.3.7", "date": "2026-09-24", "notes": ["Image tab: the 3D view can be switched off.", "Image tab: 'Slice position from sequence' can be switched off; every shot is then imaged in the plane through the air bubble's centre, with orientation and thickness still from the sequence."]}, {"version": "1.3.6", "date": "2026-09-24", "notes": ["Fixed: when the file does not state an RF pulse's purpose (Pulseq < 1.5, or 'u'), a saturation pulse above 90° was taken as a refocusing pulse and assigned to the previous shot. Purposes are now inferred with context as well: a pulse with no readout before the next excitation is a preparation pulse (inversion near 180°, otherwise saturation), and an off-resonant pulse without a gradient is a saturation pulse. Stated purposes are never changed.", "As a result, older files (e.g. MPRAGE in Pulseq 1.2–1.4) now recognise their inversion pulses, so shots split at preparation pulses as for 1.5 files."]}, {"version": "1.3.5", "date": "2026-09-24", "notes": ["Head phantom: the nose and neck now join the head, with a brainstem running from the brain into the neck.", "Phantom model: top-level regions may overlap; the later one wins, and the double-counted signal is subtracted exactly (checked on a proton-density image: overlaps show the winning tissue's value within 0.02)."]}, {"version": "1.3.4", "date": "2026-09-24", "notes": ["Head phantom: a nose and a neck make its orientation obvious in the 3D view, the scout and the simulated images.", "3D view: always rendered at full resolution."]}, {"version": "1.3.3", "date": "2026-09-24", "notes": ["3D view: rendered per pixel by ray casting through the analytic phantom, so tissue in front of a slice hides part of it and the shading follows the true path lengths; it stays smooth while rotating (half resolution during a drag)."]}, {"version": "1.3.2", "date": "2026-09-24", "notes": ["3D view: depth cueing (fog) and volume shading, so near and far parts of the phantom and the slice planes are easier to tell apart."]}, {"version": "1.3.1", "date": "2026-09-24", "notes": ["Image tab: a rotatable 3D view below the image shows the translucent phantom (exact ellipsoid outlines), the air bubble, the current slice with its thickness and image axes, and the other slices of the volume."]}, {"version": "1.3.0", "date": "2026-09-24", "notes": ["Image tab: the phantoms are now 3D (3D Shepp–Logan head, abdomen of ellipsoids). Each image is a section at the slice the sequence excites: position from the RF frequency offset and slice gradient, thickness from the RF bandwidth, orientation (including oblique) from the gradient during the pulse and the principal axes of k-space.", "Image tab: choose which sequence axis is head–foot (axial, coronal or sagittal); the image edges are labelled (A/P, L/R, S/I) and a scout inset shows where the slice lies. 3D-encoded scans show one partition; non-selective 2D scans a projection.", "Image tab: the air bubble's field is the 3D dipole relative to B0, so its pattern changes with the slice orientation, and a slice passing near the bubble is distorted even when it does not cut it.", "Image tab: faster for scans that acquire the same k-space point many times (3D partitions, averages)."]}, {"version": "1.2.1", "date": "2026-09-24", "notes": ["Image tab: the air bubble is 20–400× faster (256×256 in about 6 s instead of an estimated 45 min) and 5–15× more accurate: patches near the surface are refined, tissue edges use partial volumes, rows sharing one timing pattern share one FFT, and the far field is included everywhere through a power series in the phase.", "Image tab: Cartesian k-space is now evaluated exactly on the grid (with the sample timing interpolated), instead of interpolating half-offset samples, which had damped fine detail and shaded the image edges. Filled lines now include the bubble's field too.", "Diagram: right-drag pans along time; left-drag still zooms into the dragged range."]}, {"version": "1.2.0", "date": "2026-09-24", "notes": ["New Image tab: simulates the image the selected volume would give, from an analytic phantom (head or abdomen) sampled at the sequence's own k-space positions and sample times.", "Includes T1 steady state, inversion and frequency-selective saturation pulses, T2 and T2′ decay, six-peak fat with its chemical shift, spin-echo refocusing, diffusion weighting from the gradient waveform (b-value per shot), an optional air bubble with its field, and noise scaled with bandwidth; 1.5, 3 or 7 T.", "Lines not acquired (parallel imaging, partial Fourier) are filled as an ideal reconstruction would restore them, or zero-filled; the k-space view shows which.", "The demo's fat saturation is now tuned (95°) so that fat is suppressed."]}, {"version": "1.1.5", "date": "2026-09-24", "notes": ["Fixed: with very many shots (hundreds of thousands), the Sequence tab summary failed after loading.", "SeqView can open a file embedded in the page itself (groundwork for opening .seq files by double-click; not yet in use)."]}, {"version": "1.1.4", "date": "2026-09-24", "notes": ["Credits: designed and coded by Filip Szczepankiewicz (Lund University); coded by Claude (Anthropic).", "Released under the MIT License; the licence text is included in the file and in the About dialog."]}, {"version": "1.1.3", "date": "2026-09-24", "notes": ["Uses the operating system's own interface font instead of a downloaded web font, so the page makes no network requests and works fully offline.", "Shorter acknowledgements in the About dialog."]}, {"version": "1.1.2", "date": "2026-09-24", "notes": ["The built-in demo is now a generic diffusion-weighted spin-echo EPI written directly in the Pulseq format for SeqView, with no third-party toolbox involved.", "Links to the Pulseq paper (doi:10.1002/mrm.26235) and website on the start screen, in the Sequence tab and in the About dialog."]}, {"version": "1.1.1", "date": "2026-09-24", "notes": ["Fixed: the interface flickered while moving the cursor. The cursor readout could wrap onto a second line, which resized and redrew the diagram; it now has a fixed one-line height, and canvases are only resized when their size really changes."]}, {"version": "1.1.0", "date": "2026-09-24", "notes": ["Each block gets a short description (for example RF90 excitation, RF180 refocusing, Navigator, Phase blip, Crusher, Diffusion encoding, Spoiler, Pause), shown in the Selection tab and in the cursor readout.", "The Selection tab has a header that stays visible while scrolling and shows what is selected: block, shot or volume, with its description and position."]}, {"version": "1.0.2", "date": "2026-09-24", "notes": ["Removed the \"All\" range from the k-space tab (Visible, Shot and Volume remain).", "Fixed: grouping volumes by a label (for example SET) again uses every ADC, as before 1.0.0. Since the ADC types were added, only imaging ADCs had been used, so files whose ADCs carry the NAV, REF or NOISE flag could lose their volume boundaries.", "Automatic volume detection falls back to all ADCs when a file has no imaging-type ADCs."]}, {"version": "1.0.1", "date": "2026-09-24", "notes": ["The k-space tab now opens on \"Shot\" instead of \"All\". A remembered \"All\" from version 1.0.0 is reset once.", "\"All\" and \"Visible\" draw at most 500,000 ADC samples and a 200,000-point path, and show a message while computing large ranges."]}, {"version": "1.0.0", "date": "2026-09-24", "notes": ["First versioned release. Earlier development builds were not numbered.", "Reads Pulseq 1.2 to 1.5, checks the md5 signature, and loads files of about 100 MB in a background thread.", "Diagram with RF magnitude and phase, gradients (separate or on one axis), slew rate, ADC events coloured by type, and a labels lane.", "Detects shots and volumes; block, shot and volume steppers keep the zoom when stepping.", "Inspector for blocks, shots and volumes; k-space in 2D and 3D, coloured by acquisition order or ADC type.", "Linked tabs (same time, shot or volume), settings kept between sessions, PNG export."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.16.2", "date": "2026-09-27", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.16.2", "date": "2026-09-27", "notes": ["Faster drawing when zoomed out: the merged rectangles of min/max bands, their edges and dense trace columns are drawn with fillRect again, each with its left and right edges on whole screen pixels, instead of being collected into one path (as since 1.14.2). A graphics card draws rectangles directly but a path of hundreds of rectangles as a general shape. Measured with the frame-rate test on a laptop, whole demo in view: 111 → 170 fps panning, 115 → 146 fps zooming.", "The look is the same; single pixels at the edges of bands can differ slightly in shade, most on screens with 1.25× or 1.75× pixels, where neighbouring rectangles now meet on whole pixels.", "The frame-rate test keeps the path drawing of 1.14.2–1.16.1 as a case, for comparison."]}, {"version": "1.16.1", "date": "2026-09-27", "notes": ["Frame-rate test (⋯ › Run frame-rate test): from the current view, the diagram is moved on every screen frame for about half a minute (panning, then zooming), and the frame rate is measured with everything drawn, with each part left out in turn (block shading, min/max bands, area under RF, labels lane, overview), and with an alternative way of drawing the batched rectangles (single fillRect calls instead of one path). The table is shown in the frame-time panel and copied to the clipboard; the view and settings are restored.", "This measures the browser's whole frame, including drawing on the graphics card, on the machine where it is run, which a test browser cannot reproduce. The normal drawing is unchanged."]}, {"version": "1.16.0", "date": "2026-09-26", "notes": ["Readout oversampling in the image simulation: it is detected from the flat-top sample spacing of the readouts and the FOV definition, and the image is reconstructed from all samples over the whole sampled FOV, so objects outside the prescribed FOV no longer fold in along the readout. Image options › Oversampling: Crop to FOV (as a scanner does; default) or Show all; switching is instant. The FOV label and matrix size follow the setting.", "Before, a file with an FOV definition was reconstructed on the prescribed FOV even when oversampled, so the benefit of oversampling was lost (a phantom wider than the FOV folded in). Files without oversampling give identical images."]}, {"version": "1.15.1", "date": "2026-09-26", "notes": ["Frame times panel (⋯ › Show frame times, Shift+D): adds the frame rate while the view moves, measured from the screen frames the browser delivers (frames over the time they took, with the slowest frame), so stutter counts in full. It is measured only while the panel is open and the view is moving."]}, {"version": "1.15.0", "date": "2026-09-26", "notes": ["RF can be shown as its real and imaginary parts (Display › Axes › RF as), on a signed axis, so a sinc shows its negative lobes and phase-modulated pulses their complex shape. It is the RF shape amp·mag·e^{iφ} with the shape's own phase, without the phase and frequency offsets, as in Pulseq's rf.signal; it matches PyPulseq's rf.signal to 1e-7 of the peak. The cursor readout and hover values give both parts; the setting is remembered."]}, {"version": "1.14.2", "date": "2026-09-26", "notes": ["Faster zoomed-out views, with the same look. Drawing calls per frame are cut from up to 32,000 to at most about 600: the rectangles of envelopes, spans, ADC types and label flags are collected into one path per style and filled once, and short envelope bands are drawn in three calls instead of three each.", "On high-density screens, traces use two columns per pixel only when zoomed in (where it sharpens curves); zoomed out they use one. This replaces a timing-based switch that flipped between the two on alternate frames, so that every other frame was slow; at a twentieth of a long file, a frame took up to 123 ms and now takes about 14 ms (main thread, measured).", "The look matches 1.14.1: identical on normal screens; on high-density screens zoomed-out traces are drawn at the screen's CSS resolution, which makes dense stretches very slightly bolder."]}, {"version": "1.14.1", "date": "2026-09-26", "notes": ["Reverted the drawing changes of 1.14.0 (column bars when zoomed out, stretched previews while zooming, banded label rows): they looked worse and ran worse in real use. They had been tuned with timings from a software-rendering test browser, which misrepresents a normal GPU-accelerated one. Drawing is as in 1.13.3.", "Kept from 1.14.0: the fix for PNS and CNS curves drawn as separate points when zoomed in far."]}, {"version": "1.14.0", "date": "2026-09-26", "notes": ["Zoomed out, where every pixel column holds many samples, traces are drawn as an overview: one bar per column from the minimum to the maximum, a light band with crisp edges. It shows the shape and range of what is going on at a fraction of the drawing cost; at the scale of a volume or shot, traces are drawn as lines as before.", "Label rows: counters that change more often than every other pixel are drawn as bands, and flags that switch at every readout merge into bars (these rows were the costliest part of a zoomed-out frame).", "Zooming and panning stay smooth on long files: while the view moves, the last full frame is stretched and shifted, and the frame is drawn in full 160 ms after the movement stops. On a 1,008-shot sequence, 24 mouse-wheel steps were handled in 1.5 s instead of 5.9 s.", "Fixed: the PNS and CNS curves were drawn as separate points ('sticks') when zoomed in further than one sample per pixel; they are joined lines again."]}, {"version": "1.13.3", "date": "2026-09-26", "notes": ["Icon: the mark is centred on its tile at every size (it sat up to 4 % to the right and 3 % low), and the dashed line starts and ends with a full dash."]}, {"version": "1.13.2", "date": "2026-09-26", "notes": ["New icon: the viewer's mark (gradient trapezoid over a dashed RF line) on a rounded tile, as seqret.ico (Windows, 16–256 px), seqret.icns (macOS) and PNG; the page uses it as its favicon, so shortcuts created from the browser get it too."]}, {"version": "1.13.1", "date": "2026-09-26", "notes": ["The M0 lane is renamed k-vector and is always shown in 1/m (the values are unchanged: the zeroth moment of gradients in Hz/m is k). The cursor readout and the Selection tab say k."]}, {"version": "1.13.0", "date": "2026-09-26", "notes": ["New M0 lane (switch it on under Display): the zeroth gradient moment on x, y and z in the gradient colours, reset at each excitation and sign-flipped at each refocusing pulse (at the RF centres, as Pulseq's calculateKspacePP), from the physical gradients. It is shown at full strength from each excitation to the end of the last readout before the next one and faded elsewhere; a stretch without a readout is faded throughout.", "Units follow the gradient unit: mT·ms/m with gradients in mT/m, or 1/m (the same as k) with gradients in kHz/m. The lane scales to the largest moment in the visible active stretches, since moments differ by orders of magnitude between imaging, diffusion encoding and spoiling.", "The cursor readout shows M0 when the lane is on, and the Selection tab shows M0 at the end of the selected block.", "Checked against a reference built from PyPulseq (gradients, their integral and the RF times) over whole trajectories: agreement to 1e-7 relative or better, including a turbo spin echo with many refocusing pulses."]}, {"version": "1.12.3", "date": "2026-09-26", "notes": ["Faster with the PNS and CNS lanes on. The lanes are drawn as the upper envelope of each trace (one line per trace, the norm with a faint area under it) at one column per screen pixel: on a high-resolution screen this halved the drawing time of the whole file and cut panning at shot scale about threefold.", "The stimulation pass runs in a background worker, so the page stays responsive while it computes; the lanes show its progress. Closing the specifications dialog no longer restarts the pass when nothing changed. Results are bit-identical to before."]}, {"version": "1.12.2", "date": "2026-09-26", "notes": ["About: link to the source code repository (github.com/filip-szczepankiewicz/Seqret), also included in the citation.", "About: acknowledgements for PyPulseq, used to validate the viewer, and for safe_pns_prediction, the implementation of the SAFE model used for nerve stimulation."]}, {"version": "1.12.1", "date": "2026-09-26", "notes": ["New built-in demo (Load demo): seqret_default.seq, a diffusion-weighted spin-echo EPI (mdfwf-seepi, Pulseq 1.5.1) with three slices and three volumes, supplied by F. Szczepankiewicz and embedded unchanged."]}, {"version": "1.12.0", "date": "2026-09-26", "notes": ["Renamed from SeqView to Seqret. The page is now seqret.html and the MATLAB helper seqret.m. Settings, the theme and the stimulation parameters saved by SeqView in this browser are carried over; tabs of SeqView and Seqret do not link to each other.", "Entries below this one describe SeqView."]}, {"version": "1.11.0", "date": "2026-09-26", "notes": ["Peripheral (PNS) and cardiac (CNS) nerve stimulation predicted with the SAFE model (Hebrank and Gebhardt, ISMRM 2000) as implemented in safe_pns_prediction by F. Szczepankiewicz and T. Witzel: two new lanes, switched on under Display, with x, y and z in the gradient colours, the L2 norm in grey (optional) and the 100 % limit.", "System specifications (Display panel or the ⋯ menu): load MP_GPA_*.asc or MP_GradSys_*.asc files (a file with $INCLUDE together with the file it includes), type the parameters in, or load the example hardware of safe_pns_prediction (not a real scanner). The parameters are checked as in safe_hw_check, compared with the library of known systems (SHA-256, as in safe_hw_verify), and kept only in this browser.", "Computed in the background over the whole sequence from the physical gradients on the gradient raster; the Sequence tab gives the peak of the norm and of each axis with a link to its time, block, shot and volume cards give their own peaks, and the cursor readout the values at the cursor.", "Checked against safe_gwf_to_pns running in Octave on five sequences (agreement about 1e-15 relative) and against PyPulseq's gradient waveforms."]}, {"version": "1.10.0", "date": "2026-09-26", "notes": ["Reload button (↻, key R) next to Open: reads the current file again and keeps the zoom, selection, history, tab and settings. The header says when it was reloaded, and whether the file had changed on disk.", "In Chrome and Edge, Open and drag-and-drop keep a handle to the file on disk, so a sequence rewritten by MATLAB or Python is picked up by Reload. Other browsers keep the file as it was given: Reload works while it is unchanged, and after a change asks for it to be opened again. The demo and files embedded by seqview.m have no reload.", "On narrow screens the Open button is labelled 'Open' so the header stays on one row."]}, {"version": "1.9.0", "date": "2026-09-26", "notes": ["Decluttered layout: above the diagram only the Volume, Shot and Block steppers and the zoom buttons remain; channels, units, shots and volumes rules and Save as PNG moved to a Display panel. New tab, linked tabs and the theme moved to a menu (⋯) next to Open .seq, which shows a green dot while tabs are linked.", "k-space and Image tabs: path, colours, the explanation and Save as PNG, and the simulation settings, are behind an options button. While folded away, the Image tab shows a one-line summary of the simulation settings; click it to open them.", "Floating panels close on a click outside or on Escape; keys pressed inside a panel no longer step or zoom the diagram."]}, {"version": "1.8.0", "date": "2026-09-26", "notes": ["Selection tab: RF blocks show the slice they select: slice gradient, normal and orientation, position from isocentre and slice centre (x, y, z), thickness (FWHM of the small-tip profile), bandwidth and time–bandwidth product, fat shift, and for pulses after the excitation (refocusing) the comparison with the excited slice, including the separation of the fat slices when the slice gradients have opposite signs. A warning when the gradient varies during the pulse.", "Pulseq 1.5 ppm frequency offsets (freqPPM) are now used: the total frequency at the Image tab's B0 is shown, and the simulation places ppm-specified pulses correctly. Before, a fat saturation written the PyPulseq 1.5 way (0 Hz, −3.45 ppm) saturated water instead of fat.", "Inversion recovery in the simulation follows the actual inversion cycle (all pulses acting on the slice until the next inversion, in the steady state). The previous formula could give a longitudinal magnetization above 1 (MPRAGE); it now agrees with a step-by-step calculation over the whole file.", "Pulse purpose inference and block descriptions treat a ppm offset as off-resonance."]}, {"version": "1.7.3", "date": "2026-09-25", "notes": ["Smoother waveforms when zoomed out: traces are computed per device pixel, and where many samples fall into one pixel the min/max band is drawn as a filled envelope with thin edges instead of vertical strokes."]}, {"version": "1.7.2", "date": "2026-09-25", "notes": ["Fixed: the block shading flickered on and off while panning. It is now decided per block from its width on screen (fading in between 2 and 6 px), so it no longer depends on how many blocks happen to be in view."]}, {"version": "1.7.1", "date": "2026-09-25", "notes": ["Fixed: switching a non-Cartesian (e.g. spiral) image to coronal or sagittal could lock the page. Where the nose, neck and brainstem overlap the head, the overlap correction was a direct sum over tens of thousands of patches times all samples; it now uses FFT maps read at the samples (within 1 % of the exact sum, about 700× faster).", "The far-field maps of the air bubble are at most 1024², and their FFTs run as parallel tasks, with the page yielding between them."]}, {"version": "1.7.0", "date": "2026-09-25", "notes": ["Image simulation on the graphics card (WebGL2): the phantom evaluation, the exact inverse Fourier sum and the air bubble's direct sum run as GPU kernels when a hardware GPU is available. Checked against the CPU: images agree within one grey level.", "Falls back to the CPU workers automatically without WebGL2, with software-emulated WebGL, without floating-point render targets, or if the GPU fails during a calculation. The info line says which was used."]}, {"version": "1.6.0", "date": "2026-09-25", "notes": ["Image simulation in parallel background workers: the phantom evaluation, the exact inverse Fourier sum for non-Cartesian data and the bubble's direct sum are split over the processor cores; the page itself does only the setup and never freezes.", "Recent images are kept (up to 12): stepping back to a volume or echo just seen shows it at once.", "Faster loading: the md5 signature check runs in its own worker in parallel with parsing, and shots are handed to the page as packed arrays (about 1 s less for an 82 MB file).", "3D view rendered on the graphics card (WebGL2) with the same algorithm; the CPU renderer remains as a fallback."]}, {"version": "1.5.3", "date": "2026-09-25", "notes": ["Fixed: with the air bubble on, spiral (and other non-Cartesian) images could freeze the page for tens of seconds: the calculation now yields to the browser within long readouts and while building the field patches.", "Non-Cartesian images with the bubble use the same near/far split as Cartesian ones (exact sum near the sphere, power series through oversampled FFT maps elsewhere): about 3× faster for a spiral, 60× for radial, within 2 % of the exact sum on the radial example.", "Non-Cartesian images are reconstructed with the exact inverse Fourier sum up to much larger sizes (spirals previously fell back to nearest-neighbour gridding)."]}, {"version": "1.5.2", "date": "2026-09-24", "notes": ["Stepping through volumes or shots with the arrows keeps the zoom level: zoomed inside an item, the view keeps the same offset into the next one; otherwise it centres on the next one. A first selection still shows the whole item."]}, {"version": "1.5.1", "date": "2026-09-24", "notes": ["Image tab: multiple echoes per shot. A readout that revisits a k-space line already acquired starts a new echo (split at the largest time gap, e.g. at the refocusing pulse), so two full EPI trains around a refocusing pulse give two images; arrows above the image step between them and show each echo's TE. Turbo spin echo, whose lines are all different, stays one image.", "Fixed: when a grid point was acquired in several shots (3D partitions, averages), its timing was averaged in absolute time, so T2 decay could be evaluated seconds away from the right time (MPRAGE images had absurd intensities). Timing is now averaged relative to each sample's own excitation.", "T1 steady state for spin echoes now follows the magnetization through every refocusing pulse (each at its own flip angle) instead of using only the last one; identical to the textbook formula for a single spin echo, and correct for double echoes and turbo spin echo."]}, {"version": "1.5.0", "date": "2026-09-24", "notes": ["Rotation extension (Pulseq 1.5 ROTATIONS): a block's gradient events are played rotated, G_physical = R·G_logical with R from the unit quaternion (w, x, y, z), as in Pulseq's own code. The diagram, slew, statistics, k-space, volume detection and image simulation all use the rotated (physical) gradients.", "The Selection tab shows a block's rotation as an angle about an axis; the Sequence tab summarises the rotated blocks.", "Checked with a demo whose shots are rotated in 30° steps: the k-space of every ADC sample equals the rotated k-space of the unrotated demo (differences at the level of the quaternion's rounding)."]}, {"version": "1.4.3", "date": "2026-09-24", "notes": ["Fixed: grouping volumes by a label for shots without a readout (dummy scans). Such a shot is now read where its readout would have been (its excitation plus the typical excitation-to-ADC time), so labels set after the excitation, as in mdfwf, are taken into account."]}, {"version": "1.4.2", "date": "2026-09-24", "notes": ["Fixed: grouping volumes by a label (e.g. SET) now includes shots without a readout (dummy scans): each shot takes the label value at its first ADC, or at its excitation if it has none.", "Image tab: a shot without a readout (e.g. a dummy scan) is no longer imaged with data borrowed from other shots; the tab says there is no data to reconstruct. A selected volume is imaged from its shots that have data."]}, {"version": "1.4.1", "date": "2026-09-24", "notes": ["Image tab: tidier controls — a toolbar with the view, the 3D toggle and PNG export above the image, and the settings grouped in a compact panel (phantom, slices, contrast, artefacts, reconstruction) with toggle chips; full explanations in tooltips."]}, {"version": "1.4.0", "date": "2026-09-24", "notes": ["Image tab: optional residual eddy currents (typical or poorly compensated, illustrative): exponential responses (1 ms and 50 ms) to the gradient slew on each axis plus a B0 term. The signal is taken at the actual k-space position, so diffusion directions show their own shift, shear and scaling; the info line gives the k-space error in pixels."]}, {"version": "1.3.7", "date": "2026-09-24", "notes": ["Image tab: the 3D view can be switched off.", "Image tab: 'Slice position from sequence' can be switched off; every shot is then imaged in the plane through the air bubble's centre, with orientation and thickness still from the sequence."]}, {"version": "1.3.6", "date": "2026-09-24", "notes": ["Fixed: when the file does not state an RF pulse's purpose (Pulseq < 1.5, or 'u'), a saturation pulse above 90° was taken as a refocusing pulse and assigned to the previous shot. Purposes are now inferred with context as well: a pulse with no readout before the next excitation is a preparation pulse (inversion near 180°, otherwise saturation), and an off-resonant pulse without a gradient is a saturation pulse. Stated purposes are never changed.", "As a result, older files (e.g. MPRAGE in Pulseq 1.2–1.4) now recognise their inversion pulses, so shots split at preparation pulses as for 1.5 files."]}, {"version": "1.3.5", "date": "2026-09-24", "notes": ["Head phantom: the nose and neck now join the head, with a brainstem running from the brain into the neck.", "Phantom model: top-level regions may overlap; the later one wins, and the double-counted signal is subtracted exactly (checked on a proton-density image: overlaps show the winning tissue's value within 0.02)."]}, {"version": "1.3.4", "date": "2026-09-24", "notes": ["Head phantom: a nose and a neck make its orientation obvious in the 3D view, the scout and the simulated images.", "3D view: always rendered at full resolution."]}, {"version": "1.3.3", "date": "2026-09-24", "notes": ["3D view: rendered per pixel by ray casting through the analytic phantom, so tissue in front of a slice hides part of it and the shading follows the true path lengths; it stays smooth while rotating (half resolution during a drag)."]}, {"version": "1.3.2", "date": "2026-09-24", "notes": ["3D view: depth cueing (fog) and volume shading, so near and far parts of the phantom and the slice planes are easier to tell apart."]}, {"version": "1.3.1", "date": "2026-09-24", "notes": ["Image tab: a rotatable 3D view below the image shows the translucent phantom (exact ellipsoid outlines), the air bubble, the current slice with its thickness and image axes, and the other slices of the volume."]}, {"version": "1.3.0", "date": "2026-09-24", "notes": ["Image tab: the phantoms are now 3D (3D Shepp–Logan head, abdomen of ellipsoids). Each image is a section at the slice the sequence excites: position from the RF frequency offset and slice gradient, thickness from the RF bandwidth, orientation (including oblique) from the gradient during the pulse and the principal axes of k-space.", "Image tab: choose which sequence axis is head–foot (axial, coronal or sagittal); the image edges are labelled (A/P, L/R, S/I) and a scout inset shows where the slice lies. 3D-encoded scans show one partition; non-selective 2D scans a projection.", "Image tab: the air bubble's field is the 3D dipole relative to B0, so its pattern changes with the slice orientation, and a slice passing near the bubble is distorted even when it does not cut it.", "Image tab: faster for scans that acquire the same k-space point many times (3D partitions, averages)."]}, {"version": "1.2.1", "date": "2026-09-24", "notes": ["Image tab: the air bubble is 20–400× faster (256×256 in about 6 s instead of an estimated 45 min) and 5–15× more accurate: patches near the surface are refined, tissue edges use partial volumes, rows sharing one timing pattern share one FFT, and the far field is included everywhere through a power series in the phase.", "Image tab: Cartesian k-space is now evaluated exactly on the grid (with the sample timing interpolated), instead of interpolating half-offset samples, which had damped fine detail and shaded the image edges. Filled lines now include the bubble's field too.", "Diagram: right-drag pans along time; left-drag still zooms into the dragged range."]}, {"version": "1.2.0", "date": "2026-09-24", "notes": ["New Image tab: simulates the image the selected volume would give, from an analytic phantom (head or abdomen) sampled at the sequence's own k-space positions and sample times.", "Includes T1 steady state, inversion and frequency-selective saturation pulses, T2 and T2′ decay, six-peak fat with its chemical shift, spin-echo refocusing, diffusion weighting from the gradient waveform (b-value per shot), an optional air bubble with its field, and noise scaled with bandwidth; 1.5, 3 or 7 T.", "Lines not acquired (parallel imaging, partial Fourier) are filled as an ideal reconstruction would restore them, or zero-filled; the k-space view shows which.", "The demo's fat saturation is now tuned (95°) so that fat is suppressed."]}, {"version": "1.1.5", "date": "2026-09-24", "notes": ["Fixed: with very many shots (hundreds of thousands), the Sequence tab summary failed after loading.", "SeqView can open a file embedded in the page itself (groundwork for opening .seq files by double-click; not yet in use)."]}, {"version": "1.1.4", "date": "2026-09-24", "notes": ["Credits: designed and coded by Filip Szczepankiewicz (Lund University); coded by Claude (Anthropic).", "Released under the MIT License; the licence text is included in the file and in the About dialog."]}, {"version": "1.1.3", "date": "2026-09-24", "notes": ["Uses the operating system's own interface font instead of a downloaded web font, so the page makes no network requests and works fully offline.", "Shorter acknowledgements in the About dialog."]}, {"version": "1.1.2", "date": "2026-09-24", "notes": ["The built-in demo is now a generic diffusion-weighted spin-echo EPI written directly in the Pulseq format for SeqView, with no third-party toolbox involved.", "Links to the Pulseq paper (doi:10.1002/mrm.26235) and website on the start screen, in the Sequence tab and in the About dialog."]}, {"version": "1.1.1", "date": "2026-09-24", "notes": ["Fixed: the interface flickered while moving the cursor. The cursor readout could wrap onto a second line, which resized and redrew the diagram; it now has a fixed one-line height, and canvases are only resized when their size really changes."]}, {"version": "1.1.0", "date": "2026-09-24", "notes": ["Each block gets a short description (for example RF90 excitation, RF180 refocusing, Navigator, Phase blip, Crusher, Diffusion encoding, Spoiler, Pause), shown in the Selection tab and in the cursor readout.", "The Selection tab has a header that stays visible while scrolling and shows what is selected: block, shot or volume, with its description and position."]}, {"version": "1.0.2", "date": "2026-09-24", "notes": ["Removed the \"All\" range from the k-space tab (Visible, Shot and Volume remain).", "Fixed: grouping volumes by a label (for example SET) again uses every ADC, as before 1.0.0. Since the ADC types were added, only imaging ADCs had been used, so files whose ADCs carry the NAV, REF or NOISE flag could lose their volume boundaries.", "Automatic volume detection falls back to all ADCs when a file has no imaging-type ADCs."]}, {"version": "1.0.1", "date": "2026-09-24", "notes": ["The k-space tab now opens on \"Shot\" instead of \"All\". A remembered \"All\" from version 1.0.0 is reset once.", "\"All\" and \"Visible\" draw at most 500,000 ADC samples and a 200,000-point path, and show a message while computing large ranges."]}, {"version": "1.0.0", "date": "2026-09-24", "notes": ["First versioned release. Earlier development builds were not numbered.", "Reads Pulseq 1.2 to 1.5, checks the md5 signature, and loads files of about 100 MB in a background thread.", "Diagram with RF magnitude and phase, gradients (separate or on one axis), slew rate, ADC events coloured by type, and a labels lane.", "Detects shots and volumes; block, shot and volume steppers keep the zoom when stepping.", "Inspector for blocks, shots and volumes; k-space in 2D and 3D, coloured by acquisition order or ADC type.", "Linked tabs (same time, shot or volume), settings kept between sessions, PNG export."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -7984,6 +7992,20 @@ function geoRfm(seq, id) {
   else { t.push(0); v.push(0); }
   o = geoFinish(t, v); seq.geo.rfm[id] = o; return o;
 }
+/* real or imaginary part of the RF shape: amp·mag·e^{iφ} with φ the shape's own phase (the phase offset and the
+   frequency offset are not included, as in Pulseq's rf.signal), so a sinc shows its negative lobes */
+function geoRfPart(seq, id, im) {
+  const c = im ? (seq.geo.rfim || (seq.geo.rfim = [])) : (seq.geo.rfre || (seq.geo.rfre = [])); let o = c[id]; if (o) return o;
+  const r = seq.rf.get(id), s = r ? rfSamples(seq, r) : { t: [], mag: [], ph: [] }, t = [], v = [];
+  if (s.t.length) {
+    t.push(s.t[0]); v.push(0);
+    for (let k = 0; k < s.t.length; k++) { const p = s.ph[k] - r.phase; t.push(s.t[k]); v.push(s.mag[k] * (im ? Math.sin(p) : Math.cos(p))); }
+    t.push(s.t[s.t.length - 1]); v.push(0);
+  } else { t.push(0); v.push(0); }
+  o = geoFinish(t, v); c[id] = o; return o;
+}
+function geoRfRe(seq, id) { return geoRfPart(seq, id, false); }
+function geoRfIm(seq, id) { return geoRfPart(seq, id, true); }
 function geoRfp(seq, id) {
   let o = seq.geo.rfp[id]; if (o) return o;
   const r = seq.rf.get(id), s = r ? rfSamples(seq, r) : { t: [], ph: [] }, t = [], v = [];
@@ -8010,7 +8032,8 @@ function blockObj(seq, i) { const B = seq.B; return { id: B.id[i], rf: B.rf[i], 
 const CHANNELS = {
   gx: { col: 'pgx', fn: geoG, p: false }, gy: { col: 'pgy', fn: geoG, p: false }, gz: { col: 'pgz', fn: geoG, p: false }, // physical (after rotation)
   sx: { col: 'pgx', fn: geoSlew, p: false }, sy: { col: 'pgy', fn: geoSlew, p: false }, sz: { col: 'pgz', fn: geoSlew, p: false },
-  rfMag: { col: 'rf', fn: geoRfm, p: false }, rfPh: { col: 'rf', fn: geoRfp, p: true }
+  rfMag: { col: 'rf', fn: geoRfm, p: false }, rfPh: { col: 'rf', fn: geoRfp, p: true },
+  rfRe: { col: 'rf', fn: geoRfRe, p: false, lazy: true }, rfIm: { col: 'rf', fn: geoRfIm, p: false, lazy: true } // summaries built on first use
 };
 /* summary of channel over block i: {has, mn, mx, first, last, brk}; value is 0 outside events (NaN for phase) */
 function blockSummary(seq, key, i, o) {
@@ -8104,9 +8127,9 @@ function m0Pyramids(seq) {
   let big = 0;
   for (let i = 0; i < nb; i++) for (let a = 0; a < 3; a++) { m0Summary(seq, i, a, o); const P = per[a]; P.mn[i] = o.mn; P.mx[i] = o.mx; P.first[i] = o.first; P.last[i] = o.last; big = Math.max(big, Math.abs(o.mn), Math.abs(o.mx)); }
   ['mx', 'my', 'mz'].forEach((key, a) => {
-    const P0 = per[a], out = []; let prev = null;
-    for (let L = 0; L < PYR_SIZES.length; L++) {
-      const sz = PYR_SIZES[L], n = Math.floor(nb / sz); if (n < 2) break;
+    const P0 = per[a], out = []; let prev = null; const SIZES = pyrSizes(nb);
+    for (let L = 0; L < SIZES.length; L++) {
+      const sz = SIZES[L], n = Math.floor(nb / sz); if (n < 2) break;
       const P = { size: sz, mn: new Float32Array(n), mx: new Float32Array(n), first: new Float32Array(n), last: new Float32Array(n), has: new Uint8Array(n).fill(1), brk: new Uint8Array(n) };
       for (let k = 0; k < n; k++) {
         let mn = Infinity, mx = -Infinity;
@@ -8119,6 +8142,16 @@ function m0Pyramids(seq) {
     seq.pyr[key] = out;
   });
   seq.m0Max = big;
+  // tables for rangeSummary: per gradient event its integral extremes and area, per RF event whether it leaves m0 alone
+  const B = seq.B, ids = [B.pgx, B.pgy, B.pgz]; let maxG = 0, maxR = 0;
+  for (let i = 0; i < nb; i++) { for (let a = 0; a < 3; a++) if (ids[a][i] > maxG) maxG = ids[a][i]; if (B.rf[i] > maxR) maxR = B.rf[i]; }
+  const T = { ids, mn: new Float64Array(maxG + 1), mx: new Float64Array(maxG + 1), area: new Float64Array(maxG + 1), plainRf: new Uint8Array(maxR + 1) };
+  const seenG = new Uint8Array(maxG + 1), seenR = new Uint8Array(maxR + 1);
+  for (let i = 0; i < nb; i++) {
+    for (let a = 0; a < 3; a++) { const id = ids[a][i]; if (id && !seenG[id]) { const e = m0EventExt(seq, id); T.mn[id] = e.mn; T.mx[id] = e.mx; T.area[id] = e.area; seenG[id] = 1; } }
+    const r = B.rf[i]; if (r && !seenR[r]) { const u = rfSt(seq, r).use; T.plainRf[r] = u !== 'e' && u !== 'r' ? 1 : 0; seenR[r] = 1; }
+  }
+  seq.m0Ev = T;
 }
 /* stretches where m0 matters: from each excitation's RF centre to the end of the last readout before the next
    excitation (none if there is no readout in between): [starts, ends], sorted */
@@ -8154,6 +8187,10 @@ function channelValue(seq, key, t) {
 
 /* ---------- min/max pyramid over blocks, per channel ---------- */
 const PYR_SIZES = [16, 256, 4096, 65536, 1048576];
+/* summary levels: files up to a million blocks also get 4-block buckets. Zoomed out, a pixel column spans ~10-20
+   blocks that rarely line up with the 16-block buckets, so most were summarised block by block; with 4-block buckets
+   that is a few per column. (18 bytes per 4 blocks and channel, hence the limit.) */
+function pyrSizes(nb) { return nb <= 1e6 ? [4, ...PYR_SIZES] : PYR_SIZES; }
 function buildPyramid(seq, key) {
   const nb = seq.nb, out = [], ch = CHANNELS[key], ids = seq.B[ch.col], bs = seq.blockStart, isP = ch.p;
   // per unique event: summary pieces that do not depend on the block
@@ -8164,9 +8201,10 @@ function buildPyramid(seq, key) {
     const g = ch.fn === geoSlew ? slewSum(seq, id) : ch.fn(seq, id);
     eMn[id] = g.min; eMx[id] = g.max; eF[id] = g.v[0]; eL[id] = isP ? (g.n > 1 ? g.v[g.n - 2] : g.v[0]) : g.v[g.n - 1]; eT0[id] = g.t[0]; eT1[id] = g.t[g.n - 1]; eOk[id] = 1;
   }
-  let prev = null;
-  for (let L = 0; L < PYR_SIZES.length; L++) {
-    const sz = PYR_SIZES[L], n = Math.floor(nb / sz); if (n < 2) break;
+  (seq.evt || (seq.evt = {}))[key] = { mn: eMn, mx: eMx, f: eF, l: eL, t0: eT0, t1: eT1, ids, isP }; // for fast block summaries
+  let prev = null; const SIZES = pyrSizes(nb);
+  for (let L = 0; L < SIZES.length; L++) {
+    const sz = SIZES[L], n = Math.floor(nb / sz); if (n < 2) break;
     const P = { size: sz, mn: new Float32Array(n), mx: new Float32Array(n), first: new Float32Array(n), last: new Float32Array(n), has: new Uint8Array(n), brk: new Uint8Array(n) };
     for (let k = 0; k < n; k++) {
       let mn = Infinity, mx = -Infinity, first = NaN, last = NaN, has = 0, brk = 0;
@@ -8197,16 +8235,37 @@ function buildPyramid(seq, key) {
 
 /* combine the summaries of blocks bA..bB (inclusive) using the fewest aligned pyramid buckets */
 function rangeSummary(seq, key, bA, bB, o, tmp) {
-  const pyr = seq.pyr[key]; let has = 0, mn = Infinity, mx = -Infinity, first = 0, last = 0, brk = 0, b = bA;
+  const pyr = seq.pyr[key], m0a = key in M0_KEYS ? M0_KEYS[key] : -1, z0 = pyr && pyr.length ? pyr[0].size - 1 : -1;
+  let has = 0, mn = Infinity, mx = -Infinity, first = 0, last = 0, brk = 0, b = bA;
   while (b <= bB) {
     let used = false;
-    if (pyr) for (let L = pyr.length - 1; L >= 0; L--) {
+    if (z0 >= 0 && (b & z0) === 0 && b + z0 <= bB) for (let L = pyr.length - 1; L >= 0; L--) { // sizes are powers of two
       const P = pyr[L], sz = P.size; if (b % sz || b + sz - 1 > bB) continue;
       const q = b / sz; if (P.brk[q]) brk = 1;
       if (P.has[q]) { if (!has) first = P.first[q]; last = P.last[q]; has = 1; if (P.mn[q] < mn) mn = P.mn[q]; if (P.mx[q] > mx) mx = P.mx[q]; }
       b += sz; used = true; break;
     }
     if (used) continue;
+    if (m0a >= 0 && seq.m0Ev) { // k-vector: start value plus the event's integral extremes (blocks without excitation/refocusing)
+      const T = seq.m0Ev, r = seq.B.rf[b];
+      if (!r || T.plainRf[r]) {
+        const k0 = seq.kStart[m0a][b], id = T.ids[m0a][b], bmn = id ? k0 + T.mn[id] : k0, bmx = id ? k0 + T.mx[id] : k0, bl = id ? k0 + T.area[id] : k0;
+        if (!has) first = k0; last = bl; has = 1; if (bmn < mn) mn = bmn; if (bmx > mx) mx = bmx;
+        b++; continue;
+      }
+    }
+    const E = seq.evt && seq.evt[key];
+    if (E) { // one block from the per-event table: the same rule as blockSummary, without a call per block
+      const id = E.ids[b]; let bmn, bmx, bf, bl;
+      if (!id) { if (E.isP) { b++; continue; } bmn = bmx = bf = bl = 0; }
+      else if (E.isP) { bmn = E.mn[id]; bmx = E.mx[id]; bf = E.f[id]; bl = E.l[id]; brk = 1; }
+      else {
+        const bs = seq.blockStart; bf = E.t0[id] <= 1e-9 ? E.f[id] : 0; bl = Math.abs(E.t1[id] - (bs[b + 1] - bs[b])) <= 1e-9 ? E.l[id] : 0;
+        const z = bf === 0 || bl === 0; bmn = z && E.mn[id] > 0 ? 0 : E.mn[id]; bmx = z && E.mx[id] < 0 ? 0 : E.mx[id];
+      }
+      if (!has) first = bf; last = bl; has = 1; if (bmn < mn) mn = bmn; if (bmx > mx) mx = bmx;
+      b++; continue;
+    }
     blockSummary(seq, key, b, tmp); if (tmp.brk) brk = 1;
     if (tmp.has) { if (!has) first = tmp.first; last = tmp.last; has = 1; if (tmp.mn < mn) mn = tmp.mn; if (tmp.mx > mx) mx = tmp.mx; }
     b++;
@@ -8464,7 +8523,7 @@ function analyze(seq, progress) {
   seq.stats = { maxRF, maxG, maxSlew, nRF, nADC: nA, nSamples, uses, nExc: uses.e || 0, nRef: uses.r || 0 };
   // pyramids
   seq.pyr = {};
-  const keys = Object.keys(CHANNELS);
+  const keys = Object.keys(CHANNELS).filter(k => !CHANNELS[k].lazy);
   keys.forEach((k, j) => { if (progress) progress(0.8 + 0.15 * j / keys.length); seq.pyr[k] = buildPyramid(seq, k); });
   seq.adcPyr = buildAdcPyramid(seq);
   seq.shots = computeShots(seq, 'exc');
@@ -8740,7 +8799,7 @@ function transferList(root) {
   }
   return [...bufs];
 }
-if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, computeKspace, md5, verifySignature, ADC_TYPES, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active };
+if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, geoRfRe, geoRfIm, buildPyramid, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, computeKspace, md5, verifySignature, ADC_TYPES, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active };
 
 /* ===== Seqret image simulation =====
    Forward model for every imaging ADC sample j of a chosen image (one slice of one volume):
@@ -9930,7 +9989,7 @@ async function runSimulation(seq, shots, vol, refShot, opt, onTick) {
 function transposeResult(r) {
   const tr = (A, G) => { const B = new A.constructor(A.length); for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) B[i * G + j] = A[j * G + i]; return B; };
   const I = r.img, G = I.G, Gk = r.kspace.G;
-  r.img = { ...I, re: tr(I.re, G), im: tr(I.im, G), fovX: I.fovY, fovY: I.fovX, px: I.py, py: I.px };
+  r.img = { ...I, re: tr(I.re, G), im: tr(I.im, G), fovX: I.fovY, fovY: I.fovX, px: I.py, py: I.px, cropX: I.cropY, cropY: I.cropX };
   r.mask = tr(r.mask, Gk); r.kspace = { re: tr(r.kspace.re, Gk), im: tr(r.kspace.im, Gk), G: Gk };
   [r.bwX, r.bwY] = [r.bwY, r.bwX]; [r.fatX, r.fatY] = [r.fatY, r.fatX]; r.roAxis = 1 - r.roAxis; r.axes = r.axes[1] + r.axes[0];
   [r.dispW, r.dispH] = [r.dispH, r.dispW];
@@ -9948,7 +10007,18 @@ async function runSimulation_(seq, shots, vol, refShot, opt) {
   if (Array.isArray(seq.defs.FOV) && seq.defs.FOV.length >= 3 && M.axes[0] !== M.axes[1]) { const ax = 'xyz'; fovX = seq.defs.FOV[ax.indexOf(M.axes[0])] * 1e3; fovY = seq.defs.FOV[ax.indexOf(M.axes[1])] * 1e3; }
   else if (Array.isArray(seq.defs.FOV) && seq.defs.FOV.length === 2 && M.axes === 'xy') { fovX = seq.defs.FOV[0] * 1e3; fovY = seq.defs.FOV[1] * 1e3; }
   const est = arr => { const u = [...new Set(Array.from(arr, v => Math.round(v * 1e6)))].sort((a, b) => a - b), d = []; for (let i = 1; i < u.length; i++) d.push((u[i] - u[i - 1]) * 1e-6); return median(d.filter(x => x > 1e-6)); };
-  const dky = fovY ? 1 / fovY : est(M.KY) || 1e-3, dkx = fovX ? 1 / fovX : (est(M.KX) || dky);
+  let dky = fovY ? 1 / fovY : est(M.KY) || 1e-3, dkx = fovX ? 1 / fovX : (est(M.KX) || dky);
+  // readout oversampling: along the readout (the axis consecutive samples move along), compare the sample spacing
+  // within ADC events with the prescribed FOV. If oversampled, reconstruct the full sampled FOV (so that objects
+  // outside the prescribed FOV do not fold in); cropping to the prescribed FOV is then a display step (img.cropX/Y).
+  let osRO = 1, osAxis = -1;
+  if (fovX && fovY && n > 1) {
+    const roY = Math.abs(M.KY[1] - M.KY[0]) > Math.abs(M.KX[1] - M.KX[0]), K = roY ? M.KY : M.KX, EV = M.EVS, d = [];
+    for (let e = 0; e + 1 < EV.length && d.length < 20000; e++) for (let q = EV[e] + 1; q < EV[e + 1]; q++) { const v = Math.abs(K[q] - K[q - 1]); if (v > 1e-9) d.push(v); }
+    // the flat-top spacing sets the FOV: with ramp sampling, samples on the ramps lie closer, so take the 90th percentile
+    const sp = d.length ? Float64Array.from(d).sort()[Math.floor(0.9 * (d.length - 1))] : 0, fovRO = roY ? fovY : fovX;
+    if (sp > 0) { const s = Math.round(1 / (fovRO * sp) * 20) / 20; if (s >= 1.1 && s <= 8) { osRO = s; osAxis = roY ? 1 : 0; if (roY) dky = 1 / (s * fovY); else dkx = 1 / (s * fovX); } }
+  }
   let maxX = 0, maxY = 0; for (let q = 0; q < n; q++) { maxX = Math.max(maxX, Math.abs(M.KX[q])); maxY = Math.max(maxY, Math.abs(M.KY[q])); }
   let Nx = Math.max(8, 2 * Math.ceil(maxX / dkx - 0.49)), Ny = Math.max(8, 2 * Math.ceil(maxY / dky - 0.49));
   // Cartesian in ky?
@@ -10117,14 +10187,14 @@ async function runSimulation_(seq, shots, vol, refShot, opt) {
     const P = 1 << Math.ceil(Math.log2(Math.max(Nx, Ny)));
     const Ar = new Float64Array(P * P), Ai = new Float64Array(P * P);
     for (let j = 0; j < Ny; j++) for (let i = 0; i < Nx; i++) { const o = (j - Ny / 2 + P / 2) * P + (i - Nx / 2 + P / 2); Ar[o] = direct.xr[j * Nx + i]; Ai[o] = direct.xi[j * Nx + i]; }
-    img = { G: P, Nx, Ny, re: Ar, im: Ai, scale: 1, fovX: P / (Nx * dkx), fovY: P / (Ny * dky), px: 1 / (Nx * dkx), py: 1 / (Ny * dky) };
+    img = { G: P, Nx, Ny, re: Ar, im: Ai, scale: 1, fovX: P / (Nx * dkx), fovY: P / (Ny * dky), px: 1 / (Nx * dkx), py: 1 / (Ny * dky), cropX: osAxis === 0 ? 1 / osRO : 1, cropY: osAxis === 1 ? 1 / osRO : 1 };
   } else {
     ifft2c(Kr, Ki, G);
-    img = { G, Nx, Ny, re: Kr, im: Ki, scale: G * G / (Nx * Ny), fovX: 1 / dkx, fovY: 1 / dky, px: 1 / (G * dkx), py: 1 / (G * dky) };
+    img = { G, Nx, Ny, re: Kr, im: Ki, scale: G * G / (Nx * Ny), fovX: 1 / dkx, fovY: 1 / dky, px: 1 / (G * dkx), py: 1 / (G * dky), cropX: osAxis === 0 ? 1 / osRO : 1, cropY: osAxis === 1 ? 1 / osRO : 1 };
   }
   const inf = M.set.ref, infos = M.infos;
   return {
-    img, mask, kspace, cart, direct: !!direct, nMissing, swapDisplay: M.swapDisplay, engine: SIM_ENGINE, dispW: Nx, dispH: Ny, nEcho: M.nEcho, echo: M.echo, Ny, nAcqRows: acqRows.length, n, bub, ms: Date.now() - t0,
+    img, osRO, mask, kspace, cart, direct: !!direct, nMissing, swapDisplay: M.swapDisplay, engine: SIM_ENGINE, dispW: Nx, dispH: Ny, nEcho: M.nEcho, echo: M.echo, Ny, nAcqRows: acqRows.length, n, bub, ms: Date.now() - t0,
     TE: median(infos.map(x => x.TE)), TR: inf.TR, flip: inf.flip, b: median(infos.map(x => x.b)), bMax: Math.max(...infos.map(x => x.b)), nShots: infos.length,
     bwX: shiftX > 1e-9 ? 1 / shiftX : Infinity, bwY: shiftY > 1e-9 ? 1 / shiftY : Infinity, pf,
     // readout direction: along which image axis consecutive samples of one ADC move
@@ -10690,8 +10760,8 @@ const S = {
   seq: null, name: '', t0: 0, t1: 1, sel: -1, hoverT: null, autoY: false,
   gUnit: 'mT', rfUnit: 'uT', tab: 'seq',
   vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, pns: false, cns: false },
-  stimNorm: true, combineG: true, kColor: 'order', linkMode: 'off',
-  sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
+  stimNorm: true, combineG: true, rfMode: 'mag', kColor: 'order', linkMode: 'off',
+  sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, crop: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
   k: null, kRange: 'shot', kProj: 'xy', kTraj: true, kR: null, kZoom: 1, slew: null, labels: null
 };
 const LANES = [
@@ -10812,7 +10882,7 @@ function lanesGeom() {
   for (const l of LANES) {
     const isG = l.key === 'gx' || l.key === 'gy' || l.key === 'gz';
     if (isG && S.combineG) { if (!vis.includes(GLANE) && (S.vis.gx || S.vis.gy || S.vis.gz)) vis.push(GLANE); continue; }
-    if (S.vis[l.key]) vis.push(l);
+    if (S.vis[l.key]) vis.push(l.key === 'rfMag' && S.rfMode === 'complex' ? { ...l, kind: 'sym', label: 'RF B1' } : l);
   }
   const tot = vis.reduce((s, l) => s + l.w, 0) || 1, TOP = topH();
   const gap = 8, avail0 = H - AXH - TOP - gap * (vis.length - 1);
@@ -10826,6 +10896,7 @@ function laneChannels(l) {
   const s = S.seq;
   if (l.key === 'slew') return [['gx', 'sx'], ['gy', 'sy'], ['gz', 'sz']];
   if (l.key === 'm0') return [['gx', 'mx'], ['gy', 'my'], ['gz', 'mz']];
+  if (l.key === 'rfMag' && S.rfMode === 'complex') return [['ph', 'rfIm'], ['rf', 'rfRe']]; // imaginary first: the real part is drawn on top
   if (l.key === 'g') return ['gx', 'gy', 'gz'].filter(k => S.vis[k]).map(k => [k, k]);
   return [[l.col, l.key]];
 }
@@ -10924,11 +10995,16 @@ function buildPyr(c) {
 /* Channel tracing on the block model: pyramid buckets and single blocks that fall inside one pixel
    column are merged from their min/max summaries; wider blocks contribute exact vertices. */
 let cN = new Float64Array(0), cX = new Float64Array(0);
-let traceFine = true; // adaptive: see render()
+/* columns per CSS pixel for traces, decided per frame from the view: two on high-density screens only when zoomed in
+   (fewer visible blocks than half the plot width), where they sharpen curves. Zoomed out they add nothing visible and
+   cost up to ten times more to draw (bands of one-device-pixel slivers). This replaced a timing-based switch that
+   flipped back and forth between frames (a slow frame made it coarse, the fast coarse frame made it fine again). */
+let traceR = 1;
+function chooseTraceR(t0, t1, pw) { const bs = S.seq.blockStart, nVis = ub(bs, t1) - lb(bs, t0); return nVis <= pw / 2 ? Math.min(2, Math.max(1, dpr || 1)) : 1; }
 function traceChan(key, t0, t1, x0, w) {
   const s = S.seq, bs = s.blockStart, pyr = s.pyr[key], pts = [];
   // columns per device pixel (up to 2 per CSS px); one per CSS px while frames are slow (very large files)
-  const r = window.__cols || (traceFine ? Math.min(2, Math.max(1, dpr || 1)) : 1), sc = w / (t1 - t0), nc = Math.ceil(w * r) + 1;
+  const r = window.__cols || traceR, sc = w / (t1 - t0), nc = Math.ceil(w * r) + 1;
   ensureCols(nc); if (cN.length < nc) { cN = new Float64Array(nc); cX = new Float64Array(nc); }
   colHas.fill(0, 0, nc); colBrk.fill(0, 0, nc);
   const col = t => { const k = Math.floor((t - t0) * sc * r); return k < 0 ? -1 : k >= nc ? nc : k; };
@@ -10957,8 +11033,41 @@ function traceChan(key, t0, t1, x0, w) {
       b = lo + 1; continue;
     }
     if (kb - ka <= 3 && ka >= 0 && kb < nc && blockSummary(s, key, b, o).has && (o.n || 0) > 32) { for (let k = ka; k <= kb; k++) agg(k, o.mn, o.mx, k === ka ? o.first : o.mn, k === kb ? o.last : o.mx, 0, 2); if (o.brk) colBrk[kb] = 1; }
-    else blockVertices(s, key, b, add);
+    else if (!manyVerts(b)) blockVertices(s, key, b, add);
     b++;
+  }
+  /* blocks with many vertices (free waveforms) spanning several columns: the same result as feeding every vertex to
+     add(), column by column: the vertex range of each column by binary search, its min/max from 32-vertex chunks */
+  function manyVerts(b) {
+    const m0a = key in M0_KEYS ? M0_KEYS[key] : -1, ch = CHANNELS[key];
+    if (m0a < 0 && (!ch || ch.p)) return false;
+    let T, V, n, tb = bs[b];
+    if (m0a >= 0) { const m = m0Block(s, b); T = m.t; V = m.v[m0a]; n = T.length; if (n < 64) return false; aggVerts(T, V, n, tb, m, 'c' + m0a); return true; }
+    const id = s.B[ch.col][b]; if (!id) return false;
+    const g = ch.fn(s, id); n = g.n; if (n < 64) return false;
+    const dur = bs[b + 1] - tb, first = g.t[0] <= 1e-9 ? g.v[0] : 0, last = Math.abs(g.t[n - 1] - dur) <= 1e-9 ? g.v[n - 1] : 0;
+    add(tb, first); if (first === 0 && g.v[0] !== 0) add(tb + g.t[0], 0);            // as blockVertices
+    aggVerts(g.t, g.v, n, tb, g, 'c');
+    if (last === 0 && g.v[n - 1] !== 0) add(tb + g.t[n - 1], 0); add(bs[b + 1], last);
+    return true;
+  }
+  function aggVerts(T, V, n, tb, host, tag) {
+    const cc = host._chunks || (host._chunks = {}); let C = cc[tag];
+    if (!C) { const m = Math.ceil(n / 32), mn = new Float64Array(m).fill(Infinity), mx = new Float64Array(m).fill(-Infinity); for (let i = 0; i < n; i++) { const q = i >> 5, v = V[i]; if (v < mn[q]) mn[q] = v; if (v > mx[q]) mx[q] = v; } C = cc[tag] = { mn, mx }; }
+    const colOf = i => col(tb + T[i]);
+    let i = 0;
+    // vertices left of the view: the last one becomes `pre` (as add() does)
+    if (colOf(0) < 0) { let lo = 0, hi = n - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (colOf(m) < 0) lo = m; else hi = m - 1; } const v = V[lo]; pre = v === v ? [tb + T[lo], v] : null; i = lo + 1; }
+    while (i < n) {
+      const k = colOf(i); if (k >= nc) { if (!post && V[i] === V[i]) post = [tb + T[i], V[i]]; return; }
+      let lo = i, hi = n - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (colOf(m) <= k) lo = m; else hi = m - 1; }
+      let mn = Infinity, mx = -Infinity, a = i; const e = lo;
+      while (a <= e && (a & 31)) { const v = V[a++]; if (v < mn) mn = v; if (v > mx) mx = v; }
+      while (a + 31 <= e) { const q = a >> 5; if (C.mn[q] < mn) mn = C.mn[q]; if (C.mx[q] > mx) mx = C.mx[q]; a += 32; }
+      while (a <= e) { const v = V[a++]; if (v < mn) mn = v; if (v > mx) mx = v; }
+      agg(k, mn, mx, V[i], V[e], x0 + (tb + T[i] - t0) * sc, e - i + 1);
+      i = e + 1;
+    }
   }
   if (pre) pts.push(x0 + (pre[0] - t0) * sc, pre[1]);
   const env = []; let run = null;
@@ -10988,33 +11097,101 @@ function trStep(tr) {
   return (tr.step = { t: pt, v: pv });
 }
 /* min/max band of columns holding many samples: filled, with thin upper and lower edges */
+/* Dense traces are drawn with fillRect spans instead of long paths. A zoomed-out trace is thousands of vertices that
+   double back on themselves; stroking that (round joins, 1-1.35 px, anti-aliased) is among the slowest things a
+   canvas does, on the GPU as in software (measured: ~1.8 s per trace in Chromium's GPU pipeline on SwiftShader, 16 ms
+   as spans), while what it paints is a vertical span per pixel column. So where columns hold many samples the same
+   pixels are painted as rectangles, grouped by style; sparse stretches stay anti-aliased paths. */
+const SPAN_MIN = 24; // runs shorter than this stay paths (cheap either way)
+/* rectangles of one style, merged when one continues the previous with the same top and height: far fewer canvas
+   calls when zoomed out (neighbouring columns often have the same band), the same pixels (columns lie on whole device
+   pixels, so no seam changes; same colour and alpha, so the order of overlapping rectangles does not matter) */
+/* rectangles of one style, merged along a row where they line up (far fewer calls when zoomed out), each drawn with
+   fillRect. From 1.14.2 to 1.16.1 they were collected in one Path2D and filled once, which saves main-thread time but
+   is slower on a real graphics card: a path of hundreds of rectangles is rasterised as a general path, fillRect as
+   rectangles (frame-rate test on a laptop, whole demo in view: 111 fps as a path, 170 fps as fillRect, same pixels). */
+function rectRun(ctx) {
+  let x = 0, y = 0, w = 0, h = 0, on = false, path = new Path2D(), n = 0;
+  // left and right edges on whole device pixels, so that neighbouring rectangles meet exactly as in one path; else both
+  // cover the shared pixel partly and the colour underneath shows through as a faint seam (at 1.25× or 1.75× pixels)
+  const direct = !BENCH.pathRects, d = dpr || 1, sn = v => Math.round(v * d) / d;
+  const put = direct ? () => { const xa = sn(x); let xb = sn(x + w); if (xb <= xa) xb = xa + 1 / d; ctx.fillRect(xa, y, xb - xa, h); } : () => path.rect(x, y, w, h); // never thinner than one device pixel
+  return {
+    add(ax, ay, aw, ah) { if (on && ay === y && ah === h && Math.abs(ax - (x + w)) < 1e-9) { w += aw; return; } if (on) { put(); n++; } x = ax; y = ay; w = aw; h = ah; on = true; },
+    flush() { if (on) { put(); n++; } on = false; if (n && !direct) ctx.fill(path); path = new Path2D(); n = 0; }
+  };
+}
+function colWidth(xs, n) { let w = Infinity; for (let i = 1; i < n; i++) { const d = xs[i] - xs[i - 1]; if (d > 1e-6 && d < w) w = d; } return w === Infinity ? 1 : Math.min(1, w); }
 function fillEnvelope(ctx, env, yOf, color) {
-  if (!env || !env.length) return;
+  if (!env || !env.length || BENCH.skip.env) return;
   ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.lineJoin = 'round';
+  const long = [];
+  // short runs: all bands in one fill, all upper edges in one stroke, all lower edges in another (three calls instead
+  // of three per run; runs never overlap, and upper and lower edges stay separate strokes, so the pixels are the same)
+  const band = new Path2D(), upE = new Path2D(), dnE = new Path2D(); let nShort = 0;
   for (const run of env) {
     const n = run.x.length; if (n < 1) continue;
-    ctx.beginPath(); ctx.moveTo(run.x[0], yOf(run.mx[0]));
-    for (let i = 1; i < n; i++) ctx.lineTo(run.x[i], yOf(run.mx[i]));
-    for (let i = n - 1; i >= 0; i--) ctx.lineTo(run.x[i], yOf(run.mn[i]));
-    ctx.closePath(); ctx.globalAlpha = 0.45; ctx.fill();
-    ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.moveTo(run.x[0], yOf(run.mx[0])); for (let i = 1; i < n; i++) ctx.lineTo(run.x[i], yOf(run.mx[i])); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(run.x[0], yOf(run.mn[0])); for (let i = 1; i < n; i++) ctx.lineTo(run.x[i], yOf(run.mn[i])); ctx.stroke();
+    if (n >= SPAN_MIN) { long.push(run); continue; }
+    band.moveTo(run.x[0], yOf(run.mx[0]));
+    for (let i = 1; i < n; i++) band.lineTo(run.x[i], yOf(run.mx[i]));
+    for (let i = n - 1; i >= 0; i--) band.lineTo(run.x[i], yOf(run.mn[i]));
+    band.closePath();
+    upE.moveTo(run.x[0], yOf(run.mx[0])); for (let i = 1; i < n; i++) upE.lineTo(run.x[i], yOf(run.mx[i]));
+    dnE.moveTo(run.x[0], yOf(run.mn[0])); for (let i = 1; i < n; i++) dnE.lineTo(run.x[i], yOf(run.mn[i]));
+    nShort++;
+  }
+  if (nShort) { ctx.globalAlpha = 0.45; ctx.fill(band); ctx.globalAlpha = 0.9; ctx.stroke(upE); ctx.stroke(dnE); }
+  if (long.length) { // the same band and edges as spans: all bands, then all edges (two style changes)
+    ctx.globalAlpha = 0.45;
+    const band = rectRun(ctx);
+    for (const run of long) { const n = run.x.length, w = colWidth(run.x, n); for (let i = 0; i < n; i++) { const ya = yOf(run.mx[i]), yb = yOf(run.mn[i]); band.add(run.x[i] - w / 2, Math.min(ya, yb), w, Math.abs(yb - ya)); } band.flush(); }
+    ctx.globalAlpha = 0.9;
+    const up = rectRun(ctx), dn = rectRun(ctx);
+    for (const run of long) {
+      const n = run.x.length, w = colWidth(run.x, n); let pa = yOf(run.mx[0]), pb = yOf(run.mn[0]);
+      for (let i = 0; i < n; i++) { // each edge joins the previous column's edge (the segment a 1 px line would draw)
+        const ya = yOf(run.mx[i]), yb = yOf(run.mn[i]);
+        up.add(run.x[i] - w / 2, Math.min(pa, ya) - 0.5, w, Math.abs(pa - ya) + 1);
+        dn.add(run.x[i] - w / 2, Math.min(pb, yb) - 0.5, w, Math.abs(pb - yb) + 1);
+        pa = ya; pb = yb;
+      }
+      up.flush(); dn.flush();
+    }
   }
   ctx.globalAlpha = 1;
 }
 function strokePts(ctx, pts, yOf, color, fillBase) {
   if (!pts.length) return;
   fillEnvelope(ctx, pts.env, yOf, color);
-  ctx.beginPath(); let pen = false, fx = null, lx = null;
-  for (let i = 0; i < pts.length; i += 2) {
-    const v = pts[i + 1];
-    if (v !== v) { pen = false; continue; }
+  const LW = 1.35, hw = LW / 2;
+  // dense columns (runs of points at the same x) become spans; the rest is one anti-aliased path
+  let nDense = 0; for (let i = 2; i < pts.length; i += 2) if (pts[i] === pts[i - 2]) nDense++;
+  const useSpans = nDense >= SPAN_MIN, spans = [];
+  ctx.beginPath(); let pen = false, px = NaN, py = NaN, fx = null, lx = null;
+  const cw = useSpans ? (() => { let w = Infinity, last = NaN; for (let i = 0; i < pts.length; i += 2) { const x = pts[i]; if (x !== last && last === last && x - last > 1e-6 && x - last < w) w = x - last; last = x; } return w === Infinity ? 1 : Math.min(1, w); })() : 1;
+  for (let i = 0; i < pts.length;) {
+    const x = pts[i], v = pts[i + 1];
+    if (v !== v) { pen = false; px = NaN; i += 2; continue; }
+    let j = i + 2; if (useSpans) while (j < pts.length && pts[j] === x && pts[j + 1] === pts[j + 1]) j += 2;
+    if (j - i >= 4) { // a dense column: the zigzag through its points, plus the join from the previous point
+      let lo = Infinity, hi = -Infinity; for (let q = i; q < j; q += 2) { const y = yOf(pts[q + 1]); if (y < lo) lo = y; if (y > hi) hi = y; }
+      if (pen && px === px) {
+        if (x - px > 1.5 * cw) ctx.lineTo(x, yOf(pts[i + 1])); // a longer join stays part of the path
+        else { if (py < lo) lo = py; if (py > hi) hi = py; }
+      }
+      spans.push(x, lo, hi);
+      py = yOf(pts[j - 1]); px = x; ctx.moveTo(x, py); pen = true;
+      if (fx === null) fx = x; lx = x; i = j; continue;
+    }
     const y = yOf(v);
-    if (!pen) { ctx.moveTo(pts[i], y); pen = true; if (fx === null) fx = pts[i]; } else ctx.lineTo(pts[i], y);
-    lx = pts[i];
+    if (!pen) { ctx.moveTo(x, y); pen = true; if (fx === null) fx = x; } else ctx.lineTo(x, y);
+    px = x; py = y; lx = x; i += 2;
   }
-  ctx.strokeStyle = color; ctx.lineWidth = 1.35; ctx.lineJoin = 'round'; ctx.stroke();
-  if (fillBase !== undefined && fx !== null) {
+  ctx.strokeStyle = color; ctx.lineWidth = LW; ctx.lineJoin = 'round'; ctx.stroke();
+  if (spans.length) { ctx.fillStyle = color; const sp = rectRun(ctx); for (let k = 0; k < spans.length; k += 3) sp.add(spans[k] - cw / 2, spans[k + 1] - hw, cw, spans[k + 2] - spans[k + 1] + LW); sp.flush(); }
+  if (fillBase !== undefined && fx !== null && !BENCH.skip.area) { // area under the trace, as before: the polyline through every point
+    ctx.beginPath(); let p2 = false;
+    for (let i = 0; i < pts.length; i += 2) { const v = pts[i + 1]; if (v !== v) { p2 = false; continue; } const y = yOf(v); if (!p2) { ctx.moveTo(pts[i], y); p2 = true; } else ctx.lineTo(pts[i], y); }
     ctx.lineTo(lx, fillBase); ctx.lineTo(fx, fillBase); ctx.closePath();
     ctx.globalAlpha = 0.13; ctx.fillStyle = color; ctx.fill(); ctx.globalAlpha = 1;
   }
@@ -11035,7 +11212,7 @@ function render() {
   const renderT0 = performance.now();
   const s = S.seq, t0 = S.t0, t1 = S.t1, pw = W - GUT - 8, x0 = GUT;
   const X = t => x0 + (t - t0) / (t1 - t0) * pw;
-  const lanes = lanesGeom();
+  const lanes = lanesGeom(); traceR = chooseTraceR(t0, t1, pw);
   const nb = s.nb;
   const b0 = Math.max(0, ub(s.blockStart, t0, nb) - 1), b1 = Math.min(nb - 1, lb(s.blockStart, t1, nb));
   const nVis = b1 - b0 + 1;
@@ -11045,9 +11222,11 @@ function render() {
   // block shading: decided per block from its own width on screen (not from how many blocks are visible, which
   // changes while panning), fading in between 2 and 6 px, so panning never switches it on and off
   const wOf = b => (s.blockStart[b + 1] - s.blockStart[b]) / (t1 - t0) * pw;
-  if (nVis < 2e5) {
+  const dmax = blockDurMax(s), pxPerS = pw / (t1 - t0); // skip groups of 64 blocks too narrow on screen to draw (exact)
+  if (nVis < 2e5 && !BENCH.skip.shade) {
     pctx.fillStyle = C.shade; pctx.beginPath(); const partial = [];
     for (let b = b0 | 1; b <= b1; b += 2) {
+      if ((b & 63) < 2 && dmax[b >> 6] * pxPerS < 2) { b = (((b >> 6) + 1) << 6) - 1; continue; } // next odd block after this group
       const w = wOf(b); if (w < 2) continue;
       const xa = X(s.blockStart[b]); if (w >= 6) pctx.rect(xa, 0, w, bot); else partial.push([xa, w]);
     }
@@ -11064,6 +11243,7 @@ function render() {
   if (nVis < 2e5) { // block boundaries where both neighbouring blocks are at least 7 px wide
     pctx.strokeStyle = C['line-soft']; pctx.lineWidth = 1; pctx.beginPath();
     for (let b = b0; b <= b1 + 1 && b <= nb; b++) {
+      if (b < nb && (b & 63) === 0 && dmax[b >> 6] * pxPerS < 7 && b + 64 <= nb) { b += 63; continue; } // every block in the group < 7 px: no boundary inside or at its start
       const wl = b > 0 ? wOf(b - 1) : Infinity, wr = b < nb ? wOf(b) : Infinity; if (Math.min(wl, wr) < 7) continue;
       const x = Math.round(X(s.blockStart[b])) + 0.5; pctx.moveTo(x, 0); pctx.lineTo(x, bot);
     }
@@ -11094,10 +11274,18 @@ function render() {
 
   // lanes
   pctx.font = `500 11.5px ${C.font}`; pctx.textBaseline = 'middle';
+  const dLane = DIAG.on ? {} : null;
   for (const L of lanes) {
-    if (L.key === 'labels') { drawLabelsLane(L, X, t0, t1, x0, pw); continue; }
+    const dT = dLane ? performance.now() : 0;
+    try {
+    if (L.key === 'labels') { if (!BENCH.skip.labels) drawLabelsLane(L, X, t0, t1, x0, pw); continue; }
     if (L.stim) { drawStimLane(L, t0, t1, x0, pw); continue; }
     if (L.key === 'm0') m0Pyramids(s);
+    if (L.key === 'rfMag' && S.rfMode === 'complex') for (const k of ['rfRe', 'rfIm']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k);
+    laneBody(L);
+    } finally { if (dLane) dLane[L.label] = performance.now() - dT; }
+  }
+  function laneBody(L) {
     const chans = laneChannels(L), f = laneFactor(L.key);
     let m = L.key === 'm0' ? m0ViewMax(t0, t1) : laneMax(L);
     if (S.autoY && L.key !== 'rfPh' && L.key !== 'adc' && L.key !== 'm0') { let mv = 0; for (const [, c] of chans) mv = Math.max(mv, chanRange(c, t0, t1)); if (mv > 0) m = mv; }
@@ -11119,6 +11307,10 @@ function render() {
     if (L.key !== 'adc') {
       const unit = laneUnit(L.key), top = L.kind === 'phase' ? 'π' : fmt(m * f, 3);
       if (twoLine) pctx.fillText(unit, 16, L.y + L.h / 2 + 8);
+      if (L.key === 'rfMag' && S.rfMode === 'complex' && L.h > 80) {
+        pctx.font = `600 11px ${C.font}`; pctx.fillStyle = C.rf; pctx.fillText('re', 16, L.y + L.h / 2 + 24); pctx.fillStyle = C.ph; pctx.fillText('im', 34, L.y + L.h / 2 + 24);
+        pctx.font = `400 10.5px ${C.font}`; pctx.fillStyle = C.muted;
+      }
       if (multi && L.h > 80) {
         pctx.font = `600 11px ${C.font}`; let lx = 16;
         for (const [col] of (L.key === 'g' ? chans : [['gx'], ['gy'], ['gz']])) { pctx.fillStyle = C[col]; const tx = col[1]; pctx.fillText(tx, lx, L.y + L.h / 2 + 24); lx += 12; }
@@ -11161,8 +11353,8 @@ function render() {
       if (xb - xa > 26) pctx.fillText(s.B.id[b], (xa + xb) / 2, bot - 8);
     }
   }
-  { const dt = performance.now() - renderT0; if (traceFine && dt > 40) { traceFine = false; request(); } else if (!traceFine && dt < 12) traceFine = true; }
-  drawOverview(); drawOverlay(); updateReadout(); updateNav(); updateLegend();
+  { const dt = performance.now() - renderT0; if (BENCH.run) BENCH.js.push(dt); else if (DIAG.on) diagShow(dt, dLane); }
+  if (!BENCH.skip.ov) drawOverview(); drawOverlay(); updateReadout(); updateNav(); updateLegend();
   if (S.tab === 'img' && S.sel < 0) requestImg();
   if (S.tab === 'k' && S.kRange !== 'all') { if (S.kRange === 'view') requestKLazy(); else requestK(); }
 }
@@ -11200,6 +11392,98 @@ function m0ActivePath(L, X, t0, t1, x0, pw) {
   }
   return { on, off };
 }
+/* longest block per group of 64 (seconds), for skipping narrow stretches in the shading and boundary loops */
+function blockDurMax(seq) {
+  if (seq.durMax64) return seq.durMax64;
+  const n = Math.ceil(seq.nb / 64), d = new Float64Array(n), bs = seq.blockStart;
+  for (let i = 0; i < seq.nb; i++) { const w = bs[i + 1] - bs[i]; if (w > d[i >> 6]) d[i >> 6] = w; }
+  return (seq.durMax64 = d);
+}
+/* frame-time readout (Shift+D, or the ⋯ menu): Seqret's own time per frame and per lane, and the interval between
+   drawn frames, which also contains the browser's drawing time on the graphics card. For reporting performance. */
+const DIAG = { on: false, times: [], lastT: 0, fr: [], loop: false };
+/* frame-rate test (⋯ › Run frame-rate test): switches used only while it runs, to find out on the user's own machine
+   which part of a frame costs time. pathRects: batched rectangles as one Path2D fill (the drawing of 1.14.2–1.16.1)
+   instead of single fillRect calls. skip: leave out one part of the drawing (the normal view never uses either). */
+const BENCH = { run: false, pathRects: false, skip: {}, js: [] };
+/* display frame rate: while the panel is open and the view moves, a requestAnimationFrame loop records the time
+   between screen frames (a dropped frame shows as a longer gap); it stops half a second after the last redraw */
+function diagFrames() {
+  if (DIAG.loop || !DIAG.on) return; DIAG.loop = true; let last = 0;
+  const f = t => {
+    if (!DIAG.on || performance.now() - DIAG.lastT > 500) { DIAG.loop = false; diagText(); return; }
+    if (last) { DIAG.fr.push(t - last); if (DIAG.fr.length > 90) DIAG.fr.shift(); }
+    last = t; requestAnimationFrame(f);
+  };
+  requestAnimationFrame(f);
+}
+function diagShow(js, lanes) {
+  DIAG.js = js; DIAG.lanes = lanes; const now = performance.now(), iv = DIAG.lastT ? now - DIAG.lastT : 0; DIAG.lastT = now;
+  if (iv > 0 && iv < 1000) { DIAG.times.push(iv); if (DIAG.times.length > 30) DIAG.times.shift(); }
+  diagFrames(); diagText();
+}
+function diagText() {
+  if (BENCH.run || $('#diag').classList.contains('sel')) return;
+  const js = DIAG.js || 0, lanes = DIAG.lanes;
+  const medOf = a => a.length ? [...a].sort((x, y) => x - y)[a.length >> 1] : 0;
+  const worst = DIAG.fr.length ? Math.max(...DIAG.fr) : 0;
+  // frames delivered over the time they took (a slow frame counts for its full length, unlike in a median)
+  const tot = DIAG.fr.reduce((a, b) => a + b, 0), fps = tot ? `${Math.round(1000 * DIAG.fr.length / tot)} fps (over the last ${DIAG.fr.length} screen frames; slowest ${worst.toFixed(0)} ms)` : '–';
+  const med = medOf(DIAG.times);
+  const lan = Object.entries(lanes || {}).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v.toFixed(1)}`).join(', ');
+  $('#diag').textContent = `Seqret ${js.toFixed(1)} ms per frame (${traceR} column${traceR > 1 ? 's' : ''} per pixel)\n` +
+    `lanes: ${lan}\nframe rate while moving: ${fps}\nredraws while moving: every ${med ? med.toFixed(0) + ' ms (median; also set by how fast you scroll or drag)' : '–'}\n` +
+    `${Math.round(W)}×${Math.round(H)} CSS px, ${dpr}× pixels, ${S.seq ? S.seq.nb.toLocaleString() + ' blocks' : ''}`;
+}
+function diagToggle() { $('#diag').classList.remove('sel'); DIAG.on = !DIAG.on; DIAG.times = []; DIAG.fr = []; DIAG.lastT = 0; $('#diag').hidden = !DIAG.on; $('#diagBtn').textContent = DIAG.on ? 'Hide frame times' : 'Show frame times'; request(); }
+$('#diagBtn').onclick = diagToggle;
+/* the test: from the current view, the view is moved on every screen frame (panning back and forth by 2 % of the span,
+   or zooming in and out by 3 % about the centre), so that a frame is drawn on every screen frame, as while scrolling
+   fast. It records the time between screen frames (all of the browser's work, including drawing on the graphics card)
+   and Seqret's own time per frame, first for the normal drawing, then with each part left out, then with the
+   rectangle variant. Takes about half a minute; the view, the selection and the settings are restored. */
+async function diagBench() {
+  if (!S.seq || BENCH.run) return;
+  const btn = $('#benchBtn'), v0 = [S.t0, S.t1], el = $('#diag');
+  if (!DIAG.on) diagToggle();
+  const CASES = [['normal, panning', 'pan', {}], ['normal, zooming', 'zoom', {}],
+    ['without block shading', 'pan', { skip: { shade: 1 } }], ['without min/max bands', 'pan', { skip: { env: 1 } }],
+    ['without area under RF', 'pan', { skip: { area: 1 } }], ['without labels lane', 'pan', { skip: { labels: 1 } }],
+    ['without overview', 'pan', { skip: { ov: 1 } }], ['rectangles as one path, panning', 'pan', { pathRects: true }],
+    ['rectangles as one path, zooming', 'zoom', { pathRects: true }]];
+  const frame = () => new Promise(r => requestAnimationFrame(r));
+  const q = (a, f) => { const b = [...a].sort((x, y) => x - y); return b.length ? b[Math.min(b.length - 1, Math.floor(f * b.length))] : 0; };
+  const rows = []; BENCH.run = true; btn.disabled = true;
+  try {
+    for (let c = 0; c < CASES.length; c++) {
+      const [name, kind, o] = CASES[c];
+      BENCH.skip = o.skip || {}; BENCH.pathRects = !!o.pathRects; BENCH.js = [];
+      setView(v0[0], v0[1]); await frame(); await frame();
+      const iv = []; let last = 0; const N = 150, WARM = 15;
+      for (let i = 0; i < N; i++) {
+        const t = await frame(); if (i > WARM && last) iv.push(t - last); last = t;
+        const sp = S.t1 - S.t0, d = (i % 60) < 30 ? 1 : -1;
+        if (kind === 'pan') setView(S.t0 + d * 0.02 * sp, S.t1 + d * 0.02 * sp); else zoomAt((S.t0 + S.t1) / 2, d > 0 ? 0.97 : 1 / 0.97);
+        if (i % 10 === 0) el.textContent = `Frame-rate test: ${name} (${c + 1} of ${CASES.length})…`;
+      }
+      const tot = iv.reduce((a, b) => a + b, 0), js = BENCH.js.slice(WARM);
+      rows.push({ name, fps: 1000 * iv.length / tot, med: q(iv, 0.5), p95: q(iv, 0.95), js: q(js, 0.5), jsMax: q(js, 0.95) });
+    }
+  } finally {
+    BENCH.run = false; BENCH.skip = {}; BENCH.pathRects = false; BENCH.js = []; btn.disabled = false;
+    setView(v0[0], v0[1]);
+  }
+  const pad = (x, n) => String(x).padStart(n), nm = Math.max(...rows.map(r => r.name.length));
+  const txt = `Seqret ${APP.version} frame-rate test · ${S.name} · ${S.seq.nb.toLocaleString()} blocks · ${(v0[1] - v0[0] >= S.seq.totalDur * 0.9) ? 'whole file' : 'span ' + fmt((v0[1] - v0[0]) * 1e3, 3) + ' ms'} in view\n` +
+    `plot ${Math.round(W)}×${Math.round(H)} CSS px at ${dpr}× · ${navigator.userAgent.replace(/^.*?\) /, '').slice(0, 60)}\n` +
+    `${'case'.padEnd(nm)}   fps  frame ms (median / 95%)  Seqret ms (median / 95%)\n` +
+    rows.map(r => `${r.name.padEnd(nm)} ${pad(r.fps.toFixed(0), 5)}  ${pad(r.med.toFixed(1), 8)} / ${pad(r.p95.toFixed(1), 5)}  ${pad(r.js.toFixed(1), 11)} / ${pad(r.jsMax.toFixed(1), 5)}`).join('\n');
+  BENCH.last = txt; console.log(txt);
+  el.textContent = txt + '\n\nCopied to the clipboard. Press Shift+D to close.';
+  el.classList.add('sel');
+  try { await navigator.clipboard.writeText(txt); } catch (_) { el.textContent = txt + '\n\nSelect this text to copy it. Press Shift+D to close.'; }
+}
+$('#benchBtn').onclick = () => { $('#morePop').hidden = true; $('#moreBtn').setAttribute('aria-expanded', 'false'); diagBench(); };
 function shotOfBlock(b) { const sh = S.seq.shots; if (!sh.length || b < 0) return -1; let lo = 0, hi = sh.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (sh[m].b0 <= b) lo = m; else hi = m - 1; } return lo; }
 function shotAt(t) { return S.seq.shots.length ? Math.max(0, Math.min(S.seq.shots.length - 1, ub(S.shotT0, t) - 1)) : -1; }
 function volOfBlock(b) { const v = S.vols; if (!v.length || b < 0) return -1; let lo = 0, hi = v.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (v[m].b0 <= b) lo = m; else hi = m - 1; } return lo; }
@@ -11240,8 +11524,9 @@ function drawTypeBar(y, h, X, t0, t1, x0, pw, alpha = 1) {
   const s = S.seq, A0 = s.adcT0, A1 = s.adcT1, AT = s.adcType; if (!A0.length) return;
   const lo = lb(A1, t0), hiI = ub(A0, t1);
   pctx.globalAlpha = alpha;
+  const paths = new Map(), pathOf = tp => { let q = paths.get(tp); if (!q) paths.set(tp, q = new Path2D()); return q; }; // one fill per ADC type
   if (hiI - lo <= pw) {
-    for (let i = lo; i < hiI; i++) { const xa = X(A0[i]), xb = X(A1[i]); pctx.fillStyle = C[TYPE_COL[AT[i]]]; pctx.fillRect(xa, y, Math.max(1, xb - xa), h); }
+    for (let i = lo; i < hiI; i++) { const xa = X(A0[i]), xb = X(A1[i]); pathOf(AT[i]).rect(xa, y, Math.max(1, xb - xa), h); }
   } else {
     const nc = Math.ceil(pw) + 1; if (typeCols.length < nc) typeCols = new Int8Array(nc); typeCols.fill(-1, 0, nc);
     for (let i = lo; i < hiI;) {
@@ -11256,8 +11541,9 @@ function drawTypeBar(y, h, X, t0, t1, x0, pw, alpha = 1) {
       for (let k = ka; k <= kb; k++) if (typeCols[k] < 0 || TYPE_RANK[tp] > TYPE_RANK[typeCols[k]]) typeCols[k] = tp;
       i = next;
     }
-    for (let k = 0; k < nc;) { const tp = typeCols[k]; let e = k + 1; while (e < nc && typeCols[e] === tp) e++; if (tp >= 0) { pctx.fillStyle = C[TYPE_COL[tp]]; pctx.fillRect(x0 + k, y, e - k, h); } k = e; }
+    for (let k = 0; k < nc;) { const tp = typeCols[k]; let e = k + 1; while (e < nc && typeCols[e] === tp) e++; if (tp >= 0) pathOf(tp).rect(x0 + k, y, e - k, h); k = e; }
   }
+  for (const [tp, q] of paths) { pctx.fillStyle = C[TYPE_COL[tp]]; pctx.fill(q); }
   pctx.globalAlpha = 1;
 }
 /* Labels lane: ADC type row, then one row per label (flags as bars, counters as numbered steps) */
@@ -11278,9 +11564,10 @@ function drawLabelsLane(L, X, t0, t1, x0, pw) {
       const end = i => i + 1 < n ? tr.t[i + 1] : T;
       if (row.kind === 'flag') {
         pctx.fillStyle = C[FLAG_COL[tr.name]] || C.muted; pctx.globalAlpha = FLAG_COL[tr.name] ? 0.9 : 0.55;
-        if (i1 - i0 <= 2 * pw) { for (let i = i0; i < i1; i++) if (tr.v[i]) { const xa = X(tr.t[i]), xb = X(end(i)); pctx.fillRect(xa, y + 3, Math.max(1, xb - xa), rh - 6); } }
-        else { const pts = tracePoints(trStep(tr), t0, t1, x0, pw); let on = -1; for (let k = 0; k < pts.length; k += 2) { const x = pts[k] | 0; if (pts[k + 1]) { if (on < 0) on = x; } else if (on >= 0) { pctx.fillRect(on, y + 3, Math.max(1, x - on + 1), rh - 6); on = -1; } } if (on >= 0) pctx.fillRect(on, y + 3, x0 + pw - on, rh - 6); }
-        pctx.globalAlpha = 1;
+        const bars = new Path2D(); // one fill per row instead of one per bar (thousands per frame when zoomed out)
+        if (i1 - i0 <= 2 * pw) { for (let i = i0; i < i1; i++) if (tr.v[i]) { const xa = X(tr.t[i]), xb = X(end(i)); bars.rect(xa, y + 3, Math.max(1, xb - xa), rh - 6); } }
+        else { const pts = tracePoints(trStep(tr), t0, t1, x0, pw); let on = -1; for (let k = 0; k < pts.length; k += 2) { const x = pts[k] | 0; if (pts[k + 1]) { if (on < 0) on = x; } else if (on >= 0) { bars.rect(on, y + 3, Math.max(1, x - on + 1), rh - 6); on = -1; } } if (on >= 0) bars.rect(on, y + 3, x0 + pw - on, rh - 6); }
+        pctx.fill(bars); pctx.globalAlpha = 1;
       } else if (i1 - i0 < pw / 9) {
         pctx.font = `500 10px ${C.font}`; pctx.textAlign = 'center';
         for (let i = i0; i < i1; i++) {
@@ -11421,7 +11708,7 @@ function drawOverlay() {
     let i = 0;
     for (const [col, c] of chans) {
       const v = channelValue(S.seq, c, t);
-      const txt = v !== v ? '' : (L.kind === 'phase' ? fmt(v, 3) + ' rad' : fmt(v * f, 3) + (chans.length > 1 ? ` ${col.toUpperCase()[1]}` : ''));
+      const txt = v !== v ? '' : (L.kind === 'phase' ? fmt(v, 3) + ' rad' : fmt(v * f, 3) + (chans.length > 1 ? ` ${c === 'rfRe' ? 're' : c === 'rfIm' ? 'im' : col.toUpperCase()[1]}` : ''));
       if (!txt) continue;
       const ty = L.y + 10 + i * 14; i++;
       const tw = octx.measureText(txt).width;
@@ -11449,7 +11736,8 @@ function updateReadout() {
   el.innerHTML = `<span>t <b>${fmtT(t)}</b></span><span>block <b>${s.B.id[b]}</b> <span class="muted">${esc(describeBlock(b))}</span> <span class="muted">(${fmtT(t - s.blockStart[b])} in)</span></span>` +
     (volsOn() ? `<span>volume <b>${volAt(t) + 1}</b><span class="muted"> / ${S.vols.length}</span></span>` : '') +
     (sk >= 0 ? `<span>shot <b>${sk + 1}</b><span class="muted"> / ${s.shots.length}</span></span>` : '') +
-    `<span class="v"><i style="--c:var(--c-rf)"></i>RF <b>${fmt(channelValue(s, 'rfMag', t) * rF(), 3)}</b> ${rU()}</span>` +
+    (S.rfMode === 'complex' ? `<span class="v"><i style="--c:var(--c-rf)"></i>RF <b>${fmt(channelValue(s, 'rfRe', t) * rF(), 3)}</b> re, <b>${fmt(channelValue(s, 'rfIm', t) * rF(), 3)}</b> im ${rU()}</span>`
+      : `<span class="v"><i style="--c:var(--c-rf)"></i>RF <b>${fmt(channelValue(s, 'rfMag', t) * rF(), 3)}</b> ${rU()}</span>`) +
     ['gx', 'gy', 'gz'].map(k => `<span class="v"><i style="--c:var(--c-${k})"></i>${'G' + k[1]} <b>${g(k)}</b></span>`).join('') +
     `<span class="muted">${gU()}</span>` + (adcOn ? `<span class="v"><i style="--c:var(--c-adc)"></i><b>ADC on</b></span>` : '') +
     (S.vis.m0 ? `<span class="v"><i style="--c:var(--ink)"></i>k <b>${['mx', 'my', 'mz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') + stimReadout(t);
@@ -11640,6 +11928,7 @@ document.addEventListener('keydown', e => {
     case '.': stepShot(1); break;
     case 'Backspace': case 'b': back(); break;
     case 'r': if (SRC && (SRC.handle || SRC.file)) reloadFile(); else hit = false; break;
+    case 'D': diagToggle(); break;
     default: hit = false;
   }
   if (hit) e.preventDefault();
@@ -11665,6 +11954,7 @@ function buildChips() {
 buildChips();
 $('#gUnit').onchange = e => { S.gUnit = e.target.value; request(); renderSeqInfo(); renderBlock(); };
 $('#rfUnit').onchange = e => { S.rfUnit = e.target.value; request(); renderSeqInfo(); renderBlock(); };
+$('#rfMode').onchange = e => { S.rfMode = e.target.value; request(); };
 $('#autoY').onchange = e => { S.autoY = e.target.checked; request(); };
 $('#fitBtn').onclick = () => { if (S.seq) { pushHist(); fitAll(); } };
 $('#backBtn').onclick = () => S.seq && back();
@@ -12197,7 +12487,7 @@ function cachePut(key, r) {
 function imgReset() { imgRes = null; imgKey = null; imgRun++; imgLoadId++; imgCache.clear(); drawImg(); }
 function syncSimControls() {
   const d = S.sim;
-  segPress('#simPhantom', d.phantom); segPress('#simFill', d.fill ? 'fill' : 'zero'); segPress('#imView', d.view);
+  segPress('#simPhantom', d.phantom); segPress('#simFill', d.fill ? 'fill' : 'zero'); segPress('#simCrop', d.crop === false ? 'all' : 'crop'); segPress('#imView', d.view);
   $('#simB0').value = String(d.B0); $('#simOrient').value = d.orient; $('#simEddy').value = d.eddy;
   for (const [id, k] of [['simT1', 't1'], ['simT2', 't2'], ['simFat', 'fatShift'], ['simDiff', 'diffusion'], ['simBubble', 'bubble'], ['simNoise', 'noise'], ['simSlicePos', 'slicePos'], ['sim3d', 'show3d']]) $('#' + id).checked = d[k];
   $('.v3wrap').style.display = d.show3d ? '' : 'none';
@@ -12209,12 +12499,13 @@ function imSummary() {
   const c = [d.t1 && 'T1', d.t2 && 'T2', d.fatShift && 'fat', d.diffusion && 'diffusion'].filter(Boolean);
   const a = [d.bubble && 'air bubble', d.noise && 'noise', d.eddy !== 'off' && `${d.eddy === 'poor' ? 'poor' : 'typical'} eddy currents`].filter(Boolean);
   el.textContent = [`${d.phantom === 'head' ? 'Head' : 'Abdomen'} at ${d.B0} T`, ({ ax: 'axial', cor: 'coronal', sag: 'sagittal' }[d.orient] || d.orient) + (d.slicePos ? '' : ' through the bubble'),
-    c.length ? c.join(', ') : 'no contrast effects', ...(a.length ? [a.join(', ')] : []), d.fill ? 'ideal recon' : 'zero-filled recon'].join('; ');
+    c.length ? c.join(', ') : 'no contrast effects', ...(a.length ? [a.join(', ')] : []), d.fill ? 'ideal recon' : 'zero-filled recon', ...(d.crop === false ? ['oversampled FOV shown'] : [])].join('; ');
   el.hidden = !$('#imOpts').hidden;
 }
 syncSimControls();
 segSet('#simPhantom', 'x', v => { S.sim.phantom = v; requestImg(true); });
 segSet('#simFill', 'x', v => { S.sim.fill = v === 'fill'; requestImg(true); });
+segSet('#simCrop', 'x', v => { S.sim.crop = v === 'crop'; drawImg(); drawSlice3D(); imSummary(); }); // display only: no new simulation
 segSet('#imView', 'x', v => { S.sim.view = v; drawImg(); });
 $('#simB0').onchange = e => { S.sim.B0 = +e.target.value; requestImg(true); };
 $('#simOrient').onchange = e => { S.sim.orient = e.target.value; requestImg(true); };
@@ -12420,7 +12711,7 @@ function drawSlice3D() {
   for (const r of P3.R) addQ(r.Q, rel(r.c), r.tissue, r.vis ?? V3_SIG[r.tissue] ?? 0.006, V3_TONE[r.tissue] || V3_COL[r.tissue] || [200, 200, 200], r.parent < 0 ? 0.55 : 0.8);
   if (P3.bubble) { const b = P3.bubble, q = 1 / (b.r * b.r); addQ([[q, 0, 0], [0, q, 0], [0, 0, q]], rel(b.c), 'air', 0.03, [235, 240, 255], 1); }
   // planes: the current slice (filled), its slab faces and the other slices (outlines only)
-  const fx = (R.img.fovX || 220) / 2, fy = (R.img.fovY || 220) / 2, planes = [];
+  const fx = (R.img.fovX || 220) * imgCrop(R.img, 'x') / 2, fy = (R.img.fovY || 220) * imgCrop(R.img, 'y') / 2, planes = [];
   const fn = dot3(fwd, g.n);
   const addP = (o, kind) => { o = rel(o); planes.push({ o, kind, on: dot3(o, g.n) }); };
   addP(g.o, 'cur');
@@ -12526,6 +12817,8 @@ i3.addEventListener('pointerup', () => { v3drag = null; drawSlice3D(); }); i3.ad
 i3.addEventListener('dblclick', () => { v3 = { ...V3_DEFAULT }; drawSlice3D(); });
 i3.addEventListener('wheel', e => { e.preventDefault(); v3.zoom = Math.max(0.4, Math.min(4, v3.zoom * Math.exp(-e.deltaY * 0.0015))); v3Request(); }, { passive: false });
 let imgOff = null;
+/* fraction of the image shown along x or y: < 1 when the readout is oversampled and cropping is on */
+function imgCrop(I, a) { return S.sim.crop === false ? 1 : (a === 'x' ? I.cropX : I.cropY) || 1; }
 function drawImg() {
   if (IW <= 0) return;
   const ctx = ictx; ctx.clearRect(0, 0, IW, IW);
@@ -12563,16 +12856,19 @@ function drawImg() {
   }
   oc.putImageData(id, 0, 0);
   // keep the physical aspect ratio (FOV) of the image
-  const ax = view === 'k' ? 1 : I.fovX, ay = view === 'k' ? 1 : I.fovY, sc = Math.min(IW / ax, IW / ay);
+  // readout oversampling: the image covers the whole sampled FOV; cropping draws only its central part (display only)
+  const cx = view === 'k' ? 1 : imgCrop(I, 'x'), cy = view === 'k' ? 1 : imgCrop(I, 'y');
+  const ax = view === 'k' ? 1 : I.fovX * cx, ay = view === 'k' ? 1 : I.fovY * cy, sc = Math.min(IW / ax, IW / ay);
   const w = ax * sc, h = ay * sc;
   ctx.imageSmoothingEnabled = view !== 'k';
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, IW, IW);
-  ctx.drawImage(imgOff, (IW - w) / 2, (IW - h) / 2, w, h);
+  const sw = G * cx, sh = G * cy; // source rectangle: centred (the image rows are stored with y up, the crop is symmetric)
+  ctx.drawImage(imgOff, (G - sw) / 2, (G - sh) / 2, sw, sh, (IW - w) / 2, (IW - h) / 2, w, h);
   ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = `11px ${C.font}`; ctx.textAlign = 'left';
   const T = R.target, s = S.seq;
   ctx.fillText(view === 'k' ? 'k-space: grey acquired, amber filled' : `${S.vols.length ? `volume ${T.vi + 1} · ` : ''}shot ${T.ref + 1}`, 8, 16);
   if (view !== 'k') {
-    ctx.textAlign = 'right'; ctx.fillText(`FOV ${fmt(I.fovX, 3)} × ${fmt(I.fovY, 3)} mm`, IW - 8, IW - 8);
+    ctx.textAlign = 'right'; ctx.fillText(`FOV ${fmt(I.fovX * cx, 3)} × ${fmt(I.fovY * cy, 3)} mm${R.osRO > 1 ? ` · ${fmt(R.osRO, 3)}× readout oversampling${cx < 1 || cy < 1 ? ', cropped' : ''}` : ''}`, IW - 8, IW - 8);
     const g = R.geom;
     if (g) { // anatomical directions at the edges of the image
       const x0i = (IW - w) / 2, y0i = (IW - h) / 2, neg = v => v.map(x => -x);
@@ -12588,7 +12884,7 @@ function drawImg() {
   // info
   const f = x => isFinite(x) ? fmt(x, 3) : '∞';
   const parts = [
-    `${R.nEcho > 1 ? `Echo ${R.echo + 1} of ${R.nEcho} · ` : ''}${R.dispW}×${R.dispH} · ${R.n.toLocaleString()} samples from ${R.nShots} shot${R.nShots > 1 ? 's' : ''}${R.axes !== 'xy' ? ` · image plane k${R.axes[0]}–k${R.axes[1]}` : ''}${R.useRef ? ' · reference scan' : ''}`,
+    `${R.nEcho > 1 ? `Echo ${R.echo + 1} of ${R.nEcho} · ` : ''}${Math.round(R.dispW * imgCrop(R.img, 'x'))}×${Math.round(R.dispH * imgCrop(R.img, 'y'))} · ${R.n.toLocaleString()} samples from ${R.nShots} shot${R.nShots > 1 ? 's' : ''}${R.axes !== 'xy' ? ` · image plane k${R.axes[0]}–k${R.axes[1]}` : ''}${R.useRef ? ' · reference scan' : ''}`,
     (() => { const g = R.geom; if (!g) return '';
       const pn = planeName(g.n), tilt = pn.tilt > 1 ? `, tilted ${fmt(pn.tilt, 2)}°` : '';
       if (g.mode === 'slice' && g.fixed) return `Slice: ${pn.name}${tilt}, ${fmt(g.thick, 2)} mm thick, fixed at the air bubble's plane (${g.s0 >= 0 ? '+' : ''}${fmt(g.s0, 3)} mm); the sequence's position is ignored`;
@@ -12869,7 +13165,7 @@ window.addEventListener('drop', e => {
 });
 
 /* ---------- settings kept between sessions (browser local storage) ---------- */
-const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'gUnit', 'rfUnit', 'autoY', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kColor', 'kTraj'];
+const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kColor', 'kTraj'];
 const DEFAULTS = JSON.parse(JSON.stringify({ vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) }));
 function saveSettings() {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ v: 1, app: APP.version, vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) })); } catch (_) { }
@@ -12881,6 +13177,7 @@ function applySettings(o) {
   if (!LANES.some(l => S.vis[l.key])) S.vis.gx = true;
   if (ok('gUnit', ['mT', 'Hz'])) S.gUnit = o.gUnit;
   if (ok('rfUnit', ['uT', 'Hz'])) S.rfUnit = o.rfUnit;
+  if (ok('rfMode', ['mag', 'complex'])) S.rfMode = o.rfMode;
   for (const k of ['autoY', 'combineG', 'labelsPref', 'kTraj', 'stimNorm']) if (typeof o[k] === 'boolean') S[k] = o[k];
   if (ok('shotMode', ['exc', 'prep', 'off'])) S.shotMode = o.shotMode;
   if (typeof o.volPref === 'string' && /^(auto|off|label:.+)$/.test(o.volPref)) S.volPref = S.volMode = o.volPref;
@@ -12891,14 +13188,14 @@ function applySettings(o) {
     const d = S.sim, v = o.sim;
     if (['head', 'abdomen'].includes(v.phantom)) d.phantom = v.phantom;
     if ([1.5, 3, 7].includes(v.B0)) d.B0 = v.B0;
-    for (const k of ['t1', 't2', 'fatShift', 'diffusion', 'bubble', 'noise', 'fill', 'slicePos', 'show3d']) if (typeof v[k] === 'boolean') d[k] = v[k];
+    for (const k of ['t1', 't2', 'fatShift', 'diffusion', 'bubble', 'noise', 'fill', 'crop', 'slicePos', 'show3d']) if (typeof v[k] === 'boolean') d[k] = v[k];
     if (['mag', 'phase', 'k'].includes(v.view)) d.view = v.view;
     if (['ax', 'cor', 'sag'].includes(v.orient)) d.orient = v.orient;
     if (['off', 'typical', 'poor'].includes(v.eddy)) d.eddy = v.eddy;
   }
   syncSimControls();
   // reflect in the controls
-  $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#autoY').checked = S.autoY; $('#combG').checked = S.combineG;
+  $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#rfMode').value = S.rfMode; $('#autoY').checked = S.autoY; $('#combG').checked = S.combineG;
   $('#shotSel').value = S.shotMode; $('#kTraj').checked = S.kTraj;
   segPress('#kRange', S.kRange); segPress('#kProj', S.kProj); segPress('#kColor', S.kColor);
   buildChips();
@@ -12973,7 +13270,7 @@ function stimReady(kB) { return STIM && (STIM.R.done || kB < STIM.R.doneK - 1); 
    One pass serves both lanes and is cached for the view. */
 let stimTrCache = null;
 function stimTraces(m, t0, t1, x0, w) {
-  const R = STIM.R, key = [t0, t1, x0, w, R.doneK, traceFine, window.__cols].join();
+  const R = STIM.R, key = [t0, t1, x0, w, R.doneK, traceR, window.__cols].join();
   if (!stimTrCache || stimTrCache.key !== key || stimTrCache.R !== R) stimTrCache = { key, R, all: stimTracesAll(t0, t1, x0, w) };
   return stimTrCache.all.slice(m * 4, m * 4 + 4);
 }
@@ -13017,7 +13314,8 @@ function stimTracesAll(t0, t1, x0, w) {
   const out = [];
   for (let j = 0; j < T; j++) {
     const pts = [];
-    for (let c = 0; c < nc; c++) { if (!has[c]) { if (pts.length && pts[pts.length - 1] === pts[pts.length - 1]) pts.push(NaN, NaN); continue; } const q = c * T + j; pts.push(cnt[c] === 1 ? xs[c] : x0 + (c + 0.5) / r, cnt[c] === 1 ? fi[q] : mx[q]); }
+    // empty columns are skipped, not broken: zoomed in, samples are sparser than pixels and the line must join them
+    for (let c = 0; c < nc; c++) { if (!has[c]) continue; const q = c * T + j; pts.push(cnt[c] === 1 ? xs[c] : x0 + (c + 0.5) / r, cnt[c] === 1 ? fi[q] : mx[q]); }
     out.push(pts);
   }
   return out;
