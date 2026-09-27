@@ -17,6 +17,7 @@ Open a sequence and interactively explore the RF and gradient waveforms, ADC eve
 - Light and dark themes
 - Pulseq formats **1.2–1.5**
 - Works offline and keeps sequence data local
+- Graphical performance benchmark to track frame rate
 
 ## Usage
 
