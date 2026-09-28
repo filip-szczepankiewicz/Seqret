@@ -17,13 +17,13 @@ Open a sequence and interactively explore the RF and gradient waveforms, ADC eve
 * Light and dark themes
 * Pulseq formats **1.2–1.5**
 * Works offline and keeps sequence data local
-* Graphical performance benchmark to track frame rate
+* Built-in frame-rate test, and a lower diagram quality for slower computers
 
 ## Usage
 
-Download and open `seqret.html` in a modern web browser, then drag and drop a `.seq` file onto the page or click on the **Open .seq** button.
+Download and open `seqret.html` in a modern web browser, then drag and drop a `.seq` file onto the page or click on the **Open .seq** button. In Chrome and Edge, **Open .seq** starts in the folder of the last opened file, and the reload button reads the file again after it has changed on disk.
 
-Go to **Display/Shots and volumes** to define how shots and volumes are identified. Click on volume or shot to focus on it. Use the arrow keys to step across volumes, shots or individual blocks.
+Go to **Display › Shots and volumes** to define how shots and volumes are identified. Click on volume or shot to focus on it. Use the arrow keys to step across volumes, shots or individual blocks.
 
 Use the tabs on the right to view detailed information, view k-space or the simulated image.
 
@@ -36,6 +36,7 @@ If panning or zooming feels sluggish:
 1. Run the frame-rate test (**⋯ › Run frame-rate test**) with the whole sequence in view. If *blank diagram* reaches your screen's refresh rate but *normal, panning* does not, the browser's drawing is the limit, not Seqret.
 2. Open `chrome://gpu` (`edge://gpu` in Edge) and look for **Skia Graphite** under *Graphics Feature Status*. If it says *Disabled*, enable `chrome://flags/#skia-graphite` (`edge://flags/#skia-graphite`) and restart the browser. This is an experimental browser setting that a browser update may reset.
 3. On a laptop, Chrome's Energy Saver mode limits pages to 30 fps while on battery (*Settings › Performance*).
+4. If none of this helps, lower **Display › View › Quality**. *Standard* draws coarser waveforms when zoomed out; *fast* also draws the diagram at a quarter of the pixels on high-resolution screens (at 2×), with slightly softer lines and text. Saved PNGs stay sharp. The frame-rate test shows the rate each quality gives.
 
 ## Related tools and software
 
@@ -47,7 +48,7 @@ Seqret is based on, and designed for, sequences using the [Pulseq](https://pulse
 
 ### Nerve stimulation (SAFE model on Siemens systems)
 
-Peripheral (PNS) and cardiac (CNS) nerve stimulation are predicted with the SAFE model, as implemented in [safe_pns_prediction](https://github.com/filip-szczepankiewicz/safe_pns_prediction). Seqret's implementation was checked against it. The prediction requires the gradient system's stimulation parameters, which can be loaded from the scanner's hardware files (`MP\\\_GPA\\\_\\\*.asc` or `MP\\\_GradSys\\\_\\\*.asc`) or entered by hand. The example hardware of safe\_pns\_prediction is included for testing and does not describe a real scanner.
+Peripheral (PNS) and cardiac (CNS) nerve stimulation are predicted with the SAFE model, as implemented in [safe_pns_prediction](https://github.com/filip-szczepankiewicz/safe_pns_prediction). Seqret's implementation was checked against it. The prediction requires the gradient system's stimulation parameters, which can be loaded from the scanner's hardware files (`MP_GPA_*.asc` or `MP_GradSys_*.asc`) or entered by hand. The example hardware of safe_pns_prediction is included for testing and does not describe a real scanner.
 
 > Hebrank FX, Gebhardt M. SAFE-Model - A New Method for Predicting Peripheral Nerve Stimulations in MRI, [Proc Intl Soc Mag Reson Med. 2000;8:2007](https://cds.ismrm.org/ismrm-2000/PDF7/2007.PDF).
 

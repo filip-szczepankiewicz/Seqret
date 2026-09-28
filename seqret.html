@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.19.0 (2026-09-27) - Pulseq sequence viewer
+  Seqret 1.20.0 (2026-09-27) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.19.0">
-<meta name="description" content="Seqret 1.19.0: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.20.0">
+<meta name="description" content="Seqret 1.20.0: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -270,7 +270,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
 #moreBtn{padding:6px 8px}
 #moreBtn.linked::after{content:"";position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%;background:var(--c-gy);box-shadow:0 0 0 2px var(--surface)}
 .popbody[hidden]{display:none}
-.popbody.float{position:absolute;right:0;top:calc(100% + 6px);z-index:40;width:max-content;min-width:250px;max-width:min(340px,calc(100vw - 16px));background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-shadow:0 10px 28px color-mix(in srgb,var(--ink) 20%,transparent);font-size:13px}
+.popbody.float{position:absolute;right:0;top:calc(100% + 6px);z-index:40;width:max-content;min-width:250px;max-width:min(480px,calc(100vw - 16px));background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-shadow:0 10px 28px color-mix(in srgb,var(--ink) 20%,transparent);font-size:13px}
 .popbody.inline{border:1px solid var(--line);border-radius:10px;background:var(--plot);padding:10px;margin:0 0 10px;font-size:13px}
 .popbody.inline .simset{border:0;padding:0;margin:0 0 10px;background:none}
 .popbody section+section{border-top:1px solid var(--line-soft);margin-top:10px;padding-top:10px}
@@ -278,6 +278,13 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
 .popbody .prow{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
 .popbody .prow+.prow{margin-top:6px}
 .popbody .pgrid{display:grid;grid-template-columns:auto 1fr;gap:7px 10px;align-items:center}
+.popbody .cgrid{display:grid;grid-template-columns:auto 1fr;gap:10px 10px;align-items:start}
+.popbody .clab{color:var(--muted);font-size:13px;white-space:nowrap;padding-top:4px}
+.popbody .cbody{display:flex;flex-direction:column;gap:6px;min-width:0}
+.popbody .cbody .chips{gap:5px}
+.popbody .cbody .chip{padding:3px 9px 3px 7px}
+.popbody .cctl{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.popbody .cbody .stimstat{margin:0}
 .popbody .pgrid>span,.popbody .pgrid>label[for]{color:var(--muted)}
 .popbody label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
 .popbody select{border:1px solid var(--line);background:var(--plot);color:var(--ink);border-radius:6px;padding:3px 6px;max-width:100%}
@@ -328,7 +335,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.19.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.20.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -369,24 +376,24 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
       <div class="pop">
         <button class="btn optbtn" id="dispBtn" aria-expanded="false" aria-controls="dispPop" aria-haspopup="dialog" title="Channels, units, shots and volumes, save as PNG"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h7M12 4h2M2 8h2M7 8h7M2 12h9M14 12h0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10.5" cy="4" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="5.5" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12.5" cy="12" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Display</span></button>
         <div class="popbody float" id="dispPop" role="dialog" aria-label="Display options" hidden>
-          <section><h6>Channels</h6><div class="chips" id="chips" role="group" aria-label="Channels"></div></section>
-          <section><h6>Axes</h6>
-            <div class="prow"><label>Gradients <select id="gUnit" aria-label="Gradient unit"><option value="mT">mT/m</option><option value="Hz">kHz/m</option></select></label>
-              <label>RF <select id="rfUnit" aria-label="RF unit"><option value="uT">µT</option><option value="Hz">Hz</option></select></label></div>
-            <div class="prow"><label title="Real and imaginary parts show the RF shape with its sign (a sinc's negative lobes); the phase and frequency offsets are not included">RF as <select id="rfMode" aria-label="RF shown as"><option value="mag">magnitude</option><option value="complex">real and imaginary</option></select></label></div>
-            <div class="prow"><label title="Draw Gx, Gy and Gz on one shared axis, told apart by colour"><input type="checkbox" id="combG" checked> Gradients on one axis</label></div>
-            <div class="prow"><label title="Scale each channel to the visible time window"><input type="checkbox" id="autoY"> Fit Y to view</label></div>
-            <div class="prow"><label title="High: the waveforms are drawn with one column per screen pixel at every zoom level, so dense stretches keep their shape when zoomed out. Standard: coarser columns when zoomed out, cheaper to draw. Fast: standard at 1× pixel density on high-density screens, a quarter of the pixels at 2×, with slightly softer lines and text. Lower it if the diagram is slow (see ⋯ › Run frame-rate test). PNG export is always at full density.">Diagram quality <select id="diagRes" aria-label="Diagram quality"><option value="high">high</option><option value="standard">standard</option><option value="fast">fast</option></select></label></div>
-            <div class="prow"><label title="Where a pixel column holds many samples (zoomed out). Min/max band: the range the waveform covers, filled at half strength. Time-weighted fill: each level is shaded by the fraction of the time the waveform spends at that level or beyond it (further from zero), so a readout train shows as two blocks and levels passed only briefly stay faint; the min/max edges are kept. Slower on large files (see ⋯ › Run frame-rate test).">Dense waveforms <select id="denseSel" aria-label="Dense waveforms"><option value="band">min/max band</option><option value="fill">time-weighted fill</option></select></label></div></section>
+          <section><h6>Channels</h6>
+            <div class="cgrid">
+              <span class="clab">RF</span>
+              <div class="cbody"><div class="chips" data-group="rf" role="group" aria-label="RF channels"></div><div class="cctl"><select id="rfUnit" aria-label="RF unit"><option value="uT">µT</option><option value="Hz">Hz</option></select><label title="Real and imaginary parts show the RF shape with its sign (a sinc's negative lobes); the phase and frequency offsets are not included">as <select id="rfMode" aria-label="RF shown as"><option value="mag">magnitude</option><option value="complex">real and imaginary</option></select></label></div></div>
+              <span class="clab">Gradients</span>
+              <div class="cbody"><div class="chips" data-group="g" role="group" aria-label="Gradient channels"></div><div class="cctl"><select id="gUnit" aria-label="Gradient unit"><option value="mT">mT/m</option><option value="Hz">kHz/m</option></select><label title="Draw Gx, Gy and Gz on one shared axis, told apart by colour"><input type="checkbox" id="combG" checked> One axis</label></div></div>
+              <span class="clab">Readout</span>
+              <div class="cbody"><div class="chips" data-group="acq" role="group" aria-label="Readout channels"></div></div>
+              <span class="clab">Stimulation</span>
+              <div class="cbody"><div class="chips" data-group="stim" role="group" aria-label="Nerve stimulation channels"></div><div class="cctl"><label title="Show the L2 norm of the three axes in grey"><input type="checkbox" id="stimNorm" checked> L2 norm</label><button class="btn small" id="stimSpecBtn">Specifications…</button></div><p class="stimstat" id="stimStat"></p></div>
+            </div></section>
+          <section><h6>View</h6>
+            <div class="prow"><label title="Scale each channel to the visible time window"><input type="checkbox" id="autoY"> Fit Y to view</label><label title="High: the waveforms are drawn with one column per screen pixel at every zoom level, so dense stretches keep their shape when zoomed out. Standard: coarser columns when zoomed out, cheaper to draw. Fast: standard at 1× pixel density on high-density screens, a quarter of the pixels at 2×, with slightly softer lines and text. Lower it if the diagram is slow (see ⋯ › Run frame-rate test). PNG export is always at full density.">Quality <select id="diagRes" aria-label="Diagram quality"><option value="high">high</option><option value="standard">standard</option><option value="fast">fast</option></select></label></div></section>
           <section><h6>Shots and volumes</h6>
             <div class="pgrid"><label for="shotSel">Shots</label>
               <select id="shotSel"><option value="exc">One per excitation</option><option value="prep">Split at prep. pulses</option><option value="off">Hidden</option></select>
               <label for="volSel">Volumes</label>
               <select id="volSel"><option value="auto">Auto (repeated k-space)</option><option value="off">Hidden</option></select></div></section>
-          <section><h6>Nerve stimulation</h6>
-            <p class="stimstat" id="stimStat"></p>
-            <div class="prow"><label title="Show the L2 norm of the three axes in grey"><input type="checkbox" id="stimNorm" checked> L2 norm</label>
-              <button class="btn small" id="stimSpecBtn">System specifications…</button></div></section>
           <section><button class="btn menuitem" id="pngBtn">Save diagram as PNG</button></section>
         </div>
       </div>
@@ -7746,7 +7753,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.19.0", "date": "2026-09-27", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.19.0", "date": "2026-09-27", "notes": ["Display › Dense waveforms › time-weighted fill (option; the default stays min/max band). Where the waveform goes back and forth within a pixel column, each level is shaded by the fraction of the column's time the waveform spends at that level or beyond it (further from zero). A readout train that spends half its time at +G and half at −G shows as two smooth blocks at half strength, and levels passed only briefly stay faint; the opaque min/max edges are kept, so extremes stay visible. Smooth stretches that are merely finely sampled (free waveforms) stay lines, so the fill marks oscillation, not sampling density.", "The fill is computed exactly from every segment under the dense stretches, per frame. With more than 10,000 blocks under them in a lane (large files zoomed out), the band is drawn instead, decided from the view alone. In a slow test browser it took about 20–45 ms per frame on the demo and a 7,600-block file, several times the band's cost; the frame-rate test includes a case comparing the two.", "Frame-rate test: the suggestion no longer blames the browser when Seqret's own work is most of the frame; it then says so, notes that zooming in helps, and lists the lower settings that were faster."]}, {"version": "1.18.1", "date": "2026-09-27", "notes": ["Frame-rate test: the suggestion now tells apart the two limits. When Seqret's own work takes most of the frame (large files zoomed out), it says so instead of pointing to the browser's renderer; it points to the renderer only when the frame takes much longer than Seqret's work."]}, {"version": "1.18.0", "date": "2026-09-27", "notes": ["Smoother waveforms when zoomed out: Display › Diagram quality › high (new default) draws the waveforms with one column per screen pixel at every zoom level. Dense stretches keep their shape: RF pulses are drawn at their true width instead of as blocks, and readout trains and ramps are finer. Before, zoomed out used one column per CSS pixel, 1.75 to 2 screen pixels wide on high-density screens. On 1× screens nothing changes.", "Diagram quality replaces diagram resolution: high (new), standard (the drawing of 1.14.2–1.17.0) and fast (standard at 1× pixel density, as 'fast' in 1.17.0). A saved 'sharp' becomes high. Cost of high when zoomed out: up to about twice Seqret's time per frame on small files (3.6 → 8.1 ms on the demo in a slow test browser) and 15–30 % more on a 45,000-block file, plus more rectangles for the browser to draw. Zoomed in, and on 1× screens, high and standard are the same.", "Frame-rate test: compares the current quality with the other two, and when drawing limits the frame rate, suggests the lower qualities with the rates they gave."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.20.0", "date": "2026-09-27", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.20.0", "date": "2026-09-27", "notes": ["Open .seq starts in the folder of the last opened file, also after the browser is restarted (Chrome and Edge; the file's handle is kept in the browser's storage, which gives no access to the file by itself). Files opened by dragging them onto the page count too.", "Display panel regrouped: one row per kind of channel with its settings next to it — RF (|B1|, phase, unit, shown as), gradients (Gx, Gy, Gz, slew, k-vector, unit, one axis), readout (ADC, labels) and stimulation (PNS, CNS, L2 norm, specifications); fit Y and quality under View.", "Removed the time-weighted fill of dense waveforms (1.19.0): it added little and was slow on large files. The frame-rate test keeps the improved suggestion from 1.19.0."]}, {"version": "1.19.0", "date": "2026-09-27", "notes": ["Display › Dense waveforms › time-weighted fill (option; the default stays min/max band). Where the waveform goes back and forth within a pixel column, each level is shaded by the fraction of the column's time the waveform spends at that level or beyond it (further from zero). A readout train that spends half its time at +G and half at −G shows as two smooth blocks at half strength, and levels passed only briefly stay faint; the opaque min/max edges are kept, so extremes stay visible. Smooth stretches that are merely finely sampled (free waveforms) stay lines, so the fill marks oscillation, not sampling density.", "The fill is computed exactly from every segment under the dense stretches, per frame. With more than 10,000 blocks under them in a lane (large files zoomed out), the band is drawn instead, decided from the view alone. In a slow test browser it took about 20–45 ms per frame on the demo and a 7,600-block file, several times the band's cost; the frame-rate test includes a case comparing the two.", "Frame-rate test: the suggestion no longer blames the browser when Seqret's own work is most of the frame; it then says so, notes that zooming in helps, and lists the lower settings that were faster."]}, {"version": "1.18.1", "date": "2026-09-27", "notes": ["Frame-rate test: the suggestion now tells apart the two limits. When Seqret's own work takes most of the frame (large files zoomed out), it says so instead of pointing to the browser's renderer; it points to the renderer only when the frame takes much longer than Seqret's work."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -10793,7 +10800,7 @@ const $ = s => document.querySelector(s);
 const TAU = 2 * Math.PI;
 const S = {
   seq: null, name: '', t0: 0, t1: 1, sel: -1, hoverT: null, autoY: false,
-  gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'high', dense: 'band',
+  gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'high',
   vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, pns: false, cns: false },
   stimNorm: true, combineG: true, rfMode: 'mag', kColor: 'order', linkMode: 'off',
   sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, crop: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
@@ -11171,7 +11178,7 @@ function rectRun(ctx) {
   };
 }
 function colWidth(xs, n) { let w = Infinity; for (let i = 1; i < n; i++) { const d = xs[i] - xs[i - 1]; if (d > 1e-6 && d < w) w = d; } return w === Infinity ? 1 : Math.min(1, w); }
-function fillEnvelope(ctx, env, yOf, color, filled) { // filled(x): column shown as the time-weighted fill (no band)
+function fillEnvelope(ctx, env, yOf, color) {
   if (!env || !env.length || BENCH.skip.env) return;
   ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.lineJoin = 'round';
   const long = [];
@@ -11181,12 +11188,10 @@ function fillEnvelope(ctx, env, yOf, color, filled) { // filled(x): column shown
   for (const run of env) {
     const n = run.x.length; if (n < 1) continue;
     if (n >= SPAN_MIN) { long.push(run); continue; }
-    if (!filled || !run.x.some(filled)) { // a short run with a filled column keeps only its edges
-      band.moveTo(run.x[0], yOf(run.mx[0]));
-      for (let i = 1; i < n; i++) band.lineTo(run.x[i], yOf(run.mx[i]));
-      for (let i = n - 1; i >= 0; i--) band.lineTo(run.x[i], yOf(run.mn[i]));
-      band.closePath();
-    }
+    band.moveTo(run.x[0], yOf(run.mx[0]));
+    for (let i = 1; i < n; i++) band.lineTo(run.x[i], yOf(run.mx[i]));
+    for (let i = n - 1; i >= 0; i--) band.lineTo(run.x[i], yOf(run.mn[i]));
+    band.closePath();
     upE.moveTo(run.x[0], yOf(run.mx[0])); for (let i = 1; i < n; i++) upE.lineTo(run.x[i], yOf(run.mx[i]));
     dnE.moveTo(run.x[0], yOf(run.mn[0])); for (let i = 1; i < n; i++) dnE.lineTo(run.x[i], yOf(run.mn[i]));
     nShort++;
@@ -11195,7 +11200,7 @@ function fillEnvelope(ctx, env, yOf, color, filled) { // filled(x): column shown
   if (long.length) { // the same band and edges as spans: all bands, then all edges (two style changes)
     ctx.globalAlpha = 0.45;
     const band = rectRun(ctx);
-    for (const run of long) { const n = run.x.length, w = colWidth(run.x, n); for (let i = 0; i < n; i++) { if (filled && filled(run.x[i])) continue; const ya = yOf(run.mx[i]), yb = yOf(run.mn[i]); band.add(run.x[i] - w / 2, Math.min(ya, yb), w, Math.abs(yb - ya)); } band.flush(); }
+    for (const run of long) { const n = run.x.length, w = colWidth(run.x, n); for (let i = 0; i < n; i++) { const ya = yOf(run.mx[i]), yb = yOf(run.mn[i]); band.add(run.x[i] - w / 2, Math.min(ya, yb), w, Math.abs(yb - ya)); } band.flush(); }
     ctx.globalAlpha = 0.9;
     const up = rectRun(ctx), dn = rectRun(ctx);
     for (const run of long) {
@@ -11211,10 +11216,9 @@ function fillEnvelope(ctx, env, yOf, color, filled) { // filled(x): column shown
   }
   ctx.globalAlpha = 1;
 }
-function strokePts(ctx, pts, yOf, color, fillBase, dense) {
+function strokePts(ctx, pts, yOf, color, fillBase) {
   if (!pts.length) return;
-  const filled = dense ? (x => dense.fill[Math.round((x - dense.x0) * dense.r - 0.5)] === 1) : null; // columns shown as the time-weighted fill
-  fillEnvelope(ctx, pts.env, yOf, color, filled);
+  fillEnvelope(ctx, pts.env, yOf, color);
   const LW = 1.35, hw = LW / 2;
   // dense columns (runs of points at the same x) become spans; the rest is one anti-aliased path
   let nDense = 0; for (let i = 2; i < pts.length; i += 2) if (pts[i] === pts[i - 2]) nDense++;
@@ -11231,7 +11235,7 @@ function strokePts(ctx, pts, yOf, color, fillBase, dense) {
         if (x - px > 1.5 * cw) ctx.lineTo(x, yOf(pts[i + 1])); // a longer join stays part of the path
         else { if (py < lo) lo = py; if (py > hi) hi = py; }
       }
-      if (!filled || !filled(x)) spans.push(x, lo, hi); // a column shown as the time-weighted fill keeps only its edges
+      spans.push(x, lo, hi);
       py = yOf(pts[j - 1]); px = x; ctx.moveTo(x, py); pen = true;
       if (fx === null) fx = x; lx = x; i = j; continue;
     }
@@ -11247,152 +11251,6 @@ function strokePts(ctx, pts, yOf, color, fillBase, dense) {
     ctx.lineTo(lx, fillBase); ctx.lineTo(fx, fillBase); ctx.closePath();
     ctx.globalAlpha = 0.13; ctx.fillStyle = color; ctx.fill(); ctx.globalAlpha = 1;
   }
-}
-
-/* ---------- time-weighted fill of dense stretches (Display › Dense waveforms › time-weighted fill, 1.19.0) ----------
-   Where a pixel column holds many samples, the min/max band says only that the waveform reaches between two values.
-   The fill says how long it stays there: a screen row at level u (above the zero line) is coloured by the fraction of
-   the column's time during which the waveform is at u or beyond (g ≥ u), and below the zero line by the fraction with
-   g ≤ u. A readout train that spends half its time at +G and half at −G becomes two blocks at half strength; a level
-   the waveform only passes through briefly stays faint. The opaque min/max edges are kept, so extremes stay visible.
-   Exact per linear segment: a segment spreads its time evenly over the rows it passes through (a difference array per
-   column), then two cumulative sums from the outer rows towards the zero line give the fractions. Only columns in
-   dense runs are computed. The cost grows with the segments under them (every vertex of every block, per frame): with
-   more than DENS_MAX_B blocks under the dense runs of a lane the band is drawn instead, decided from the view alone.
-   (A 45,000-block file in full view took about 450 ms per frame in a slow test browser; a precomputed time-by-value
-   pyramid would be needed to make that fast.) */
-const DENS_MAX_V = 3e6, DENS_MAX_B = 10000, DENS_GAMMA = 0.6, DENS_ALPHA = 0.85;
-let densCv = null, densCtx = null, densImg = null, densD = null, densF = null, densLUT = null;
-function denseColumns(key, t0, t1, x0, w, r, env, rA, rB, DH) {
-  const s = S.seq, nc = Math.ceil(w * r) + 1, sc = w / (t1 - t0), colT = 1 / (sc * r), scr = sc * r;
-  const idx = new Int32Array(nc).fill(-1), cols = [];
-  for (const run of env) for (const x of run.x) { const k = Math.round((x - x0) * r - 0.5); if (k >= 0 && k < nc && idx[k] < 0) { idx[k] = cols.length; cols.push(k); } }
-  if (!cols.length) return undefined;
-  const W1 = DH + 1, need = cols.length * W1;
-  if (!densD || densD.length < need) densD = new Float64Array(Math.ceil(need * 1.5));
-  const D = densD; D.fill(0, 0, need); // difference arrays, one per dense column (reused between frames)
-  // direction reversals per column: the fill is for stretches where the waveform goes back and forth (scrubbing), not
-  // for a smooth stretch that is merely finely sampled (a free waveform), which stays a line
-  const lastDir = new Int8Array(cols.length), flips = new Int32Array(cols.length);
-  const addSeg = (ta, va, tb, vb) => { // ta < tb, both values finite
-    const ka = Math.floor((ta - t0) * scr), kb = Math.floor((tb - t0) * scr);
-    if (ka === kb) { // the common case: the whole segment inside one column
-      if (ka < 0 || ka >= nc) return; const c = idx[ka]; if (c < 0) return;
-      const dir = vb > va ? 1 : vb < va ? -1 : 0; if (dir) { if (lastDir[c] && dir !== lastDir[c]) flips[c]++; lastDir[c] = dir; }
-      const ya = rA + rB * va, yb = rA + rB * vb;
-      let j0 = Math.floor(ya < yb ? ya : yb), j1 = Math.floor(ya < yb ? yb : ya); if (j0 < 0) j0 = 0; if (j1 > DH - 1) j1 = DH - 1; if (j1 < j0) return;
-      const dd = (tb - ta) / (j1 - j0 + 1), o = c * W1; D[o + j0] += dd; D[o + j1 + 1] -= dd; return;
-    }
-    const k0 = Math.max(0, ka), k1 = Math.min(nc - 1, kb), sl = (vb - va) / (tb - ta);
-    for (let k = k0; k <= k1; k++) {
-      const c = idx[k]; if (c < 0) continue;
-      const cs = t0 + k * colT, a = ta > cs ? ta : cs, b = tb < cs + colT ? tb : cs + colT; if (!(b > a)) continue;
-      const v1 = va + sl * (a - ta), v2 = va + sl * (b - ta);
-      const dir = v2 > v1 ? 1 : v2 < v1 ? -1 : 0; if (dir) { if (lastDir[c] && dir !== lastDir[c]) flips[c]++; lastDir[c] = dir; }
-      const ya = rA + rB * v1, yb = rA + rB * v2;
-      let j0 = Math.floor(ya < yb ? ya : yb), j1 = Math.floor(ya < yb ? yb : ya); if (j0 < 0) j0 = 0; if (j1 > DH - 1) j1 = DH - 1; if (j1 < j0) continue;
-      const dd = (b - a) / (j1 - j0 + 1), o = c * W1; D[o + j0] += dd; D[o + j1 + 1] -= dd;
-    }
-  };
-  // only the blocks under the dense runs; a block reaching into the next run was already added in full
-  let nv = 0, over = false, lastB = -1, pt = NaN, pv = NaN;
-  const push = (t, v) => { if (v === v && pv === pv && t > pt) addSeg(pt, pv, t, v); pt = t; pv = v; };
-  for (const run of env) {
-    if (!run.x.length || over) continue;
-    const ta = t0 + ((run.x[0] - x0) - 1) / sc, tb = t0 + ((run.x[run.x.length - 1] - x0) + 1) / sc;
-    const bA = Math.max(lastB + 1, blockAtTime(s, ta)), bB = blockAtTime(s, tb);
-    for (let b = bA; b <= bB; b++) {
-      pt = NaN; pv = NaN; // segments only within a block (RF has no samples between its pulses)
-      blockVertices(s, key, b, push); nv += 4;
-      if (nv > DENS_MAX_V) { over = true; break; }
-    }
-    if (bB > lastB) lastB = bB;
-  }
-  if (over) return null;
-  // a column is filled where the waveform oscillates around it: on average at least one reversal per column over the
-  // column and its 3 neighbours on each side. Deciding per column alone left stripes in trains whose period is close to
-  // the column width (columns with one reversal alternate with columns with two)
-  const fill = new Uint8Array(nc), fl = new Float64Array(nc), has = new Uint8Array(nc);
-  for (let q = 0; q < cols.length; q++) { fl[cols[q]] = flips[q]; has[cols[q]] = 1; }
-  for (let q = 0; q < cols.length; q++) {
-    const k = cols[q]; let sum = 0, n = 0;
-    for (let m = Math.max(0, k - 3); m <= Math.min(nc - 1, k + 3); m++) if (has[m]) { sum += fl[m]; n++; }
-    if (n && sum / n >= 1) fill[k] = 1;
-  }
-  return { cols, D, colT, fill };
-}
-/* draws the fill of all channels of a lane into one image (source-over in the channel order, as the traces), then
-   onto the diagram. Returns, per channel, which columns were filled (their band and spans are then left out), or
-   false when too many vertices are in view (the caller keeps the band) */
-function drawDense(L, chans, t0, t1, x0, pw, yOf, envs) {
-  // columns at the diagram's pixel density, rows at one per CSS pixel (the fill is smooth; the image is scaled up)
-  const d = pdpr || 1, DW = Math.max(1, Math.round(pw * d)), DH = Math.max(1, Math.round(L.h + 2)), top = L.y - 1;
-  // screen rows are an affine function of the value in these lanes: row = rA + rB · v
-  const rA = yOf(0) - top, rB = yOf(1) - top - rA, jz = Math.floor(rA); // jz: the zero line's row
-  const r = traceR, out = { r, x0, fill: [] };
-  { // too many blocks under the dense runs: keep the band (see DENS_MAX_B)
-    const sc = pw / (t1 - t0); let nb = 0;
-    for (const env of envs) { if (!env) continue; let last = -1; for (const run of env) { if (!run.x.length) continue;
-      const bA = Math.max(last + 1, blockAtTime(S.seq, t0 + (run.x[0] - x0 - 1) / sc)), bB = blockAtTime(S.seq, t0 + (run.x[run.x.length - 1] - x0 + 1) / sc);
-      if (bB >= bA) nb += bB - bA + 1; if (bB > last) last = bB; } }
-    if (nb > DENS_MAX_B) return false;
-  }
-  if (!densCv) { densCv = document.createElement('canvas'); densCtx = densCv.getContext('2d'); }
-  if (densCv.width !== DW || densCv.height !== DH) { densCv.width = DW; densCv.height = DH; densImg = null; }
-  if (!densImg) densImg = densCtx.createImageData(DW, DH);
-  if (!densLUT) { densLUT = new Float32Array(1025); for (let i = 0; i <= 1024; i++) densLUT[i] = DENS_ALPHA * Math.pow(i / 1024, DENS_GAMMA); }
-  const P = densImg.data; let xmin = DW, xmax = 0, cleared = false;
-  const hist = new Float64Array(DH);
-  for (let c = 0; c < chans.length; c++) {
-    if (!envs[c] || !envs[c].length) continue;
-    const R = denseColumns(chans[c][1], t0, t1, x0, pw, r, envs[c], rA, rB, DH);
-    if (R === null) return false; if (!R) continue;
-    const rgb = hexRGB(C[chans[c][0]]); if (!rgb) continue; // unknown colour format: keep the band for this channel
-    out.fill[c] = R.fill;
-    const nq = R.cols.length, W1 = DH + 1, D = R.D;
-    if (!densF || densF.length < nq * DH) densF = new Float32Array(Math.ceil(nq * DH * 1.5));
-    const F = densF; let any = false;
-    for (let q = 0; q < nq; q++) { // fractions per filled column, as a fraction of the column's time
-      if (!R.fill[R.cols[q]]) continue; any = true;
-      const o = q * W1, f = q * DH, it = 1 / R.colT;
-      let acc = 0; for (let j = 0; j < DH; j++) { acc += D[o + j]; hist[j] = acc; }
-      acc = 0; for (let j = 0; j < Math.min(jz, DH); j++) { acc += hist[j]; F[f + j] = acc * it; }   // above the zero line: g ≥ u
-      acc = 0; for (let j = DH - 1; j > jz && j >= 0; j--) { acc += hist[j]; F[f + j] = acc * it; }  // below: g ≤ u
-      if (jz >= 0 && jz < DH) F[f + jz] = 0;
-    }
-    if (!any) continue;
-    if (!cleared) { P.fill(0); cleared = true; }
-    // a light smoothing along time (1-2-1 over neighbouring filled columns): a train whose period is close to the column
-    // width otherwise shows a faint moiré, since each column catches a different share of the ramps
-    for (let q = 0; q < nq; q++) {
-      const k = R.cols[q]; if (!R.fill[k]) continue;
-      const qa = q > 0 && R.cols[q - 1] === k - 1 && R.fill[k - 1] ? (q - 1) * DH : -1, qb = q + 1 < nq && R.cols[q + 1] === k + 1 && R.fill[k + 1] ? (q + 1) * DH : -1;
-      const wsum = 2 + (qa >= 0 ? 1 : 0) + (qb >= 0 ? 1 : 0), f = q * DH;
-      const xa = Math.max(0, Math.round((k / r) * d)), xb = Math.min(DW, Math.round(((k + 1) / r) * d)); if (xb <= xa) continue;
-      if (xa < xmin) xmin = xa; if (xb > xmax) xmax = xb;
-      for (let j = 0; j < DH; j++) {
-        const v = (2 * F[f + j] + (qa >= 0 ? F[qa + j] : 0) + (qb >= 0 ? F[qb + j] : 0)) / wsum; if (!(v > 1e-4)) continue;
-        const a = densLUT[v >= 1 ? 1024 : (v * 1024) | 0];
-        for (let x = xa; x < xb; x++) { // source over, unpremultiplied
-          const p = (j * DW + x) * 4, ad = P[p + 3] / 255;
-          if (ad === 0) { P[p] = rgb[0]; P[p + 1] = rgb[1]; P[p + 2] = rgb[2]; P[p + 3] = a * 255; continue; }
-          const ao = a + ad * (1 - a), wa = a / ao, wd = ad * (1 - a) / ao;
-          P[p] = rgb[0] * wa + P[p] * wd; P[p + 1] = rgb[1] * wa + P[p + 1] * wd; P[p + 2] = rgb[2] * wa + P[p + 2] * wd; P[p + 3] = ao * 255;
-        }
-      }
-    }
-  }
-  if (xmax <= xmin) return out;
-  densCtx.putImageData(densImg, 0, 0, xmin, 0, xmax - xmin, DH); // only the columns written
-  pctx.drawImage(densCv, xmin, 0, xmax - xmin, DH, x0 + xmin / d, top, (xmax - xmin) / d, DH);
-  return out;
-}
-function hexRGB(c) { // '#rgb', '#rrggbb' or 'rgb(r, g, b)' to [r, g, b]
-  if (!c) return null; c = c.trim(); let m;
-  if ((m = /^#([0-9a-f]{3})$/i.exec(c))) return [...m[1]].map(h => parseInt(h + h, 16));
-  if ((m = /^#([0-9a-f]{6})/i.exec(c))) return [0, 2, 4].map(i => parseInt(m[1].slice(i, i + 2), 16));
-  if ((m = /rgba?\(([^)]+)\)/i.exec(c))) return m[1].split(',').slice(0, 3).map(x => parseFloat(x));
-  return null;
 }
 
 /* ---------- time axis ticks ---------- */
@@ -11527,12 +11385,9 @@ function render() {
       pctx.save(); pctx.clip(act.on); for (const [col, p] of pts) strokePts(pctx, p, yOf, C[col]); pctx.restore();
       pctx.save(); pctx.clip(act.off, 'evenodd'); for (const [col, p] of pts) strokePts(pctx, p, yOf, mixColor(C[col], C.plot, 0.78)); pctx.restore(); // pale colour: strokePts sets its own alpha
     }
-    else {
-      const all = chans.map(([col, c]) => traceChan(c, t0, t1, x0, pw));
-      // time-weighted fill of the dense stretches (not for the RF phase), drawn under the traces
-      const dense = (BENCH.dense || S.dense) === 'fill' && L.kind !== 'phase' && L.key !== 'adc' && all.some(p => p.env && p.env.length)
-        && drawDense(L, chans, t0, t1, x0, pw, yOf, all.map(p => p.env));
-      chans.forEach(([col], c) => strokePts(pctx, all[c], yOf, C[col], L.kind === 'phase' || chans.length > 1 ? undefined : base, dense && dense.fill[c] ? { r: dense.r, x0: dense.x0, fill: dense.fill[c] } : null));
+    else for (const [col, c] of chans) {
+      const pts = traceChan(c, t0, t1, x0, pw);
+      strokePts(pctx, pts, yOf, C[col], L.kind === 'phase' || chans.length > 1 ? undefined : base);
     }
     pctx.restore();
   }
@@ -11607,7 +11462,7 @@ const DIAG = { on: false, times: [], lastT: 0, fr: [], loop: false };
 /* frame-rate test (⋯ › Run frame-rate test): switches used only while it runs, to find out on the user's own machine
    which part of a frame costs time. pathRects: batched rectangles as one Path2D fill (the drawing of 1.14.2–1.16.1)
    instead of single fillRect calls. skip: leave out one part of the drawing (the normal view never uses either). */
-const BENCH = { run: false, pathRects: false, skip: {}, js: [], acc: 0, dpr: 0, quality: '', dense: '' };
+const BENCH = { run: false, pathRects: false, skip: {}, js: [], acc: 0, dpr: 0, quality: '' };
 const benchT = (f) => { if (!BENCH.run) return f(); const t = performance.now(); try { return f(); } finally { BENCH.acc += performance.now() - t; } };
 /* display frame rate: while the panel is open and the view moves, a requestAnimationFrame loop records the time
    between screen frames (a dropped frame shows as a longer gap); it stops half a second after the last redraw */
@@ -11654,7 +11509,6 @@ async function diagBench() {
     ['without area under RF', 'pan', { skip: { area: 1 } }], ['without labels lane', 'pan', { skip: { labels: 1 } }],
     ['without overview', 'pan', { skip: { ov: 1 } }], ['without page updates', 'pan', { skip: { dom: 1 } }],
     ['blank diagram', 'pan', { skip: { draw: 1 } }], ['blank diagram, no page updates', 'pan', { skip: { draw: 1, dom: 1, ov: 1 } }],
-    [S.dense === 'fill' ? 'dense stretches as min/max band' : 'dense stretches as time-weighted fill', 'pan', { dense: S.dense === 'fill' ? 'band' : 'fill' }],
     ...['high', 'standard', 'fast'].filter(q => q !== S.diagRes && (q !== 'fast' || window.devicePixelRatio > 1.01)).map(q => [`diagram quality ${q}`, 'pan', { quality: q }]),
     ['rectangles as one path, panning', 'pan', { pathRects: true }], ['rectangles as one path, zooming', 'zoom', { pathRects: true }]];
   const frame = () => new Promise(r => requestAnimationFrame(r));
@@ -11663,7 +11517,7 @@ async function diagBench() {
   try {
     for (let c = 0; c < CASES.length; c++) {
       const [name, kind, o] = CASES[c];
-      BENCH.skip = o.skip || {}; BENCH.pathRects = !!o.pathRects; BENCH.dense = o.dense || ''; BENCH.js = [];
+      BENCH.skip = o.skip || {}; BENCH.pathRects = !!o.pathRects; BENCH.js = [];
       if ((o.dpr || 0) !== BENCH.dpr || (o.quality || '') !== BENCH.quality) { BENCH.dpr = o.dpr || 0; BENCH.quality = o.quality || ''; resize(); }
       setView(v0[0], v0[1]); await frame(); await frame();
       const iv = []; let last = 0; const N = 150, WARM = 15;
@@ -11677,13 +11531,13 @@ async function diagBench() {
       rows.push({ name, fps: 1000 * iv.length / tot, med: q(iv, 0.5), p95: q(iv, 0.95), js: q(js, 0.5), jsMax: q(js, 0.95) });
     }
   } finally {
-    BENCH.run = false; BENCH.skip = {}; BENCH.pathRects = false; BENCH.dense = ''; BENCH.js = []; btn.disabled = false;
+    BENCH.run = false; BENCH.skip = {}; BENCH.pathRects = false; BENCH.js = []; btn.disabled = false;
     if (BENCH.dpr || BENCH.quality) { BENCH.dpr = 0; BENCH.quality = ''; resize(); }
     setView(v0[0], v0[1]);
   }
   const pad = (x, n) => String(x).padStart(n), nm = Math.max(...rows.map(r => r.name.length));
   const txt = `Seqret ${APP.version} frame-rate test · ${S.name} · ${S.seq.nb.toLocaleString()} blocks · ${(v0[1] - v0[0] >= S.seq.totalDur * 0.9) ? 'whole file' : 'span ' + fmt((v0[1] - v0[0]) * 1e3, 3) + ' ms'} in view\n` +
-    `plot ${Math.round(W)}×${Math.round(H)} CSS px at ${window.devicePixelRatio}× · diagram quality ${S.diagRes}${S.dense === 'fill' ? ', time-weighted fill' : ''}${pdpr !== dpr ? ` (${pdpr}× pixels)` : ''} · ${{ seq: 'Sequence', blk: 'Selection', k: 'k-space', img: 'Image', defs: 'Defs' }[S.tab] || S.tab} tab${S.tab === 'k' ? ` (${S.kRange})` : ''} · ${navigator.userAgent.replace(/^.*?\) /, '').slice(0, 60)}\n` +
+    `plot ${Math.round(W)}×${Math.round(H)} CSS px at ${window.devicePixelRatio}× · diagram quality ${S.diagRes}${pdpr !== dpr ? ` (${pdpr}× pixels)` : ''} · ${{ seq: 'Sequence', blk: 'Selection', k: 'k-space', img: 'Image', defs: 'Defs' }[S.tab] || S.tab} tab${S.tab === 'k' ? ` (${S.kRange})` : ''} · ${navigator.userAgent.replace(/^.*?\) /, '').slice(0, 60)}\n` +
     // quantity names on the first header line, their units on the second
     `${'case'.padEnd(nm)}  ${pad('frame rate', 10)}  ${pad('frame time', 16)}  ${pad('Seqret time', 16)}\n` +
     `${''.padEnd(nm)}  ${pad('fps', 10)}  ${pad('ms, median / 95%', 16)}  ${pad('ms, median / 95%', 16)}\n` +
@@ -11694,9 +11548,7 @@ async function diagBench() {
   let tip = '';
   if (nrm && blank && blank.fps > 1.25 * nrm.fps) {
     const better = ['standard', 'fast'].map(q => row(`diagram quality ${q}`)).filter(r => r && r.fps > 1.2 * nrm.fps);
-    const alt = row(S.dense === 'fill' ? 'dense stretches as min/max band' : '');
-    const lower = [...better.map(r => `Display › Diagram quality › ${r.name.split(' ').pop()} gave ${r.fps.toFixed(0)} fps`),
-      ...(alt && alt.fps > 1.2 * nrm.fps ? [`Display › Dense waveforms › min/max band gave ${alt.fps.toFixed(0)} fps`] : [])];
+    const lower = better.map(r => `Display › Diagram quality › ${r.name.split(' ').pop()} gave ${r.fps.toFixed(0)} fps`);
     if (nrm.js > 0.5 * nrm.med) { // Seqret's own work is most of the frame: the browser is not the limit
       tip = `\n\nSeqret's own work limits the frame rate here: it needs ${nrm.js.toFixed(1)} ms of a ${nrm.med.toFixed(1)} ms frame (a blank diagram runs at ${blank.fps.toFixed(0)} fps). This grows with the number of blocks in view; zooming in makes it faster.`;
       if (lower.length) tip += ` ${lower.join('; ')}.`;
@@ -12163,14 +12015,18 @@ document.addEventListener('keydown', e => {
 });
 
 /* ---------- toolbar ---------- */
+// chips grouped by kind of channel in the Display panel (RF, gradients, readout, stimulation), with short labels
+const CHIP_GROUP = { rfMag: 'rf', rfPh: 'rf', gx: 'g', gy: 'g', gz: 'g', slew: 'g', m0: 'g', adc: 'acq', labels: 'acq', pns: 'stim', cns: 'stim' };
+const CHIP_LABEL = { rfMag: '|B1|', rfPh: 'Phase' };
 function buildChips() {
-  const el = $('#chips'); el.innerHTML = '';
+  for (const el of document.querySelectorAll('#dispPop .chips[data-group]')) el.innerHTML = '';
   for (const L of LANES) {
+    const el = document.querySelector(`#dispPop .chips[data-group="${CHIP_GROUP[L.key] || 'acq'}"]`);
     const b = document.createElement('button'); b.className = 'chip'; b.type = 'button';
     b.style.setProperty('--c', L.key === 'slew' || L.key === 'labels' || L.key === 'm0' ? 'var(--ink)' : L.stim ? 'var(--muted)' : `var(--c-${L.col})`);
     if (L.key === 'm0') b.title = 'k-vector (the zeroth gradient moment): reset at each excitation, sign flipped at each refocusing pulse, faded after the last readout';
     if (L.stim) b.title = L.stim === 'pns' ? 'Peripheral nerve stimulation (SAFE model)' : 'Cardiac nerve stimulation (SAFE model)';
-    b.setAttribute('aria-pressed', S.vis[L.key]); b.innerHTML = `<span class="sw"></span>${L.label}`;
+    b.setAttribute('aria-pressed', S.vis[L.key]); b.innerHTML = `<span class="sw"></span>${CHIP_LABEL[L.key] || L.label}`; if (CHIP_LABEL[L.key]) b.setAttribute('aria-label', L.label);
     b.onclick = () => {
       S.vis[L.key] = !S.vis[L.key]; if (!LANES.some(l => S.vis[l.key])) S.vis[L.key] = true; if (L.key === 'labels') S.labelsPref = S.vis.labels; b.setAttribute('aria-pressed', S.vis[L.key]);
       if (L.stim && S.vis[L.key] && !stimHasModel(L.stim)) openSafeDialog();
@@ -12185,7 +12041,6 @@ $('#rfUnit').onchange = e => { S.rfUnit = e.target.value; request(); renderSeqIn
 $('#rfMode').onchange = e => { S.rfMode = e.target.value; request(); };
 $('#autoY').onchange = e => { S.autoY = e.target.checked; request(); };
 $('#diagRes').onchange = e => { S.diagRes = e.target.value; resize(); };
-$('#denseSel').onchange = e => { S.dense = e.target.value; request(); };
 $('#fitBtn').onclick = () => { if (S.seq) { pushHist(); fitAll(); } };
 $('#backBtn').onclick = () => S.seq && back();
 $('#combG').onchange = e => { S.combineG = e.target.checked; request(); };
@@ -13371,16 +13226,33 @@ async function reloadFile() {
   finally { reloading = false; $('#reloadBtn').classList.remove('spin'); }
 }
 $('#reloadBtn').onclick = reloadFile;
+/* the folder of the last opened file (1.20.0): its handle is kept in the browser's IndexedDB, and the next Open .seq
+   starts there (startIn). Only where the File System Access API exists (Chrome, Edge); other browsers' own file
+   dialogs remember the folder, or not, by themselves. The handle gives no access to the file by itself. */
+let lastHandle = null;
+const kvDB = (() => { let p = null; return () => p || (p = new Promise((res, rej) => { const r = indexedDB.open('seqret', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })); })();
+async function kvGet(k) { const db = await kvDB(); return new Promise((res, rej) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); }
+async function kvSet(k, v) { const db = await kvDB(); return new Promise((res, rej) => { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); }); }
+function rememberHandle(h) { if (!h || h.kind !== 'file') return; lastHandle = h; kvSet('lastSeqHandle', h).catch(() => { }); }
+if (typeof window.showOpenFilePicker === 'function' && window.indexedDB) kvGet('lastSeqHandle').then(h => { if (h && !lastHandle) lastHandle = h; }, () => { });
 async function openFile(f, src) {
   if (!f) return;
+  if (src && src.handle) rememberHandle(src.handle);
   let buf; try { buf = new Uint8Array(await f.arrayBuffer()); } catch (e) { showError(`Could not read ${f.name}: ${e.message}`); return; }
   load(buf, f.name, { src: { ...(src || { file: f }), mod: f.lastModified, size: f.size } });
 }
 async function pickFile() { // File System Access picker where available (reloadable from disk), otherwise the file input
   if (!canPick) { $('#fileIn').click(); return; }
   let h;
-  try { [h] = await window.showOpenFilePicker({ id: 'seqret', types: [{ description: 'Pulseq sequence', accept: { 'text/plain': ['.seq'] } }] }); }
-  catch (e) { if (e.name !== 'AbortError') $('#fileIn').click(); return; }
+  const types = [{ description: 'Pulseq sequence', accept: { 'text/plain': ['.seq'] } }];
+  // start in the folder of the last opened file; without one (or if the browser rejects it), in the folder the
+  // browser remembers for this picker
+  try { [h] = await window.showOpenFilePicker(lastHandle ? { startIn: lastHandle, types } : { id: 'seqret', types }); }
+  catch (e) {
+    if (e.name === 'AbortError') return;
+    if (lastHandle) { try { [h] = await window.showOpenFilePicker({ id: 'seqret', types }); } catch (e2) { if (e2.name !== 'AbortError') $('#fileIn').click(); return; } }
+    else { $('#fileIn').click(); return; }
+  }
   try { openFile(await h.getFile(), { handle: h }); } catch (e) { showError(`Could not read the file: ${e.message}`); }
 }
 $('#openBtn').onclick = $('#openBtn2').onclick = pickFile;
@@ -13400,7 +13272,7 @@ window.addEventListener('drop', e => {
 });
 
 /* ---------- settings kept between sessions (browser local storage) ---------- */
-const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'dense', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kColor', 'kTraj'];
+const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kColor', 'kTraj'];
 const DEFAULTS = JSON.parse(JSON.stringify({ vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) }));
 function saveSettings() {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ v: 1, app: APP.version, vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) })); } catch (_) { }
@@ -13413,7 +13285,6 @@ function applySettings(o) {
   if (ok('gUnit', ['mT', 'Hz'])) S.gUnit = o.gUnit;
   if (ok('rfUnit', ['uT', 'Hz'])) S.rfUnit = o.rfUnit;
   if (ok('rfMode', ['mag', 'complex'])) S.rfMode = o.rfMode;
-  if (ok('dense', ['band', 'fill'])) S.dense = o.dense;
   if (ok('diagRes', ['high', 'standard', 'fast', 'sharp'])) S.diagRes = o.diagRes === 'sharp' ? 'high' : o.diagRes; // 'sharp' (1.17.0) was the default; takes effect at the next resize()
   for (const k of ['autoY', 'combineG', 'labelsPref', 'kTraj', 'stimNorm']) if (typeof o[k] === 'boolean') S[k] = o[k];
   if (ok('shotMode', ['exc', 'prep', 'off'])) S.shotMode = o.shotMode;
@@ -13432,7 +13303,7 @@ function applySettings(o) {
   }
   syncSimControls();
   // reflect in the controls
-  $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#rfMode').value = S.rfMode; $('#diagRes').value = S.diagRes; $('#denseSel').value = S.dense; $('#autoY').checked = S.autoY; $('#combG').checked = S.combineG;
+  $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#rfMode').value = S.rfMode; $('#diagRes').value = S.diagRes; $('#autoY').checked = S.autoY; $('#combG').checked = S.combineG;
   $('#shotSel').value = S.shotMode; $('#kTraj').checked = S.kTraj;
   segPress('#kRange', S.kRange); segPress('#kProj', S.kProj); segPress('#kColor', S.kColor);
   buildChips();

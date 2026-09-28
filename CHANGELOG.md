@@ -2,6 +2,12 @@
 
 All versions, newest first. The About dialog of the page shows the latest 3.
 
+## 1.20.0 (2026-09-27)
+
+- Open .seq starts in the folder of the last opened file, also after the browser is restarted (Chrome and Edge; the file's handle is kept in the browser's storage, which gives no access to the file by itself). Files opened by dragging them onto the page count too.
+- Display panel regrouped: one row per kind of channel with its settings next to it — RF (|B1|, phase, unit, shown as), gradients (Gx, Gy, Gz, slew, k-vector, unit, one axis), readout (ADC, labels) and stimulation (PNS, CNS, L2 norm, specifications); fit Y and quality under View.
+- Removed the time-weighted fill of dense waveforms (1.19.0): it added little and was slow on large files. The frame-rate test keeps the improved suggestion from 1.19.0.
+
 ## 1.19.0 (2026-09-27)
 
 - Display › Dense waveforms › time-weighted fill (option; the default stays min/max band). Where the waveform goes back and forth within a pixel column, each level is shaded by the fraction of the column's time the waveform spends at that level or beyond it (further from zero). A readout train that spends half its time at +G and half at −G shows as two smooth blocks at half strength, and levels passed only briefly stay faint; the opaque min/max edges are kept, so extremes stay visible. Smooth stretches that are merely finely sampled (free waveforms) stay lines, so the fill marks oscillation, not sampling density.
