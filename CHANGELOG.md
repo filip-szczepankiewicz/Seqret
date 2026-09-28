@@ -2,6 +2,22 @@
 
 All versions, newest first. The About dialog of the page shows the latest 3.
 
+## 1.19.0 (2026-09-27)
+
+- Display › Dense waveforms › time-weighted fill (option; the default stays min/max band). Where the waveform goes back and forth within a pixel column, each level is shaded by the fraction of the column's time the waveform spends at that level or beyond it (further from zero). A readout train that spends half its time at +G and half at −G shows as two smooth blocks at half strength, and levels passed only briefly stay faint; the opaque min/max edges are kept, so extremes stay visible. Smooth stretches that are merely finely sampled (free waveforms) stay lines, so the fill marks oscillation, not sampling density.
+- The fill is computed exactly from every segment under the dense stretches, per frame. With more than 10,000 blocks under them in a lane (large files zoomed out), the band is drawn instead, decided from the view alone. In a slow test browser it took about 20–45 ms per frame on the demo and a 7,600-block file, several times the band's cost; the frame-rate test includes a case comparing the two.
+- Frame-rate test: the suggestion no longer blames the browser when Seqret's own work is most of the frame; it then says so, notes that zooming in helps, and lists the lower settings that were faster.
+
+## 1.18.1 (2026-09-27)
+
+- Frame-rate test: the suggestion now tells apart the two limits. When Seqret's own work takes most of the frame (large files zoomed out), it says so instead of pointing to the browser's renderer; it points to the renderer only when the frame takes much longer than Seqret's work.
+
+## 1.18.0 (2026-09-27)
+
+- Smoother waveforms when zoomed out: Display › Diagram quality › high (new default) draws the waveforms with one column per screen pixel at every zoom level. Dense stretches keep their shape: RF pulses are drawn at their true width instead of as blocks, and readout trains and ramps are finer. Before, zoomed out used one column per CSS pixel, 1.75 to 2 screen pixels wide on high-density screens. On 1× screens nothing changes.
+- Diagram quality replaces diagram resolution: high (new), standard (the drawing of 1.14.2–1.17.0) and fast (standard at 1× pixel density, as 'fast' in 1.17.0). A saved 'sharp' becomes high. Cost of high when zoomed out: up to about twice Seqret's time per frame on small files (3.6 → 8.1 ms on the demo in a slow test browser) and 15–30 % more on a 45,000-block file, plus more rectangles for the browser to draw. Zoomed in, and on 1× screens, high and standard are the same.
+- Frame-rate test: compares the current quality with the other two, and when drawing limits the frame rate, suggests the lower qualities with the rates they gave.
+
 ## 1.17.0 (2026-09-27)
 
 - Display › Diagram resolution: sharp (default) or fast. Fast draws the diagram and the overview at 1× pixel density on high-density screens (a quarter of the pixels at 2×) and lets the browser scale them up, for computers or browsers where drawing limits the frame rate; lines and text are slightly softer. The cursor overlay, k-space and image stay sharp, PNG export is always at full density, and the setting is remembered. On a 1× screen it changes nothing.

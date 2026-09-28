@@ -43,20 +43,20 @@ If panning or zooming feels sluggish:
 
 Seqret is based on, and designed for, sequences using the [Pulseq](https://pulseq.github.io/) format.
 
-> Layton KJ, et al. \*Pulseq: A rapid and hardware-independent pulse sequence prototyping framework.\* Magn Reson Med. 2017;77:1544–1552. \[doi:10.1002/mrm.26235](https://doi.org/10.1002/mrm.26235)
+> Layton KJ, et al. Pulseq: A rapid and hardware-independent pulse sequence prototyping framework. Magn Reson Med. 2017;77:1544–1552. [doi:10.1002/mrm.26235](https://doi.org/10.1002/mrm.26235)
 
 ### Nerve stimulation (SAFE model on Siemens systems)
 
-Peripheral (PNS) and cardiac (CNS) nerve stimulation are predicted with the SAFE model, as implemented in [safe\_pns\_prediction](https://github.com/filip-szczepankiewicz/safe_pns_prediction). Seqret's implementation was checked against it. The prediction requires the gradient system's stimulation parameters, which can be loaded from the scanner's hardware files (`MP\_GPA\_\*.asc` or `MP\_GradSys\_\*.asc`) or entered by hand. The example hardware of safe\_pns\_prediction is included for testing and does not describe a real scanner.
+Peripheral (PNS) and cardiac (CNS) nerve stimulation are predicted with the SAFE model, as implemented in [safe_pns_prediction](https://github.com/filip-szczepankiewicz/safe_pns_prediction). Seqret's implementation was checked against it. The prediction requires the gradient system's stimulation parameters, which can be loaded from the scanner's hardware files (`MP\\\_GPA\\\_\\\*.asc` or `MP\\\_GradSys\\\_\\\*.asc`) or entered by hand. The example hardware of safe\_pns\_prediction is included for testing and does not describe a real scanner.
 
-> Hebrank FX, Gebhardt M. \*SAFE-Model: a new method for predicting peripheral nerve stimulations in MRI.\* Proc Intl Soc Mag Reson Med. 2000;8:2007.
+> Hebrank FX, Gebhardt M. SAFE-Model - A New Method for Predicting Peripheral Nerve Stimulations in MRI, [Proc Intl Soc Mag Reson Med. 2000;8:2007](https://cds.ismrm.org/ismrm-2000/PDF7/2007.PDF).
 
-> Szczepankiewicz F, Witzel T. \*safe\_pns\_prediction.\* \[github.com/filip-szczepankiewicz/safe\_pns\_prediction](https://github.com/filip-szczepankiewicz/safe\_pns\_prediction)
+> Szczepankiewicz F, Witzel T. SAFE-model in MATLAB [github.com/filip-szczepankiewicz/safe_pns_prediction](https://github.com/filip-szczepankiewicz/safe_pns_prediction)
 
 ## Authors
 
 Designed and coded by **Filip Szczepankiewicz**, Lund University.  
-Code and testing scripts by **Claude**, Anthropic.
+HTML implementation and testing scripts by **Claude**, Anthropic.
 
 ## License
 
