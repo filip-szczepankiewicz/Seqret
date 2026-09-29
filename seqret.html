@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.24.1 (2026-09-29) - Pulseq sequence viewer
+  Seqret 1.26.0 (2026-09-29) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.24.1">
-<meta name="description" content="Seqret 1.24.1: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.26.0">
+<meta name="description" content="Seqret 1.26.0: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -179,6 +179,10 @@ table.defs td:first-child{color:var(--muted);white-space:nowrap;padding-right:14
 table.defs td:last-child{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .kwrap{position:relative;width:100%;aspect-ratio:1/1;background:var(--plot);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none}
 .kwrap canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab}
+.ktip{position:absolute;z-index:3;pointer-events:none;max-width:calc(100% - 4px);padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--muted);font-size:12px;line-height:1.45;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.ktip b{color:var(--ink);font-weight:600}
+.kring{position:absolute;z-index:2;pointer-events:none;border:2px solid var(--sel);border-radius:50%}
+.ktip[hidden],.kring[hidden]{display:none}
 .imtop{display:flex;gap:8px;align-items:center;margin:10px 0 8px;font-size:13px}
 .imtop .sp{flex:1}
 .btn.small{padding:4px 10px;font-size:12.5px;border-radius:7px}
@@ -195,12 +199,10 @@ table.defs td:last-child{font-variant-numeric:tabular-nums;overflow-wrap:anywher
 .chip.tg input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
 .chip.tg:has(input:checked){background:var(--ink);color:var(--plot);border-color:var(--ink)}
 .chip.tg:has(input:focus-visible){outline:2px solid var(--c-gx);outline-offset:1px}
-.simchk{gap:4px 12px}
 .v3wrap{aspect-ratio:4/3;margin-top:8px}
 .v3wrap canvas{position:absolute;left:0;top:0;width:100%;height:100%}
 #i3gl{visibility:hidden}
 .v3wrap canvas{cursor:grab}
-.simchk label{display:inline-flex;gap:4px;align-items:center;cursor:pointer}
 .kctl .sel{border:1px solid var(--line);background:var(--plot);border-radius:6px;padding:3px 6px}
 .tabs{overflow-x:auto;scrollbar-width:none}
 .kctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 6px;font-size:13px}
@@ -339,7 +341,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.24.1</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.26.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -456,7 +458,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
         <p class="note">Samples are coloured by acquisition order (dark to bright) or by ADC type (imaging, reference, noise, navigator, from the Pulseq flag labels). k is reset at excitation pulses and mirrored at refocusing pulses, evaluated at the RF centre (as in Pulseq's calculateKspacePP). Drag the plot to rotate, scroll to zoom.</p>
         <button class="btn small" id="kPng">Save k-space as PNG</button>
       </div>
-      <div class="kwrap"><canvas id="kc" aria-label="k-space trajectory plot. Drag to rotate, scroll to zoom."></canvas></div>
+      <div class="kwrap"><canvas id="kc" aria-label="k-space trajectory plot. Drag to rotate, right-drag to pan, scroll to zoom."></canvas></div>
       <p class="note num" id="kInfo"></p>
     </div>
     <div class="panel" id="p-img" hidden>
@@ -7759,7 +7761,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.24.1", "date": "2026-09-29", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.24.1", "date": "2026-09-29", "notes": ["A button at the right end of the toolbar (or the \\ key) hides the side panel with its tabs, so the diagram fills the width of the window; pressing it again brings the panel back. The choice is remembered. While the panel is hidden, the k-space and the simulated image are not recomputed as the view moves; they update when the panel is shown again."]}, {"version": "1.24.0", "date": "2026-09-29", "notes": ["Less blocky waveforms when zoomed out: Display › View › Peaks › exact (new default). Each pixel column now also keeps the times of its first, minimum, maximum and last value, and short features (RF pulses, ramps, crushers; stretches of fewer than 24 dense columns) are drawn through their extremes at the times they happen, as a line. An RF pulse a pixel or two wide is now a thin pointed spike instead of a flat-topped bar a column or two wide. This is the M4 method: Jugel U, Jerzak Z, Hackenbroich G, Markl V. M4: A Visualization-Oriented Time Series Data Aggregation. PVLDB 2014;7(10):797–808.", "Checked against a drawing of every vertex at its own time: on the demo in full view 2.0 % of pixels differ from it (3.4 % before), zoomed in 0.01 % (0.8 % before). Long dense stretches (readout trains, a ZTE sequence) are drawn as before, which keeps them cheap; the frame rate is unchanged in a test browser (demo, a spiral and a 40,000-block ZTE-like sequence).", "Peaks › per column gives the previous drawing, pixel for pixel, for comparison; the frame-rate test compares the two.", "Fixed (from 1.22.0): without saved settings, Display › View › Quality showed 'ultra' although the diagram was drawn in high (the default)."]}, {"version": "1.23.3", "date": "2026-09-29", "notes": ["Fixed: zooming in very far could hang the page for many seconds per frame (reproduced on the demo with the k-vector lane on: 13.8 s per frame). The k-vector (1.22.3) and the area under a trace (1.23.0) find where a line crosses each pixel column's edges, and a line from a point far off screen made that loop run over millions of columns off screen. It now runs over the columns on screen only.", "The view is at least 0.1 ms wide (before: 0.2 µs)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.26.0", "date": "2026-09-29", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.26.0", "date": "2026-09-29", "notes": ["k-space: hold the right mouse button and drag to pan, for example to look closely at the edge of k-space after zooming in. The left button still rotates, and the scroll wheel zooms about the centre of the plot, so what is in the middle stays there. Choosing a projection (kx–ky, kx–kz, ky–kz, 3D) resets the pan and zoom. The pan is limited to the extent of the data, so the plot cannot be lost off screen."]}, {"version": "1.25.0", "date": "2026-09-29", "notes": ["k-space: zoomed in, the samples are drawn as dots up to 6 px across (before: 1–2 px at every zoom), so it is easy to see where k-space is sampled. The size follows the space per sample in view; the full view looks as before (pixel for pixel on the demo).", "k-space: hovering a sample rings it and shows its number in the ADC event, the ADC event and shot, the block, the time (and time after the excitation), k in m⁻¹, the ADC type and the label values. The cursor in the diagram moves to that time, so the sample can be found in the sequence."]}, {"version": "1.24.4", "date": "2026-09-29", "notes": ["Fixed: Image › k-space drew the reconstruction grid cell by cell as a square, so a readout with oversampling (smaller Δk along the readout) looked as if it reached twice as far in k-space. It is now drawn in physical k, with the same scale on both axes: an oversampled readout covers the same k range as the phase encoding, with samples twice as dense. Checked on the demo (2× oversampling): the drawn data is now as wide as it is high (width/height 1.01, before 1.88), and on the rotated stacks, including the ones shown transposed."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -8342,7 +8344,6 @@ function labelNames(seq) {
 }
 const LABEL_ORDER = ['SLC', 'SEG', 'REP', 'AVG', 'SET', 'ECO', 'PHS', 'LIN', 'PAR', 'ACQ', 'TRID', 'NAV', 'REV', 'SMS', 'REF', 'IMA', 'NOISE', 'PMC', 'NOROT', 'NOPOS', 'NOSCL', 'ONCE'];
 const LABEL_FLAGS = new Set(['NAV', 'REV', 'SMS', 'REF', 'IMA', 'NOISE', 'PMC', 'NOROT', 'NOPOS', 'NOSCL', 'ONCE']);
-const ADC_TYPES = ['imaging', 'reference', 'reference + imaging', 'noise', 'navigator'];
 
 /* growable typed buffer */
 class GBuf { constructor(T, n = 1024) { this.T = T; this.a = new T(n); this.n = 0; } push(x) { if (this.n === this.a.length) { const b = new this.T(this.n * 2); b.set(this.a); this.a = b; } this.a[this.n++] = x; } done() { return this.a.slice(0, this.n); } }
@@ -8589,7 +8590,9 @@ function kSamples(seq, j0, j1, maxPts = Infinity, withT = false) {
   let n = 0; for (let j = j0; j < j1; j += step) n += seq.adcOff[j + 1] - seq.adcOff[j];
   const out = [new Float32Array(n), new Float32Array(n), new Float32Array(n)], type = new Uint8Array(n), T = withT ? new Float64Array(n) : null;
   let o = 0; const tmp = [new Float64Array(0), new Float64Array(0), new Float64Array(0)], relCache = new Map();
+  const ne = step > 1 ? Math.ceil((j1 - j0) / step) : Math.max(0, j1 - j0), ej = new Int32Array(ne), eo = new Int32Array(ne + 1); let e = 0; // ADC event of each run of samples
   for (let j = j0; j < j1; j += step) {
+    ej[e] = j; eo[e++] = o;
     const b = seq.adcBlocks[j], aid = seq.B.adc[b], d = seq.adc.get(aid);
     let rel = relCache.get(aid); if (!rel) { rel = new Float64Array(d.num); for (let q = 0; q < d.num; q++) rel[q] = d.delay + (q + 0.5) * d.dwell; relCache.set(aid, rel); }
     if (tmp[0].length < d.num) for (let a = 0; a < 3; a++) tmp[a] = new Float64Array(d.num);
@@ -8599,7 +8602,8 @@ function kSamples(seq, j0, j1, maxPts = Infinity, withT = false) {
     if (T) for (let q = 0; q < d.num; q++) T[o + q] = seq.blockStart[b] + rel[q];
     o += d.num;
   }
-  return { n, k: out, type, t: T, thinned: step > 1 };
+  eo[e] = o;
+  return { n, k: out, type, t: T, thinned: step > 1, ej, eo }; // samples eo[e]..eo[e+1]-1 come from ADC event ej[e]
 }
 /* trajectory through blocks b0..b1: gradient vertices (+3 subdivisions); only block starts when too many */
 function kPath(seq, b0, b1, maxPts = 6e5) {
@@ -8610,7 +8614,7 @@ function kPath(seq, b0, b1, maxPts = 6e5) {
     let o = 0; for (let i = b0; i <= b1 && o < n; i += step, o++) for (let a = 0; a < 3; a++) k[a][o] = seq.kStart[a][i];
     return { n: o, k, coarse: true };
   }
-  const K = [new GBuf(Float32Array), new GBuf(Float32Array), new GBuf(Float32Array)], tmp = [[], [], []];
+  const K = [new GBuf(Float32Array), new GBuf(Float32Array), new GBuf(Float32Array)];
   for (let i = b0; i <= b1; i++) {
     const dur = seq.blockStart[i + 1] - seq.blockStart[i], u = [0, dur];
     for (const c of ['pgx', 'pgy', 'pgz']) if (B[c][i]) { const g = geoG(seq, B[c][i]); for (let q = 0; q < g.n; q++) u.push(g.t[q]); }
@@ -8825,7 +8829,7 @@ function transferList(root) {
   }
   return [...bufs];
 }
-if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, geoRfRe, geoRfIm, buildPyramid, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, computeKspace, md5, verifySignature, ADC_TYPES, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active };
+if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, geoRfRe, geoRfIm, buildPyramid, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, computeKspace, md5, verifySignature, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active };
 
 /* ===== Seqret image simulation =====
    Forward model for every imaging ADC sample j of a chosen image (one slice of one volume):
@@ -8843,7 +8847,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { packShot
    inversion recovery for inversion pulses, frequency-selective saturation from the saturation
    pulse's small-tip frequency response. b: from the gradient waveform of the shot,
    (2π)² ∫ k(t)ᵀk(t) dt from excitation to the echo. No spin history beyond this.
-   The image plane is (kx, ky); kz is ignored (the object is a thin sheet). Units: mm, s, Hz. */
+   The image plane is spanned by the readout direction and the largest k-space spread perpendicular to it
+   (never the slab normal of a slab-selective 3D scan); k along the third axis is ignored (the object is a
+   thin sheet, one partition for 3D). Units: mm, s, Hz. */
 
 const SIM_GBAR = 42.577478e6;
 const FAT6 = { ppm: [-3.80, -3.40, -2.60, -1.94, -0.39, 0.60], amp: [0.087, 0.693, 0.128, 0.004, 0.039, 0.048] };
@@ -8883,51 +8889,6 @@ function bessj1(x) { // Numerical Recipes rational approximation, |error| < 1e-7
 }
 function sincPi(x) { if (Math.abs(x) < 1e-12) return 1; const p = Math.PI * x; return Math.sin(p) / p; }
 
-/* ---------- phantoms: regions painted in order, each inside its parent, siblings disjoint ---------- */
-const E_ = (x0, y0, a, b, deg) => ({ type: 'ell', x0, y0, a, b, th: (deg || 0) * Math.PI / 180 });
-const R_ = (x0, y0, w, h, deg) => ({ type: 'rect', x0, y0, a: w, b: h, th: (deg || 0) * Math.PI / 180 });
-const SIM_PHANTOMS = {
-  head: {
-    name: 'Head (Shepp–Logan geometry)',
-    bubble: { x: -50, y: 42, r: 7 },
-    regions() {
-      const s = 110, E = (a, b, x, y, d) => E_(x * s, y * s, a * s, b * s, d);
-      return [
-        [E(0.69, 0.92, 0, 0, 0), 'fat', -1],
-        [E(0.6624, 0.874, 0, -0.0184, 0), 'wm', 0],
-        [E(0.11, 0.31, 0.22, 0, -18), 'csf', 1],
-        [E(0.16, 0.41, -0.22, 0, 18), 'csf', 1],
-        [E(0.21, 0.25, 0, 0.35, 0), 'gm', 1],
-        [E(0.046, 0.046, 0, 0.1, 0), 'lesion', 1],
-        [E(0.046, 0.046, 0, -0.1, 0), 'lesion', 1],
-        [E(0.046, 0.023, -0.08, -0.605, 0), 'gm', 1],
-        [E(0.023, 0.023, 0, -0.606, 0), 'gm', 1],
-        [E(0.023, 0.046, 0.06, -0.605, 0), 'gm', 1],
-        [E_(0, -90, 4, 4), 'blood', 1]
-      ];
-    }
-  },
-  abdomen: {
-    name: 'Abdomen',
-    bubble: { x: 58, y: 56, r: 8 },
-    regions() {
-      return [
-        [E_(0, 0, 170, 120), 'fat', -1],
-        [E_(0, -2, 157, 107), 'muscle', 0],
-        [E_(-60, 45, 70, 40, 15), 'liver', 1],
-        [E_(-48, 38, 10, 14, 20), 'fluid', 2],
-        [E_(58, 48, 34, 24, -10), 'fluid', 1],
-        [E_(75, -40, 34, 42, -20), 'fat', 1],
-        [E_(75, -40, 22, 32, -20), 'kidney', 5],
-        [E_(-75, -40, 34, 42, 20), 'fat', 1],
-        [E_(-75, -40, 22, 32, 20), 'kidney', 7],
-        [E_(0, -72, 20, 15), 'marrow', 1],
-        [E_(0, -96, 8, 6), 'csf', 1],
-        [E_(-22, -48, 9, 9), 'blood', 1]
-      ];
-    }
-  }
-};
 /* ---------- 3D phantoms (mm; x = patient left, y = anterior, z = superior; B0 along z) ----------
    Each region: ellipsoid (centre, semi-axes, Euler angles φ θ ψ in degrees), tissue, parent. */
 const SIM_PHANTOMS3D = {
@@ -9045,7 +9006,6 @@ function overlapPatches(regions, base, w, h, out) {
   const R = regions.slice(base), root = R.map((r, i) => { let k = i; while (R[k].parent >= base) k = R[k].parent - base; return k; });
   const roots = [...new Set(root)]; if (roots.length < 2) return;
   const rb = k => R[k];
-  let budget = 0;
   for (let a = 0; a < roots.length; a++) for (let b = a + 1; b < roots.length; b++) {
     const A = rb(roots[a]), B = rb(roots[b]);
     const x0 = Math.max(A.bx0, B.bx0), x1 = Math.min(A.bx1, B.bx1), y0 = Math.max(A.by0, B.by0), y1 = Math.min(A.by1, B.by1);
@@ -9060,7 +9020,6 @@ function overlapPatches(regions, base, w, h, out) {
       if (roots[b] !== last) continue;
       let tn = null; for (let i = 0; i < R.length; i++) if (root[i] === roots[a] && inside(R[i], x, y)) tn = R[i].tissue;
       if (tn && tn !== 'air') out.push({ x, y, tissue: tn, w: -w * hh * hh, h: hh });
-      budget++;
     }
   }
 }
@@ -9158,17 +9117,6 @@ function sliceGeometry(seq, inf, e1s, e2s, e3s, k3, orient, fixedAt) {
 function dirLetter(v) { const a = [Math.abs(v[0]), Math.abs(v[1]), Math.abs(v[2])], i = a.indexOf(Math.max(...a)); return [['R', 'L'], ['P', 'A'], ['I', 'S']][i][v[i] > 0 ? 1 : 0]; }
 function planeName(n) { const a = n.map(Math.abs), i = a.indexOf(Math.max(...a)); return { name: ['sagittal', 'coronal', 'axial'][i], tilt: Math.acos(Math.min(1, a[i])) * 180 / Math.PI }; }
 
-function buildPhantom(key, bubble) {
-  const P = SIM_PHANTOMS[key], R = P.regions().map(([sh, tis, par]) => ({ ...sh, c: Math.cos(sh.th), s: Math.sin(sh.th), tissue: tis, parent: par }));
-  const bbox = r => { const hx = r.type === 'ell' ? Math.hypot(r.a * r.c, r.b * r.s) : Math.abs(r.a / 2 * r.c) + Math.abs(r.b / 2 * r.s), hy = r.type === 'ell' ? Math.hypot(r.a * r.s, r.b * r.c) : Math.abs(r.a / 2 * r.s) + Math.abs(r.b / 2 * r.c); r.bx0 = r.x0 - hx; r.bx1 = r.x0 + hx; r.by0 = r.y0 - hy; r.by1 = r.y0 + hy; };
-  R.forEach(bbox);
-  if (bubble) { // air sphere: a child of the region that contains its centre
-    const b = P.bubble; let par = -1;
-    for (let i = 0; i < R.length; i++) if (inside(R[i], b.x, b.y)) par = i;
-    R.push({ type: 'ell', x0: b.x, y0: b.y, a: b.r, b: b.r, th: 0, c: 1, s: 0, tissue: 'air', parent: par, bx0: b.x - b.r, bx1: b.x + b.r, by0: b.y - b.r, by1: b.y + b.r });
-  }
-  return { key, regions: R, bubble: bubble ? P.bubble : null };
-}
 function inside(s, x, y) {
   const dx = x - s.x0, dy = y - s.y0, u = dx * s.c + dy * s.s, v = -dx * s.s + dy * s.c;
   return s.type === 'ell' ? (u * u) / (s.a * s.a) + (v * v) / (s.b * s.b) <= 1 : Math.abs(u) <= s.a / 2 && Math.abs(v) <= s.b / 2;
@@ -9364,7 +9312,7 @@ async function parMap(task, list, p0, p1) {
   if (!(SIM_POOL && list.length > 1) && SIM_ENGINE !== 'GPU') SIM_ENGINE = 'CPU';
   if (SIM_POOL && list.length > 1 && SIM_ENGINE !== 'GPU') SIM_ENGINE = `CPU, ${SIM_POOL.size} worker${SIM_POOL.size > 1 ? 's' : ''}`;
   if (SIM_POOL && list.length > 1) {
-    let done = 0; const out = await Promise.all(list.map(a => SIM_POOL(task, a).then(r => { done++; return r; })));
+    const out = await Promise.all(list.map(a => SIM_POOL(task, a)));
     await tick(p1); return out;
   }
   const out = []; for (let i = 0; i < list.length; i++) { await tick(p0 + (p1 - p0) * i / list.length); out.push(SIM_TASKS[task](list[i])); } return out;
@@ -9443,6 +9391,15 @@ async function simulateImage(seq, shots, vol, refShot, opt) {
     let best = -1, bv = -1; for (let a = 0; a < 3; a++) { if (Math.abs(r1[a]) > 0.5) continue; if (C3[a][a] > bv * 1.0001) { bv = C3[a][a]; best = a; } }
     r2 = [0, 0, 0]; r2[best] = 1;
   } else r2 = posDom(snap(nrm(EVp[0].vec)));
+  { // slab-selective 3D: the second image axis must not be the slab normal (the gradient during the excitation);
+    // the partitions along it can have a k-spread as large as the phase encoding's. Then take the direction
+    // perpendicular to both the readout and the slab normal.
+    const Ge = ['gx', 'gy', 'gz'].map(k => channelValue(seq, k, set.ref.tE)), Gm = Math.hypot(...Ge);
+    if (Gm > 1e3) {
+      const nS = Ge.map(x => x / Gm), c = cross(nS, r1);
+      if (Math.abs(dot3(r2, nS)) > 0.5 && Math.hypot(...c) > 0.5) r2 = posDom(snap(nrm(c)));
+    }
+  }
   r2 = nrm(addS(r2, r1, -dot3(r2, r1))); // keep exactly perpendicular
   const idx = v => { const a = v.map(Math.abs); return a.indexOf(Math.max(...a)); };
   // computed with the readout as the first image axis (rows along the readout); transposed at the end if the
@@ -9752,7 +9709,7 @@ function bubbleDirectCore(a) {
    readouts. */
 async function bubbleDirectFast(M, B, SR, SI) {
   const nodes = B.nodes, N = nodes.length; if (!N) return;
-  const px = new Float64Array(N), df = new Float64Array(N), w = new Float64Array(N), pi = new Int32Array(N), pj = new Int32Array(N), ti = new Int32Array(N);
+  const df = new Float64Array(N), w = new Float64Array(N), pi = new Int32Array(N), pj = new Int32Array(N), ti = new Int32Array(N);
   nodes.forEach((nd, k) => { df[k] = nd.df; w[k] = nd.w ?? 1; pi[k] = nd.i; pj[k] = nd.j; ti[k] = nd.ti; });
   const ev = M.EVS, parts = nChunks(M.n * N / 50), per = M.n / parts, tasks = [];
   let e0 = 0;
@@ -10016,7 +9973,7 @@ function transposeResult(r) {
   const tr = (A, G) => { const B = new A.constructor(A.length); for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) B[i * G + j] = A[j * G + i]; return B; };
   const I = r.img, G = I.G, Gk = r.kspace.G;
   r.img = { ...I, re: tr(I.re, G), im: tr(I.im, G), fovX: I.fovY, fovY: I.fovX, px: I.py, py: I.px, cropX: I.cropY, cropY: I.cropX };
-  r.mask = tr(r.mask, Gk); r.kspace = { re: tr(r.kspace.re, Gk), im: tr(r.kspace.im, Gk), G: Gk };
+  r.mask = tr(r.mask, Gk); r.kspace = { re: tr(r.kspace.re, Gk), im: tr(r.kspace.im, Gk), G: Gk, dkx: r.kspace.dky, dky: r.kspace.dkx };
   [r.bwX, r.bwY] = [r.bwY, r.bwX]; [r.fatX, r.fatY] = [r.fatY, r.fatX]; r.roAxis = 1 - r.roAxis; r.axes = r.axes[1] + r.axes[0];
   [r.dispW, r.dispH] = [r.dispH, r.dispW];
   if (r.eddy) r.eddy = { ...r.eddy, echoX: r.eddy.echoY, echoY: r.eddy.echoX, maxX: r.eddy.maxY, maxY: r.eddy.maxX };
@@ -10232,17 +10189,14 @@ async function runSimulation_(seq, shots, vol, refShot, opt) {
     }
   }
   const mask = new Int8Array(G * G); for (let o = 0; o < G * G; o++) mask[o] = W[o] > 0 ? 1 : W[o] < 0 ? 2 : 0;
-  const kspace = { re: Float64Array.from(Kr), im: Float64Array.from(Ki), G };
+  const kspace = { re: Float64Array.from(Kr), im: Float64Array.from(Ki), G, dkx, dky }; // grid steps (1/mm) along x and y
   // effective bandwidth: fit τ ≈ c0 + ax·kx + ay·ky (least squares over acquired samples)
   const fit = lsq3(M.KX, M.KY, M.TAU);
   const pxX = 1 / (Nx * dkx), pxY = 1 / (Ny * dky); // pixel size (mm)
   const shiftX = Math.abs(fit[1]) / pxX, shiftY = Math.abs(fit[2]) / pxY; // pixels per Hz (the phase −2πfτ ≈ shift f·a)
   // image
   let img;
-  if (direct) { // put the Nx×Ny direct image on a G×G display grid by k-space zero-padding
-    const Fr = new Float64Array(G * G), Fi = new Float64Array(G * G);
-    // forward FFT of the direct image, then pad: simplest via placing pixels and interpolating in k-space
-    const tr = new Float64Array(Nx * Ny).fill(0);
+  if (direct) { // the Nx×Ny direct image, centred on a P×P grid (P: the next power of two)
     const P = 1 << Math.ceil(Math.log2(Math.max(Nx, Ny)));
     const Ar = new Float64Array(P * P), Ai = new Float64Array(P * P);
     for (let j = 0; j < Ny; j++) for (let i = 0; i < Nx; i++) { const o = (j - Ny / 2 + P / 2) * P + (i - Nx / 2 + P / 2); Ar[o] = direct.xr[j * Nx + i]; Ai[o] = direct.xi[j * Nx + i]; }
@@ -10280,7 +10234,7 @@ function lsq3(X, Y, Z) { // fit z ≈ c0 + c1·x + c2·y
 }
 function hashU(i) { let a = (i * 2654435761 + 0x6D2B79F5) | 0, t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return (((t ^ (t >>> 14)) >>> 0) + 0.5) / 4294967297; }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { mlite, SIM_TASKS, setSimPool: p => { SIM_POOL = p; }, eddyTrack, eddyShift, sampleChannel, EDDY, sectionPhantom, build3D, tissueAt3, sectionEllipse, eig3, runSimulation, simulateImage, buildPhantom, SIM_PHANTOMS, TISSUES, bValue, shotInfo, tauAt, lsq3, rfSlice, rfFreqHz, invCycle, MzInv, Mz };
+if (typeof module !== 'undefined' && module.exports) module.exports = { mlite, SIM_TASKS, setSimPool: p => { SIM_POOL = p; }, eddyTrack, eddyShift, sampleChannel, EDDY, sectionPhantom, build3D, tissueAt3, sectionEllipse, eig3, runSimulation, simulateImage, TISSUES, bValue, shotInfo, tauAt, lsq3, rfSlice, rfFreqHz, invCycle, MzInv, Mz };
 
 /* ===== nerve stimulation: the SAFE model (Hebrank & Gebhardt, ISMRM 2000, abstract 2007) as implemented in
    safe_pns_prediction by F. Szczepankiewicz and T. Witzel (github.com/filip-szczepankiewicz/safe_pns_prediction).
@@ -10498,7 +10452,7 @@ class StimPass {
      sink(k, s): interval k, values s. sinkRun(k0, n, yb): n zero-input intervals from k0, yb = state before them.
      onCk(k, y): state before interval k, for every k that is a multiple of STIM_CK. */
   run(kEnd, sink, sinkRun, budget = Infinity, onCk = null) {
-    const seq = this.seq, bs = seq.blockStart, dt = this.dt, M = this.M, y = this.y, G = this.G, s = this.s, co = this.co, B = seq.B;
+    const seq = this.seq, bs = seq.blockStart, dt = this.dt, M = this.M, y = this.y, G = this.G, s = this.s, co = this.co;
     kEnd = Math.min(kEnd, this.N + 1); let done = 0;
     const yb = this.yb || (this.yb = new Float64Array(y.length));
     while (this.k < kEnd && done < budget) {
@@ -10814,14 +10768,13 @@ void main() {
 (function () {
 'use strict';
 const $ = s => document.querySelector(s);
-const TAU = 2 * Math.PI;
 const S = {
   seq: null, name: '', t0: 0, t1: 1, sel: -1, hoverT: null, autoY: false,
   gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'high', lineMode: 'exact', sideHidden: false,
   vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, pns: false, cns: false },
   stimNorm: true, combineG: true, rfMode: 'mag', kColor: 'order', linkMode: 'off',
   sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, crop: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
-  k: null, kRange: 'shot', kProj: 'xy', kTraj: true, kR: null, kZoom: 1, slew: null, labels: null
+  kRange: 'shot', kProj: 'xy', kTraj: true, kR: null, kZoom: 1, kPan: [0, 0]
 };
 const LANES = [
   { key: 'adc', label: 'ADC', w: 0.42, col: 'adc' },
@@ -10892,14 +10845,6 @@ const us = s => fmt(s * 1e6, 5) + ' µs';
 /* ---------- search helpers ---------- */
 function lb(a, x, n = a.length) { let lo = 0, hi = n; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < x) lo = m + 1; else hi = m; } return lo; }
 function ub(a, x, n = a.length) { let lo = 0, hi = n; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] <= x) lo = m + 1; else hi = m; } return lo; }
-function valueAt(c, t, outside = 0) {
-  const n = c.t.length; if (!n) return outside;
-  const i = ub(c.t, t);
-  if (i === 0 || i >= n) return i >= n && c.t[n - 1] === t ? c.v[n - 1] : outside;
-  const ta = c.t[i - 1], tb = c.t[i], va = c.v[i - 1], vb = c.v[i];
-  if (isNaN(va) || isNaN(vb)) return NaN;
-  return tb > ta ? va + (vb - va) * (t - ta) / (tb - ta) : vb;
-}
 function blockAt(t) { const s = S.seq; if (!s) return -1; return blockAtTime(s, t); }
 
 /* ---------- canvas setup ---------- */
@@ -10924,7 +10869,7 @@ function sizeCanvas(cv, ctx, w, h, d = dpr) { // only touch the canvas when its 
 }
 function resize() {
   dpr = window.devicePixelRatio || 1;
-  pdpr = BENCH.dpr || (PNG_FULL || (BENCH.quality || S.diagRes) !== 'fast' ? dpr : Math.min(1, dpr));
+  pdpr = PNG_FULL || (BENCH.quality || S.diagRes) !== 'fast' ? dpr : Math.min(1, dpr);
   const r = $('#plotwrap').getBoundingClientRect(); W = r.width; H = r.height;
   sizeCanvas(plot, pctx, W, H, pdpr); sizeCanvas(ovl, octx, W, H);
   const o = ov.parentElement.getBoundingClientRect(); OW = o.width; OH = o.height;
@@ -10958,7 +10903,6 @@ function lanesGeom() {
   return out;
 }
 function laneChannels(l) {
-  const s = S.seq;
   if (l.key === 'slew') return [['gx', 'sx'], ['gy', 'sy'], ['gz', 'sz']];
   if (l.key === 'm0') return [['gx', 'mx'], ['gy', 'my'], ['gz', 'mz']];
   if (l.key === 'rfMag' && S.rfMode === 'complex') return [['ph', 'rfIm'], ['rf', 'rfRe']]; // imaginary first: the real part is drawn on top
@@ -10973,24 +10917,6 @@ function laneMax(l) {
   if (l.key === 'slew') return Math.max(...st.maxSlew);
   if (l.key === 'm0') { m0Pyramids(S.seq); return S.seq.m0Max; }
   return Math.max(...st.maxG); // shared scale across gradient axes
-}
-function visibleRange(c, t0, t1) {
-  const n = c.t.length; if (!n) return 0;
-  let i0 = Math.max(0, ub(c.t, t0) - 1), i1 = Math.min(n - 1, lb(c.t, t1));
-  let m = 0, i = i0;
-  const pyr = c.pyr || (c.pyr = buildPyr(c));
-  while (i <= i1) {
-    let used = false;
-    for (let L = pyr.length - 1; L >= 0; L--) {
-      const P = pyr[L], sz = P.size;
-      if (i % sz || i + sz - 1 > i1) continue;
-      const b = i / sz; if (P.has[b]) m = Math.max(m, Math.abs(P.mn[b]), Math.abs(P.mx[b]));
-      i += sz; used = true; break;
-    }
-    if (used) continue;
-    const a = Math.abs(c.v[i++]); if (a > m) m = a;
-  }
-  return m;
 }
 
 /* ---------- decimating polyline ---------- */
@@ -11084,7 +11010,7 @@ function chooseTraceR(t0, t1, pw) {
   const bs = S.seq.blockStart, nVis = ub(bs, t1) - lb(bs, t0); return nVis <= pw / 2 ? Math.min(2, Math.max(1, pdpr || 1)) : 1;
 }
 function traceChan(key, t0, t1, x0, w) {
-  const s = S.seq, bs = s.blockStart, pyr = s.pyr[key], pts = [];
+  const s = S.seq, bs = s.blockStart, pts = [];
   // columns per device pixel (up to 2 per CSS px); one per CSS px while frames are slow (very large files)
   const r = traceR, sc = w / (t1 - t0), nc = Math.ceil(w * r) + 1;
   ensureCols(nc); if (cN.length < nc) { cN = new Float64Array(nc); cX = new Float64Array(nc); }
@@ -11219,18 +11145,19 @@ const SPAN_MIN = 24; // runs shorter than this stay paths (cheap either way)
 /* rectangles of one style, merged along a row where they line up (far fewer calls when zoomed out), each drawn with
    fillRect. From 1.14.2 to 1.16.1 they were collected in one Path2D and filled once, which saves main-thread time but
    is slower on a real graphics card: a path of hundreds of rectangles is rasterised as a general path, fillRect as
-   rectangles (frame-rate test on a laptop, whole demo in view: 111 fps as a path, 170 fps as fillRect, same pixels). */
+   rectangles (frame-rate test on a laptop, whole demo in view: 111 fps as a path, 170 fps as fillRect, same pixels;
+   the comparison case was removed from the frame-rate test in 1.24.3). */
 function rectRun(ctx) {
-  let x = 0, y = 0, w = 0, h = 0, on = false, path = new Path2D(), n = 0;
+  let x = 0, y = 0, w = 0, h = 0, on = false;
   // left and right edges on whole device pixels, so that neighbouring rectangles meet exactly as in one path; else both
   // cover the shared pixel partly and the colour underneath shows through as a faint seam (at 1.25× or 1.75× pixels)
   // ultra quality: columns narrower than a screen pixel, drawn where they fall (anti-aliased edges smooth the steps);
   // otherwise edges snapped to whole screen pixels
-  const direct = !BENCH.pathRects, d = pdpr || 1, ultra = (BENCH.quality || S.diagRes) === 'ultra', sn = ultra ? (v => v) : (v => Math.round(v * d) / d);
-  const put = direct ? () => { const xa = sn(x); let xb = sn(x + w); if (xb <= xa) xb = xa + (ultra ? 1e-3 : 1 / d); ctx.fillRect(xa, y, xb - xa, h); } : () => path.rect(x, y, w, h); // never thinner than one device pixel
+  const d = pdpr || 1, ultra = (BENCH.quality || S.diagRes) === 'ultra', sn = ultra ? (v => v) : (v => Math.round(v * d) / d);
+  const put = () => { const xa = sn(x); let xb = sn(x + w); if (xb <= xa) xb = xa + (ultra ? 1e-3 : 1 / d); ctx.fillRect(xa, y, xb - xa, h); }; // never thinner than one device pixel
   return {
-    add(ax, ay, aw, ah) { if (on && ay === y && ah === h && Math.abs(ax - (x + w)) < 1e-9) { w += aw; return; } if (on) { put(); n++; } x = ax; y = ay; w = aw; h = ah; on = true; },
-    flush() { if (on) { put(); n++; } on = false; if (n && !direct) ctx.fill(path); path = new Path2D(); n = 0; }
+    add(ax, ay, aw, ah) { if (on && ay === y && ah === h && Math.abs(ax - (x + w)) < 1e-9) { w += aw; return; } if (on) put(); x = ax; y = ay; w = aw; h = ah; on = true; },
+    flush() { if (on) put(); on = false; }
   };
 }
 function colWidth(xs, n) { let w = Infinity; for (let i = 1; i < n; i++) { const d = xs[i] - xs[i - 1]; if (d > 1e-6 && d < w) w = d; } return w === Infinity ? 1 : Math.min(1, w); }
@@ -11299,7 +11226,7 @@ function strokePts(ctx, pts, yOf, color, fillBase) {
     if (!qDown || ta > 0) ctx.moveTo(xa, ya);
     ctx.lineTo(ax + (x - ax) * tb, ay + dy * tb); qDown = tb >= 1;
   };
-  ctx.beginPath(); let pen = false, px = NaN, py = NaN, fx = null, lx = null;
+  ctx.beginPath(); let pen = false, px = NaN, py = NaN, fx = null;
   /* column width: the grid of traceChan when known (1.23.2). Before, the smallest spacing between any two points,
      which a single sample near a column centre made tiny: dense spans were then drawn a fraction of a column wide, and
      almost every join between dense columns counted as a gap and was stroked (on a ZTE sequence about 150,000 pixels
@@ -11317,11 +11244,11 @@ function strokePts(ctx, pts, yOf, color, fillBase) {
       }
       spans.push(x, lo, hi);
       py = yOf(pts[j - 1]); px = x; M_(x, py); pen = true;
-      if (fx === null) fx = x; lx = x; i = j; continue;
+      if (fx === null) fx = x; i = j; continue;
     }
     const y = yOf(v);
     if (!pen) { M_(x, y); pen = true; if (fx === null) fx = x; } else L_(x, y);
-    px = x; py = y; lx = x; i += 2;
+    px = x; py = y; i += 2;
   }
   ctx.strokeStyle = color; ctx.lineWidth = LW; ctx.lineJoin = 'round'; ctx.stroke();
   if (spans.length) { ctx.fillStyle = color; const sp = rectRun(ctx); for (let k = 0; k < spans.length; k += 3) sp.add(spans[k] - cw / 2, cy(spans[k + 1]) - hw, cw, cy(spans[k + 2]) - cy(spans[k + 1]) + LW); sp.flush(); }
@@ -11581,9 +11508,9 @@ function blockDurMax(seq) {
    drawn frames, which also contains the browser's drawing time on the graphics card. For reporting performance. */
 const DIAG = { on: false, times: [], lastT: 0, fr: [], loop: false };
 /* frame-rate test (⋯ › Run frame-rate test): switches used only while it runs, to find out on the user's own machine
-   which part of a frame costs time. pathRects: batched rectangles as one Path2D fill (the drawing of 1.14.2–1.16.1)
-   instead of single fillRect calls. skip: leave out one part of the drawing (the normal view never uses either). */
-const BENCH = { run: false, pathRects: false, skip: {}, js: [], acc: 0, dpr: 0, quality: '', lineMode: '' };
+   which part of a frame costs time. skip: leave out one part of the drawing; quality, lineMode: draw as with that
+   setting (the normal view never uses them). */
+const BENCH = { run: false, skip: {}, js: [], acc: 0, quality: '', lineMode: '' };
 const benchT = (f) => { if (!BENCH.run) return f(); const t = performance.now(); try { return f(); } finally { BENCH.acc += performance.now() - t; } };
 /* display frame rate: while the panel is open and the view moves, a requestAnimationFrame loop records the time
    between screen frames (a dropped frame shows as a longer gap); it stops half a second after the last redraw */
@@ -11619,8 +11546,8 @@ $('#diagBtn').onclick = diagToggle;
 /* the test: from the current view, the view is moved on every screen frame (panning back and forth by 2 % of the span,
    or zooming in and out by 3 % about the centre), so that a frame is drawn on every screen frame, as while scrolling
    fast. It records the time between screen frames (all of the browser's work, including drawing on the graphics card)
-   and Seqret's own time per frame, first for the normal drawing, then with each part left out, then with the
-   rectangle variant. Takes about half a minute; the view, the selection and the settings are restored. */
+   and Seqret's own time per frame, first for the normal drawing, then with each part left out, then with the other
+   peak drawing and the other diagram qualities. Takes about half a minute; the view, the selection and the settings are restored. */
 async function diagBench() {
   if (!S.seq || BENCH.run) return;
   const btn = $('#benchBtn'), v0 = [S.t0, S.t1], el = $('#diag');
@@ -11631,16 +11558,15 @@ async function diagBench() {
     ['without overview', 'pan', { skip: { ov: 1 } }], ['without page updates', 'pan', { skip: { dom: 1 } }],
     ['blank diagram', 'pan', { skip: { draw: 1 } }], ['blank diagram, no page updates', 'pan', { skip: { draw: 1, dom: 1, ov: 1 } }],
     [S.lineMode === 'exact' ? 'peaks per column' : 'peaks exact', 'pan', { lineMode: S.lineMode === 'exact' ? 'columns' : 'exact' }],
-    ...['ultra', 'high', 'standard', 'fast'].filter(q => q !== S.diagRes && (q !== 'fast' || window.devicePixelRatio > 1.01)).map(q => [`diagram quality ${q}`, 'pan', { quality: q }]),
-    ['rectangles as one path, panning', 'pan', { pathRects: true }], ['rectangles as one path, zooming', 'zoom', { pathRects: true }]];
+    ...['ultra', 'high', 'standard', 'fast'].filter(q => q !== S.diagRes && (q !== 'fast' || window.devicePixelRatio > 1.01)).map(q => [`diagram quality ${q}`, 'pan', { quality: q }])];
   const frame = () => new Promise(r => requestAnimationFrame(r));
   const q = (a, f) => { const b = [...a].sort((x, y) => x - y); return b.length ? b[Math.min(b.length - 1, Math.floor(f * b.length))] : 0; };
   const rows = []; BENCH.run = true; btn.disabled = true;
   try {
     for (let c = 0; c < CASES.length; c++) {
       const [name, kind, o] = CASES[c];
-      BENCH.skip = o.skip || {}; BENCH.pathRects = !!o.pathRects; BENCH.lineMode = o.lineMode || ''; ovCache = null; BENCH.js = [];
-      if ((o.dpr || 0) !== BENCH.dpr || (o.quality || '') !== BENCH.quality) { BENCH.dpr = o.dpr || 0; BENCH.quality = o.quality || ''; resize(); }
+      BENCH.skip = o.skip || {}; BENCH.lineMode = o.lineMode || ''; ovCache = null; BENCH.js = [];
+      if ((o.quality || '') !== BENCH.quality) { BENCH.quality = o.quality || ''; resize(); }
       setView(v0[0], v0[1]); await frame(); await frame();
       const iv = []; let last = 0; const N = 150, WARM = 15;
       for (let i = 0; i < N; i++) {
@@ -11653,8 +11579,8 @@ async function diagBench() {
       rows.push({ name, fps: 1000 * iv.length / tot, med: q(iv, 0.5), p95: q(iv, 0.95), js: q(js, 0.5), jsMax: q(js, 0.95) });
     }
   } finally {
-    BENCH.run = false; BENCH.skip = {}; BENCH.pathRects = false; BENCH.lineMode = ''; ovCache = null; BENCH.js = []; btn.disabled = false;
-    if (BENCH.dpr || BENCH.quality) { BENCH.dpr = 0; BENCH.quality = ''; resize(); }
+    BENCH.run = false; BENCH.skip = {}; BENCH.lineMode = ''; ovCache = null; BENCH.js = []; btn.disabled = false;
+    if (BENCH.quality) { BENCH.quality = ''; resize(); }
     setView(v0[0], v0[1]);
   }
   const pad = (x, n) => String(x).padStart(n), nm = Math.max(...rows.map(r => r.name.length));
@@ -11674,7 +11600,10 @@ async function diagBench() {
     // the one part of the drawing whose removal helps most, when it is a large share
     const parts = rows.filter(r => r.name.startsWith('without ') && r.name !== 'without page updates').sort((a, b) => b.fps - a.fps);
     const worst = parts.length && parts[0].fps > 1.5 * nrm.fps ? parts[0] : null;
-    if (nrm.js > 0.5 * nrm.med) { // Seqret's own work is most of the frame: the browser is not the limit
+    // Seqret's own work is the limit only when it takes most of what the screen allows per frame (the blank diagram's
+    // frame time); before 1.24.2 it was compared with the (slow) frame itself, so 5 ms of Seqret in a 10 ms frame on
+    // a 100 Hz screen, where the drawing took the rest, was blamed on Seqret
+    if (nrm.js > 0.8 * (1000 / blank.fps)) {
       tip = `\n\nSeqret's own work limits the frame rate here: it needs ${nrm.js.toFixed(1)} ms of a ${nrm.med.toFixed(1)} ms frame (a blank diagram runs at ${blank.fps.toFixed(0)} fps). This grows with the number of blocks in view; zooming in makes it faster.`;
       if (lower.length) tip += ` ${lower.join('; ')}.`;
     } else {
@@ -12283,7 +12212,6 @@ function renderSeqInfo() {
 }
 function minMax(a) { let mn = Infinity, mx = -Infinity; for (const x of a) { if (x < mn) mn = x; if (x > mx) mx = x; } return [mn, mx]; } // no spread: arrays can hold ~1M values
 function volsHTML() {
-  const s = S.seq;
   if (S.volMode === 'off') return '';
   const v = S.vols, how = S.volMode === 'auto' ? 'k-space sampling repeats' : `label ${esc(S.volMode.slice(6))} changes`;
   if (!v.length) return `<h3>Volumes</h3><p class="note">No shots were found, so no volumes are marked.</p>`;
@@ -12406,7 +12334,6 @@ function describeBlock(i) {
   const hasEv = b => B.rf[b] || B.gx[b] || B.gy[b] || B.gz[b] || B.adc[b];
   const nextEv = (b, d) => { for (let q = b + d, n = 0; q >= 0 && q < s.nb && n < 8; q += d, n++) if (hasEv(q)) return q; return -1; };
   const pv = nextEv(i, -1), nx = nextEv(i, 1);
-  const isImgAdc = b => { if (b < 0 || !B.adc[b]) return false; const q = lb(s.adcBlocks, b); const t = s.adcType[q]; return t === 0 || t === 2; };
   const k = s.shots.length ? shotOfBlock(i) : -1, sh = k >= 0 ? s.shots[k] : null;
   let excB = -1; if (sh) for (let q = Math.min(sh.b1, i); q >= sh.b0; q--) if (useOf(q) === 'e') { excB = q; break; }
   // first main readout (imaging or reference, not noise or navigator) after the excitation, and the last one in the shot
@@ -12567,19 +12494,18 @@ function segSet(id, key, cb) {
   const el = $(id); el.querySelectorAll('button').forEach(b => b.onclick = () => { el.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); cb(b.dataset.v); });
 }
 segSet('#kRange', 'kRange', v => { S.kRange = v; requestK(); });
-segSet('#kProj', 'kProj', v => { S.kProj = v; S.kR = v === '3d' ? rot3d() : PROJ[v]; S.kZoom = 1; requestK(); });
+segSet('#kProj', 'kProj', v => { S.kProj = v; S.kR = v === '3d' ? rot3d() : PROJ[v]; S.kZoom = 1; S.kPan = [0, 0]; requestK(); });
 segSet('#kColor', 'kColor', v => { S.kColor = v; requestK(); });
 $('#kTraj').onchange = e => { S.kTraj = e.target.checked; requestK(); };
 let kPending = false;
 function requestK() { if (!kPending) { kPending = true; requestAnimationFrame(() => { kPending = false; benchT(drawK); }); } }
 const VIR = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
-function cmap(u) { const x = Math.min(0.9999, Math.max(0, u)) * 4, i = Math.floor(x), f = x - i, a = VIR[i], b = VIR[i + 1]; return `rgb(${a[0] + (b[0] - a[0]) * f | 0},${a[1] + (b[1] - a[1]) * f | 0},${a[2] + (b[2] - a[2]) * f | 0})`; }
 /* k-space drawing: skipped when nothing changed; ADC points written straight into a pixel
    buffer; the path is simplified in screen space; view-driven redraws are throttled. */
-let kFast = false, kFastTimer = null, kKey = null, kMax = { key: null, m: 1 }, kOff = null, kImg = null, kLut = null, kLast = 0, kTimer = null;
-let kData = null, kData_busy = false;
+let kFast = false, kFastTimer = null, kKey = null, kOff = null, kImg = null, kLut = null, kLast = 0, kTimer = null;
+let kData = null, kData_busy = false, kHit = null, kTip = null, kRing = null, kHoverI = -1; // kHit: drawn samples, for hovering
 const K_MAX_PTS = 5e5, K_MAX_PATH = 2e5; // display caps for large ranges (more is not visible at this plot size)
-function kInvalidate() { kKey = null; kData = null; }
+function kInvalidate() { kKey = null; kData = null; kHit = null; kHoverHide(); }
 function requestKLazy() {
   if (S.tab !== 'k') return;
   const wait = 120 - (performance.now() - kLast);
@@ -12626,12 +12552,12 @@ function drawK() {
     kData = { key: dk, smp, path, m: mm > 0 ? mm : 1, total: s.adcOff[j1] - s.adcOff[j0] };
   }
   const K = { kA: kData.smp.k, kT: kData.path.k, type: kData.smp.type }, a0 = 0, a1 = kData.smp.n, p0 = 0, p1 = kData.path.n;
-  const key = [S.kColor, kFast, dk, R.map(r => r.join(',')).join(';'), S.kZoom, S.kTraj, KW, dpr, C.plot, C.muted].join('|');
+  const key = [S.kColor, kFast, dk, R.map(r => r.join(',')).join(';'), S.kZoom, S.kPan.join(','), S.kTraj, KW, dpr, C.plot, C.muted].join('|');
   if (key === kKey) return;
-  kKey = key;
+  kKey = key; kHoverHide(); // the samples move: the hovered one is found again at the next pointer move
   const ctx = kctx; ctx.clearRect(0, 0, KW, KW);
   const n = a1 - a0, m = kData.m;
-  const cx = KW / 2, cy = KW / 2, sc = (KW / 2 - 26) / m * S.kZoom;
+  const cx = KW / 2 + S.kPan[0], cy = KW / 2 + S.kPan[1], sc = (KW / 2 - 26) / m * S.kZoom; // k = 0 at (cx, cy): moved by panning
   const r00 = R[0][0] * sc, r01 = R[0][1] * sc, r02 = R[0][2] * sc, r10 = R[1][0] * sc, r11 = R[1][1] * sc, r12 = R[1][2] * sc;
   const P = (x, y, z) => [cx + r00 * x + r01 * y + r02 * z, cy - (r10 * x + r11 * y + r12 * z)];
   // axes
@@ -12655,23 +12581,40 @@ function drawK() {
   }
   // ADC points into a device-pixel buffer
   let thinned = kData.smp.thinned;
+  if (kHit) kHit.n = 0;
   if (n > 0) {
     const Wd = kc.width, Hd = kc.height;
     if (!kOff || kOff.width !== Wd || kOff.height !== Hd) { kOff = document.createElement('canvas'); kOff.width = Wd; kOff.height = Hd; kImg = kOff.getContext('2d').createImageData(Wd, Hd); }
     if (!kLut) buildLut();
     const buf = new Uint32Array(kImg.data.buffer); buf.fill(0);
     const step = Math.max(1, Math.ceil(n / (kFast ? 2e5 : K_MAX_PTS))); if (step > 1 && !kFast) thinned = true;
-    const cnt = n / step, rs = Math.max(1, Math.round((cnt > 40000 ? 1 : cnt > 4000 ? 1.6 : 2.4) * dpr)), h0 = rs >> 1;
-    const d = dpr, X = K.kA[0], Y = K.kA[1], Z = K.kA[2], inv = 255 / Math.max(1, n - 1);
+    const cnt = n / step, d = dpr, X = K.kA[0], Y = K.kA[1], Z = K.kA[2], inv = 255 / Math.max(1, n - 1);
+    // project once: device coordinates of the samples inside the canvas (kept for finding the hovered sample)
+    if (!kHit || kHit.x.length < cnt + 1) kHit = { x: new Float32Array(cnt + 1), y: new Float32Array(cnt + 1), i: new Int32Array(cnt + 1), n: 0, r: 1 };
+    const HX = kHit.x, HY = kHit.y, HI = kHit.i; let nv = 0;
+    for (let i = a0; i < a1; i += step) {
+      const fx = (cx + r00 * X[i] + r01 * Y[i] + r02 * Z[i]) * d, fy = (cy - (r10 * X[i] + r11 * Y[i] + r12 * Z[i])) * d;
+      if (fx < 0 || fy < 0 || fx >= Wd || fy >= Hd) continue;
+      HX[nv] = fx; HY[nv] = fy; HI[nv] = i; nv++;
+    }
+    kHit.n = nv;
+    // dot size: at least as before (from the number of samples), and larger when few samples are in view (zoomed in):
+    // 0.3 × the side of the canvas area per visible sample, at most 6 px. Large dots are round.
+    const base = Math.max(1, Math.round((cnt > 40000 ? 1 : cnt > 4000 ? 1.6 : 2.4) * d));
+    const rs = Math.max(base, Math.min(Math.round(6 * d), Math.round(0.3 * Math.sqrt(Wd * Hd / Math.max(1, nv)))));
+    kHit.r = rs / d;
+    const stamp = r2 => { const o = []; const c = (r2 - 1) / 2, rr = r2 * r2 / 4 + 0.25; for (let yy = 0; yy < r2; yy++) for (let xx = 0; xx < r2; xx++) if (r2 < 4 || (xx - c) ** 2 + (yy - c) ** 2 <= rr) o.push(yy * Wd + xx); return Int32Array.from(o); };
     const byType = S.kColor === 'type', ST = byType ? K.type : null, TL = byType ? TYPE_COL.map(c => hexU32(C[c])) : null;
     // by type: imaging first, then the other types on top so they stay visible
-    for (let pass = 0; pass < (byType ? 2 : 1); pass++) for (let i = a0; i < a1; i += step) {
-      if (byType && ((ST[i] === 0) !== (pass === 0))) continue;
-      const r2 = pass ? rs + Math.ceil(d) : rs, hh = r2 >> 1; // non-imaging samples drawn a bit larger
-      const px = ((cx + r00 * X[i] + r01 * Y[i] + r02 * Z[i]) * d | 0) - hh, py = ((cy - (r10 * X[i] + r11 * Y[i] + r12 * Z[i])) * d | 0) - hh;
-      if (px < 0 || py < 0 || px + r2 > Wd || py + r2 > Hd) continue;
-      const col = byType ? TL[ST[i]] : kLut[(i - a0) * inv | 0];
-      for (let yy = 0; yy < r2; yy++) { const o = (py + yy) * Wd + px; for (let xx = 0; xx < r2; xx++) buf[o + xx] = col; }
+    for (let pass = 0; pass < (byType ? 2 : 1); pass++) {
+      const r2 = pass ? rs + Math.ceil(d) : rs, hh = r2 >> 1, st = stamp(r2), ns = st.length; // non-imaging samples drawn a bit larger
+      for (let v = 0; v < nv; v++) {
+        const i = HI[v]; if (byType && ((ST[i] === 0) !== (pass === 0))) continue;
+        const px = (HX[v] | 0) - hh, py = (HY[v] | 0) - hh;
+        if (px < 0 || py < 0 || px + r2 > Wd || py + r2 > Hd) continue;
+        const col = byType ? TL[ST[i]] : kLut[(i - a0) * inv | 0], o = py * Wd + px;
+        for (let q = 0; q < ns; q++) buf[o + st[q]] = col;
+      }
     }
     kOff.getContext('2d').putImageData(kImg, 0, 0);
     ctx.drawImage(kOff, 0, 0, KW, KW);
@@ -12689,18 +12632,57 @@ function drawK() {
   $('#kInfo').textContent = n ? `${kData.total.toLocaleString()} ADC samples${what}${thinned ? ` (${Math.min(n, kFast ? 2e5 : K_MAX_PTS).toLocaleString()} shown)` : ''}. Max |k| component ${fmt(m, 4)} m⁻¹ (≈ ${fmt(1e3 / (2 * m), 3)} mm resolution).` : 'No ADC samples in range.';
   kLast = performance.now();
 }
-let kDrag = null;
-kc.addEventListener('pointerdown', e => { kc.setPointerCapture(e.pointerId); kDrag = { x: e.offsetX, y: e.offsetY }; });
+/* hovered sample: the nearest drawn sample within 8 px (or the dot radius) of the pointer gets a ring and a short
+   description; the diagram's cursor moves to its time */
+kTip = document.createElement('div'); kRing = document.createElement('div');
+kTip.className = 'ktip num'; kRing.className = 'kring'; kTip.hidden = kRing.hidden = true;
+kc.parentElement.append(kRing, kTip);
+function kHoverHide() { if (!kTip || (kHoverI < 0 && kTip.hidden)) return; kHoverI = -1; kTip.hidden = kRing.hidden = true; if (S.tab === 'k' && S.seq) { S.hoverT = null; requestOverlay(); } }
+function kHover(ex, ey) {
+  if (!kHit || !kHit.n || !kData || !S.seq) { kHoverHide(); return; }
+  const d = dpr, x = ex * d, y = ey * d, R = Math.max(8, kHit.r / 2 + 3) * d; let best = -1, bd = R * R;
+  for (let v = 0; v < kHit.n; v++) { const dx = kHit.x[v] - x, dy = kHit.y[v] - y, q = dx * dx + dy * dy; if (q < bd) { bd = q; best = v; } }
+  if (best < 0) { kHoverHide(); return; }
+  const i = kHit.i[best], smp = kData.smp, s = S.seq, B = s.B;
+  let lo = 0, hi = smp.ej.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (smp.eo[m] <= i) lo = m; else hi = m - 1; }
+  const j = smp.ej[lo], q = i - smp.eo[lo], b = s.adcBlocks[j], ad = s.adc.get(B.adc[b]), t = s.blockStart[b] + ad.delay + (q + 0.5) * ad.dwell;
+  const k = shotOfBlock(b), sh = k >= 0 ? s.shots[k] : null;
+  let tE = null; if (sh) for (let c = b; c >= sh.b0; c--) if (B.rf[c]) { const st = rfSt(s, B.rf[c]); if (st.use === 'e') { tE = s.blockStart[c] + st.center; break; } }
+  const lab = labelState(b), labs = s.labels.filter(L => !L.flag || lab[L.name]).map(L => `${L.name} ${lab[L.name] ?? 0}`).join(' · ');
+  kTip.innerHTML = `<b>Sample ${q + 1}</b> / ${ad.num} · ADC ${sh ? `${j - sh.j0 + 1} / ${sh.nADC} · shot ${k + 1}` : ''} · block ${B.id[b]}<br>` +
+    `t ${fmt(t * 1e3, 6)} ms${tE !== null ? ` (${fmt((t - tE) * 1e3, 4)} ms after excitation)` : ''}<br>` +
+    `k ${[0, 1, 2].map(a => fmt(smp.k[a][i], 4)).join(', ')} m⁻¹ · ${TYPE_NAME[s.adcType[j]]}` + (labs ? `<br>${esc(labs)}` : '');
+  const px = kHit.x[best] / d, py = kHit.y[best] / d, rr = Math.max(5, kHit.r / 2 + 3);
+  kRing.style.cssText = `left:${px - rr}px;top:${py - rr}px;width:${2 * rr}px;height:${2 * rr}px`;
+  kTip.hidden = kRing.hidden = false;
+  const tw = kTip.offsetWidth, th = kTip.offsetHeight; // beside the sample, flipped to stay inside the plot
+  kTip.style.left = `${px + 12 + tw > KW ? Math.max(2, px - 12 - tw) : px + 12}px`; kTip.style.top = `${py + 12 + th > KW ? Math.max(2, py - 12 - th) : py + 12}px`;
+  kHoverI = i; S.hoverT = t; requestOverlay();
+}
+let kDrag = null, kHoverPos = null;
+kc.addEventListener('pointerdown', e => { kc.setPointerCapture(e.pointerId); kDrag = { x: e.offsetX, y: e.offsetY, pan: e.button === 2 }; kc.style.cursor = kDrag.pan ? 'move' : 'grabbing'; kHoverHide(); });
+kc.addEventListener('contextmenu', e => e.preventDefault()); // right-drag pans
+kc.addEventListener('pointerleave', () => { kHoverPos = null; if (!kDrag) kHoverHide(); });
 kc.addEventListener('pointermove', e => {
-  if (!kDrag) return;
-  const dx = e.offsetX - kDrag.x, dy = e.offsetY - kDrag.y; kDrag = { x: e.offsetX, y: e.offsetY };
+  if (!kDrag) { // one search per frame (it runs over all drawn samples, up to K_MAX_PTS)
+    if (e.pointerType !== 'mouse') return;
+    const first = !kHoverPos; kHoverPos = [e.offsetX, e.offsetY];
+    if (first) requestAnimationFrame(() => { const p = kHoverPos; kHoverPos = null; if (p && !kDrag) kHover(p[0], p[1]); });
+    return;
+  }
+  const dx = e.offsetX - kDrag.x, dy = e.offsetY - kDrag.y; kDrag.x = e.offsetX; kDrag.y = e.offsetY;
+  if (kDrag.pan) { kPanBy(dx, dy); kFast = true; requestK(); return; } // right-drag: move the view, keep the projection
   S.kR = mul(rx(dy * 0.01), mul(ry(dx * 0.01), S.kR)); kFast = true;
   if (S.kProj !== '3d') { S.kProj = '3d'; $('#kProj').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === '3d')); }
   requestK();
 });
+/* pan (CSS px, offset of k = 0 from the canvas centre), kept within the data's extent on screen so it cannot be lost */
+function kPanBy(dx, dy) { const L = Math.max(0, (KW / 2 - 26) * S.kZoom); S.kPan = [Math.max(-L, Math.min(L, S.kPan[0] + dx)), Math.max(-L, Math.min(L, S.kPan[1] + dy))]; }
 function kSettle() { if (kFast) { kFast = false; requestK(); } }
-kc.addEventListener('pointerup', () => { kDrag = null; kSettle(); }); kc.addEventListener('pointercancel', () => { kDrag = null; kSettle(); });
-kc.addEventListener('wheel', e => { e.preventDefault(); S.kZoom = Math.min(50, Math.max(0.2, S.kZoom * Math.exp(-e.deltaY * 0.002))); kFast = true; clearTimeout(kFastTimer); kFastTimer = setTimeout(kSettle, 160); requestK(); }, { passive: false });
+const kUp = () => { kDrag = null; kc.style.cursor = ''; kSettle(); };
+kc.addEventListener('pointerup', kUp); kc.addEventListener('pointercancel', kUp);
+kc.addEventListener('wheel', e => { e.preventDefault(); kHoverHide(); const z0 = S.kZoom; S.kZoom = Math.min(50, Math.max(0.2, S.kZoom * Math.exp(-e.deltaY * 0.002)));
+  S.kPan = [S.kPan[0] * S.kZoom / z0, S.kPan[1] * S.kZoom / z0]; kPanBy(0, 0); /* zoom about the canvas centre: the k there stays */ kFast = true; clearTimeout(kFastTimer); kFastTimer = setTimeout(kSettle, 160); requestK(); }, { passive: false });
 
 /* ---------- simulated image ---------- */
 let imgRes = null, imgKey = null, imgRun = 0, imgTimer = null, imgLoadId = 0;
@@ -13086,14 +13068,27 @@ function drawImg() {
   // keep the physical aspect ratio (FOV) of the image
   // readout oversampling: the image covers the whole sampled FOV; cropping draws only its central part (display only)
   const cx = view === 'k' ? 1 : imgCrop(I, 'x'), cy = view === 'k' ? 1 : imgCrop(I, 'y');
-  const ax = view === 'k' ? 1 : I.fovX * cx, ay = view === 'k' ? 1 : I.fovY * cy, sc = Math.min(IW / ax, IW / ay);
-  const w = ax * sc, h = ay * sc;
   ctx.imageSmoothingEnabled = view !== 'k';
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, IW, IW);
-  const sw = G * cx, sh = G * cy; // source rectangle: centred (the image rows are stored with y up, the crop is symmetric)
-  ctx.drawImage(imgOff, (G - sw) / 2, (G - sh) / 2, sw, sh, (IW - w) / 2, (IW - h) / 2, w, h);
+  let w, h, kE = 0;
+  if (view === 'k') {
+    // k-space in physical units, the same scale on both axes: a grid cell is Δkx wide and Δky high, so readout
+    // oversampling (smaller Δk along the readout) shows as denser samples over the same k range, not as a wider
+    // range. Shown: a square of ±kE, the largest |k| acquired or filled along either axis.
+    const dx = R.kspace.dkx || 1, dy = R.kspace.dky || 1; let mxc = 0, myc = 0;
+    for (let y = 0; y < G; y++) for (let x = 0; x < G; x++) if (R.mask[y * G + x]) { mxc = Math.max(mxc, Math.abs(x - G / 2) + 0.5); myc = Math.max(myc, Math.abs(y - G / 2) + 0.5); }
+    kE = Math.max(mxc * dx, myc * dy) || G / 2 * Math.max(dx, dy);
+    w = h = IW; const px = IW / (2 * kE); // screen pixels per 1/mm
+    // source rectangle in grid cells (centre at G/2), clipped to the grid; the destination follows the clipping
+    const hx = Math.min(G / 2, kE / dx), hy = Math.min(G / 2, kE / dy), dw = 2 * hx * dx * px, dh = 2 * hy * dy * px;
+    ctx.drawImage(imgOff, G / 2 - hx, G / 2 - hy, 2 * hx, 2 * hy, (IW - dw) / 2, (IW - dh) / 2, dw, dh);
+  } else {
+    const ax = I.fovX * cx, ay = I.fovY * cy, sc = Math.min(IW / ax, IW / ay); w = ax * sc; h = ay * sc;
+    const sw = G * cx, sh = G * cy; // source rectangle: centred (the image rows are stored with y up, the crop is symmetric)
+    ctx.drawImage(imgOff, (G - sw) / 2, (G - sh) / 2, sw, sh, (IW - w) / 2, (IW - h) / 2, w, h);
+  }
   ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = `11px ${C.font}`; ctx.textAlign = 'left';
-  const T = R.target, s = S.seq;
+  const T = R.target;
   ctx.fillText(view === 'k' ? 'k-space: grey acquired, amber filled' : `${S.vols.length ? `volume ${T.vi + 1} · ` : ''}shot ${T.ref + 1}`, 8, 16);
   if (view !== 'k') {
     ctx.textAlign = 'right'; ctx.fillText(`FOV ${fmt(I.fovX * cx, 3)} × ${fmt(I.fovY * cy, 3)} mm${R.osRO > 1 ? ` · ${fmt(R.osRO, 3)}× readout oversampling${cx < 1 || cy < 1 ? ', cropped' : ''}` : ''}`, IW - 8, IW - 8);
@@ -13749,7 +13744,7 @@ updateStimStat();
 
 readColors(); resize();
 
-/* ---------- a file embedded by the Windows "open with Seqret" helper ---------- */
+/* ---------- a file embedded in the page by matlab/seqret.m ---------- */
 // <script type="text/plain" id="autoSeq" data-name="..."> holds the file as base64, one chunk per line
 function autoLoad() {
   const a = document.getElementById('autoSeq'); if (!a) return;
