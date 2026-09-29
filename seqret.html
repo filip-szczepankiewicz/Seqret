@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.26.0 (2026-09-29) - Pulseq sequence viewer
+  Seqret 1.26.1 (2026-09-29) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.26.0">
-<meta name="description" content="Seqret 1.26.0: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.26.1">
+<meta name="description" content="Seqret 1.26.1: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -341,7 +341,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.26.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.26.1</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -7761,7 +7761,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.26.0", "date": "2026-09-29", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.26.0", "date": "2026-09-29", "notes": ["k-space: hold the right mouse button and drag to pan, for example to look closely at the edge of k-space after zooming in. The left button still rotates, and the scroll wheel zooms about the centre of the plot, so what is in the middle stays there. Choosing a projection (kx–ky, kx–kz, ky–kz, 3D) resets the pan and zoom. The pan is limited to the extent of the data, so the plot cannot be lost off screen."]}, {"version": "1.25.0", "date": "2026-09-29", "notes": ["k-space: zoomed in, the samples are drawn as dots up to 6 px across (before: 1–2 px at every zoom), so it is easy to see where k-space is sampled. The size follows the space per sample in view; the full view looks as before (pixel for pixel on the demo).", "k-space: hovering a sample rings it and shows its number in the ADC event, the ADC event and shot, the block, the time (and time after the excitation), k in m⁻¹, the ADC type and the label values. The cursor in the diagram moves to that time, so the sample can be found in the sequence."]}, {"version": "1.24.4", "date": "2026-09-29", "notes": ["Fixed: Image › k-space drew the reconstruction grid cell by cell as a square, so a readout with oversampling (smaller Δk along the readout) looked as if it reached twice as far in k-space. It is now drawn in physical k, with the same scale on both axes: an oversampled readout covers the same k range as the phase encoding, with samples twice as dense. Checked on the demo (2× oversampling): the drawn data is now as wide as it is high (width/height 1.01, before 1.88), and on the rotated stacks, including the ones shown transposed."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.26.1", "date": "2026-09-29", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.26.1", "date": "2026-09-29", "notes": ["Fixed: the PNS and CNS lanes labelled their axis '104' at the height of the limit, which read as a limit of 104 %. The lane's top is 4 % above the larger of the limit and the peak (headroom), and its label hid the '100' of the limit line. The limit line is now labelled '100', and the top of the axis is labelled only when it is clear of it (a peak well above the limit)."]}, {"version": "1.26.0", "date": "2026-09-29", "notes": ["k-space: hold the right mouse button and drag to pan, for example to look closely at the edge of k-space after zooming in. The left button still rotates, and the scroll wheel zooms about the centre of the plot, so what is in the middle stays there. Choosing a projection (kx–ky, kx–kz, ky–kz, 3D) resets the pan and zoom. The pan is limited to the extent of the data, so the plot cannot be lost off screen."]}, {"version": "1.25.0", "date": "2026-09-29", "notes": ["k-space: zoomed in, the samples are drawn as dots up to 6 px across (before: 1–2 px at every zoom), so it is easy to see where k-space is sampled. The size follows the space per sample in view; the full view looks as before (pixel for pixel on the demo).", "k-space: hovering a sample rings it and shows its number in the ADC event, the ADC event and shot, the block, the time (and time after the excitation), k in m⁻¹, the ADC type and the label values. The cursor in the diagram moves to that time, so the sample can be found in the sequence."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -13593,10 +13593,14 @@ function drawStimLane(L, t0, t1, x0, pw) {
   // zero line and the limit (100 %)
   pctx.strokeStyle = C.line; pctx.lineWidth = 1; pctx.beginPath(); pctx.moveTo(x0, Math.round(base) + 0.5); pctx.lineTo(x0 + pw, Math.round(base) + 0.5); pctx.stroke();
   pctx.textAlign = 'right'; pctx.font = `400 10.5px ${C.font}`; pctx.fillStyle = C.muted;
-  pctx.fillText(fmt(top, 3), x0 - 6, L.y + 7); pctx.fillText('0', x0 - 6, L.y + L.h - 7);
-  if (100 <= top) {
+  // axis labels: the limit (100 %) at its line; the top of the axis only where it does not crowd that label (the top
+  // is 4 % above the larger of the limit and the peak, so without a peak above the limit only "100" is shown)
+  const showLim = 100 <= top, topClear = !showLim || Math.abs(yOf(100) - (L.y + 7)) > 12;
+  if (topClear) pctx.fillText(fmt(top, 3), x0 - 6, L.y + 7);
+  pctx.fillText('0', x0 - 6, L.y + L.h - 7);
+  if (showLim) {
     const y = Math.round(yOf(100)) + 0.5; pctx.strokeStyle = C.rf; pctx.globalAlpha = 0.7; pctx.setLineDash([5, 4]); pctx.beginPath(); pctx.moveTo(x0, y); pctx.lineTo(x0 + pw, y); pctx.stroke(); pctx.setLineDash([]); pctx.globalAlpha = 1;
-    if (Math.abs(yOf(100) - (L.y + 7)) > 12) { pctx.fillStyle = C.rf; pctx.fillText('100', x0 - 6, y); }
+    pctx.fillStyle = C.rf; pctx.fillText('100', x0 - 6, Math.max(y, L.y + 7));
   }
   pctx.save(); pctx.beginPath(); pctx.rect(x0, L.y - 1, pw, L.h + 2); pctx.clip();
   if (S.stimNorm) stimLine(traces[3], yOf, C.muted, base);
