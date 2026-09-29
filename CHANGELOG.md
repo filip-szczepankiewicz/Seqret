@@ -2,6 +2,66 @@
 
 All versions, newest first. The About dialog of the page shows the latest 3.
 
+## 1.24.2 (2026-09-29)
+
+- Frame-rate test: the suggestion blames Seqret's own work only when it takes most of what the screen allows per frame (80 % of a blank diagram's frame time). Before, it compared Seqret's time with the slow frame itself, so on a wide window at 100 Hz (Seqret 5 ms, frames 10–20 ms, the rest the browser's drawing) it wrongly said Seqret was the limit.
+
+## 1.24.1 (2026-09-29)
+
+- A button at the right end of the toolbar (or the \ key) hides the side panel with its tabs, so the diagram fills the width of the window; pressing it again brings the panel back. The choice is remembered. While the panel is hidden, the k-space and the simulated image are not recomputed as the view moves; they update when the panel is shown again.
+
+## 1.24.0 (2026-09-29)
+
+- Less blocky waveforms when zoomed out: Display › View › Peaks › exact (new default). Each pixel column now also keeps the times of its first, minimum, maximum and last value, and short features (RF pulses, ramps, crushers; stretches of fewer than 24 dense columns) are drawn through their extremes at the times they happen, as a line. An RF pulse a pixel or two wide is now a thin pointed spike instead of a flat-topped bar a column or two wide. This is the M4 method: Jugel U, Jerzak Z, Hackenbroich G, Markl V. M4: A Visualization-Oriented Time Series Data Aggregation. PVLDB 2014;7(10):797–808.
+- Checked against a drawing of every vertex at its own time: on the demo in full view 2.0 % of pixels differ from it (3.4 % before), zoomed in 0.01 % (0.8 % before). Long dense stretches (readout trains, a ZTE sequence) are drawn as before, which keeps them cheap; the frame rate is unchanged in a test browser (demo, a spiral and a 40,000-block ZTE-like sequence).
+- Peaks › per column gives the previous drawing, pixel for pixel, for comparison; the frame-rate test compares the two.
+- Fixed (from 1.22.0): without saved settings, Display › View › Quality showed 'ultra' although the diagram was drawn in high (the default).
+
+## 1.23.3 (2026-09-29)
+
+- Fixed: zooming in very far could hang the page for many seconds per frame (reproduced on the demo with the k-vector lane on: 13.8 s per frame). The k-vector (1.22.3) and the area under a trace (1.23.0) find where a line crosses each pixel column's edges, and a line from a point far off screen made that loop run over millions of columns off screen. It now runs over the columns on screen only.
+- The view is at least 0.1 ms wide (before: 0.2 µs).
+
+## 1.23.2 (2026-09-29)
+
+- Faster zoomed-out diagram, most in high and ultra quality: dense stretches were joined column to column by stroked lines that the column's own span already covers. The width of a pixel column was estimated as the smallest spacing between any two points, which a single sample near a column centre made tiny, so almost every join counted as a gap. On a ZTE-like sequence in full view that was about 100,000–190,000 pixels of anti-aliased line per frame in the gradient lane (the frame-rate test showed high at 26 fps against 84 fps for standard). The column width now comes from the column grid itself; the lines are gone (about 2,600 pixels of line per frame remain, mostly the grid and axes).
+- The look is the same: on the demo at three zoom levels at most 0.35 % of pixels differ, on the ZTE-like sequence 0–2.3 %, where dense spans now fill their whole column.
+
+## 1.23.1 (2026-09-29)
+
+- The faster area drawing of 1.23.0 also covers the gradients when each is drawn in its own lane (Display › Gradients › One axis off), where the area lies on both sides of the zero line: 1.23.0 filled only the part above it. Now one rectangle per pixel column above and one below. Checked against 1.20.0 with separate gradient lanes on the demo and a ZTE-like sequence at two zoom levels: no pixel differs by more than a trace.
+
+## 1.23.0 (2026-09-29)
+
+- Much faster with many RF pulses in view: the faint area under the RF |B1| trace was one filled polygon through every point of the trace. For a ZTE sequence (a pulse per spoke) that is tens of thousands of vertices, and the frame-rate test on a 46,818-block ZTE sequence showed it as nearly all of the frame: 6 fps with it, 36 fps without. It is now drawn as one faint rectangle per pixel column, from the base to the highest point the trace reaches there; the look is the same (239 pixels of the demo's diagram differ slightly in shade).
+- Frame-rate test: when the browser's drawing is the limit and leaving out one part raises the frame rate by more than half, the suggestion names that part.
+
+## 1.22.3 (2026-09-29)
+
+- Faster k-vector lane again, after the reset change of 1.22.2 made it slow: breaking the curve at every excitation turned each spoke of a ZTE sequence into a ramp that had to be stroked as an anti-aliased line (tens of thousands of pixels of line per frame, at medium zoom). The k-vector is now drawn only with rectangles: one opaque rectangle per pixel column and stretch of the curve, from the lowest to the highest point the curve reaches there (its samples, the column's summary, and where its lines cross the column's edges), at least a line wide. Resets still start the curve anew.
+- Measured on a 40,000-block ZTE-like sequence in a test browser, the frame rate with the k-vector on now equals the rate without it at every zoom level tried (full view to single spokes; before: half at medium zoom). Sloped stretches look slightly more stepped than an anti-aliased line; ultra quality smooths them.
+- The k-vector's per-block data is now kept for up to about a million vertices instead of 4,096 blocks.
+
+## 1.22.2 (2026-09-29)
+
+- k-vector lane: at an excitation the curve starts anew at zero instead of being joined to it by a line from the last k-position; the reset is a jump, not a path through k-space. Where one pixel column holds both sides of the reset, it is split there: the part before is drawn up to the reset, the part after starts from zero. Zoomed far out, where one column holds whole spokes, the column's range still spans both. The sign flip at a refocusing pulse is still drawn as a vertical line.
+
+## 1.22.1 (2026-09-29)
+
+- Fixed (from 1.22.0): the k-vector lane showed broken lines, correct only when zoomed far in. To save drawing, 1.22.0 left out every line between two pixel columns that each have a solid min–max rectangle, but such a line is only redundant when it passes from one rectangle into the other; elsewhere it is the curve itself (a ramp across a few columns, a flat stretch between readouts). Now a line is left out only between neighbouring columns and only where it runs inside both rectangles. Checked on the demo and on a 40,000-block ZTE-like sequence at several zoom levels against 1.20.0; the cost stays as in 1.22.0 (12–15 fps with the k-vector on in full view in a test browser, 15 fps without).
+
+## 1.22.0 (2026-09-29)
+
+- The k-vector lane now costs no more than the gradient lane: on a 40,000-block ZTE-like sequence in full view, turning it on took the frame rate in a test browser from 15 to 3 fps in 1.20.0 and 9 fps in 1.21.0; now 12–15 fps. Three causes, all fixed: (1) the traces were faded outside the active stretches with clip paths or an extra image; they are now drawn at full strength, and the stretches outside the active ones (after the last readout) are marked by a pale veil over the lane's background instead. (2) Dense stretches of the k-vector are drawn as one opaque rectangle per pixel column from minimum to maximum, without the half-transparent band and its edges. (3) Lines between neighbouring columns that those rectangles already cover are left out; they were thousands of long strokes per frame.
+- The per-block k-vector summaries are kept after they are first computed; before, a sequence with more than 4,096 excitations recomputed them while drawing.
+- Lines and rectangles are limited to the lane's rows as they are built (exactly, inside the lane), so values far outside a lane's scale no longer make the browser draw very long shapes.
+- Display › View › Quality › ultra: two columns per screen pixel, drawn anti-aliased, for the smoothest waveforms when zoomed out on computers that draw fast. Its cost grows with the file: on the ZTE-like sequence it took Seqret's time per frame from 12 to 69 ms in a slow test browser (high stays the default). The frame-rate test compares it with the other qualities.
+
+## 1.21.0 (2026-09-29)
+
+- Faster k-vector lane. Its traces were drawn twice, once at full strength clipped to the active stretches and once pale clipped to the rest, and with many active stretches (every spoke of a ZTE sequence) the clip paths held thousands of rectangles, which every one of the many drawing calls had to pass through. The traces are now drawn once into a lane-sized image, faded outside the active stretches, and copied onto the diagram. On a 40,000-block ZTE-like sequence in full view, in a slow test browser: Seqret's time for the lane 163 → about 20 ms per frame, the whole frame 350 → 150 ms. The look is the same (0.6 % of pixels differ slightly in shade).
+- What remains is the cost of drawing three dense traces, as in the gradient lane: zoomed out on such a file each lane draws about 25,000 rectangles per frame.
+
 ## 1.20.0 (2026-09-27)
 
 - Open .seq starts in the folder of the last opened file, also after the browser is restarted (Chrome and Edge; the file's handle is kept in the browser's storage, which gives no access to the file by itself). Files opened by dragging them onto the page count too.
