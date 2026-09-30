@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.26.1 (2026-09-29) - Pulseq sequence viewer
+  Seqret 1.29.0 (2026-09-30) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.26.1">
-<meta name="description" content="Seqret 1.26.1: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.29.0">
+<meta name="description" content="Seqret 1.29.0: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -341,7 +341,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.26.1</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.29.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -394,7 +394,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
               <div class="cbody"><div class="chips" data-group="stim" role="group" aria-label="Nerve stimulation channels"></div><div class="cctl"><label title="Show the L2 norm of the three axes in grey"><input type="checkbox" id="stimNorm" checked> L2 norm</label><button class="btn small" id="stimSpecBtn">Specifications…</button></div><p class="stimstat" id="stimStat"></p></div>
             </div></section>
           <section><h6>View</h6>
-            <div class="prow"><label title="Scale each channel to the visible time window"><input type="checkbox" id="autoY"> Fit Y to view</label><label title="Ultra: two columns per screen pixel, drawn anti-aliased, for the smoothest waveforms on computers that draw fast (about twice the work of high). High: the waveforms are drawn with one column per screen pixel at every zoom level, so dense stretches keep their shape when zoomed out. Standard: coarser columns when zoomed out, cheaper to draw. Fast: standard at 1× pixel density on high-density screens, a quarter of the pixels at 2×, with slightly softer lines and text. Lower it if the diagram is slow (see ⋯ › Run frame-rate test). PNG export is always at full density.">Quality <select id="diagRes" aria-label="Diagram quality"><option value="ultra">ultra</option><option value="high" selected>high</option><option value="standard">standard</option><option value="fast">fast</option></select></label></div>
+            <div class="prow"><label title="Scale each channel to the visible time window"><input type="checkbox" id="autoY"> Fit Y to view</label><label title="A faint hatch in the RF and gradient lanes over pauses: blocks without RF, gradients, ADC or trigger"><input type="checkbox" id="pauseHatch" checked> Mark pauses</label><label title="Ultra: two columns per screen pixel, drawn anti-aliased, for the smoothest waveforms on computers that draw fast (about twice the work of high). High: the waveforms are drawn with one column per screen pixel at every zoom level, so dense stretches keep their shape when zoomed out. Standard: coarser columns when zoomed out, cheaper to draw. Fast: standard at 1× pixel density on high-density screens, a quarter of the pixels at 2×, with slightly softer lines and text. Lower it if the diagram is slow (see ⋯ › Run frame-rate test). PNG export is always at full density.">Quality <select id="diagRes" aria-label="Diagram quality"><option value="ultra">ultra</option><option value="high" selected>high</option><option value="standard">standard</option><option value="fast">fast</option></select></label></div>
             <div class="prow"><label title="When zoomed out, where a pixel column holds several values. Exact: short features (RF pulses, ramps, crushers) are drawn through their minimum and maximum at the times they happen, as the full waveform would look (the M4 method). Per column: every such column is drawn as a bar at its centre, as up to 1.23 (more blocky). Long dense stretches (readout trains) are drawn the same way in both.">Peaks <select id="lineMode" aria-label="Peaks"><option value="exact">exact</option><option value="columns">per column</option></select></label></div></section>
           <section><h6>Shots and volumes</h6>
             <div class="pgrid"><label for="shotSel">Shots</label>
@@ -7761,7 +7761,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.26.1", "date": "2026-09-29", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.26.1", "date": "2026-09-29", "notes": ["Fixed: the PNS and CNS lanes labelled their axis '104' at the height of the limit, which read as a limit of 104 %. The lane's top is 4 % above the larger of the limit and the peak (headroom), and its label hid the '100' of the limit line. The limit line is now labelled '100', and the top of the axis is labelled only when it is clear of it (a peak well above the limit)."]}, {"version": "1.26.0", "date": "2026-09-29", "notes": ["k-space: hold the right mouse button and drag to pan, for example to look closely at the edge of k-space after zooming in. The left button still rotates, and the scroll wheel zooms about the centre of the plot, so what is in the middle stays there. Choosing a projection (kx–ky, kx–kz, ky–kz, 3D) resets the pan and zoom. The pan is limited to the extent of the data, so the plot cannot be lost off screen."]}, {"version": "1.25.0", "date": "2026-09-29", "notes": ["k-space: zoomed in, the samples are drawn as dots up to 6 px across (before: 1–2 px at every zoom), so it is easy to see where k-space is sampled. The size follows the space per sample in view; the full view looks as before (pixel for pixel on the demo).", "k-space: hovering a sample rings it and shows its number in the ADC event, the ADC event and shot, the block, the time (and time after the excitation), k in m⁻¹, the ADC type and the label values. The cursor in the diagram moves to that time, so the sample can be found in the sequence."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.29.0", "date": "2026-09-30", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.29.0", "date": "2026-09-30", "notes": ["Pauses: the hatch lines are twice as far apart (16 px) and drawn only in the RF and gradient lanes. Display › View › Mark pauses turns them on or off; the choice is remembered."]}, {"version": "1.28.0", "date": "2026-09-30", "notes": ["Pauses: blocks without RF, gradients, ADC or trigger (delays, and blocks that only set labels) get a faint diagonal hatch over the lanes, so it is clear that nothing happens there. Consecutive pause blocks share one hatch; it fades in when a pause is 4–10 px wide on screen and moves with the diagram when panning.", "The cost is small: the pauses are found once per file (18 ms for 744,000 blocks), and drawing them takes under 0.03 ms per frame even in the whole-file view of that file. The frame-rate test has a new case without the texture, for comparison on real hardware."]}, {"version": "1.27.0", "date": "2026-09-29", "notes": ["Triggers: trigger events (Pulseq TRIGGERS extension) are shown as a TRIG row at the bottom of the labels lane, from their start to their end. Output pulses (osc0, osc1, ext1) are dark; waits for an external trigger (physio1, physio2) are orange. Zoomed in, each bar is labelled with its channel; hovering shows e.g. 'osc0 output'; the Selection tab describes them ('output pulse on osc0, delay 100 µs, 1000 µs long'). The labels lane now also appears for files with triggers but no labels.", "Checked on a generated sequence with both kinds (tools/make_triggers.py): the times, durations and channels of all 34 triggers agree with PyPulseq's reading of the file (largest difference 2e-16 s)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -8459,6 +8459,11 @@ function applyRotations(seq) {
   B.pgx = pg[0]; B.pgy = pg[1]; B.pgz = pg[2]; seq.rot.distinct = mats.size;
 }
 
+/* Pulseq TRIGGERS extension: "id type channel delay duration" (µs). Type 1: digital output pulse on osc0, osc1 or ext1;
+   type 2: wait for an external trigger on physio1 or physio2 (Pulseq registerControlEvent; PyPulseq the same) */
+const TRIG_TYPES = { 1: { kind: 'output', ch: ['osc0', 'osc1', 'ext1'] }, 2: { kind: 'wait', ch: ['physio1', 'physio2'] } };
+function trigName(type, ch) { const T = TRIG_TYPES[type]; return T && T.ch[ch - 1] ? T.ch[ch - 1] : `type ${type} ch ${ch}`; }
+function trigText(type, ch) { const T = TRIG_TYPES[type], n = trigName(type, ch); return !T ? `trigger (${n})` : T.kind === 'output' ? `output pulse on ${n}` : `wait for ${n} trigger`; }
 /* ---------- one pass over all blocks: stats, ADC table, labels, ADC types, triggers, k at block starts ---------- */
 function analyze(seq, progress) {
   const nb = seq.nb, B = seq.B, bs = seq.blockStart, W = seq.warnings;
@@ -8476,7 +8481,7 @@ function analyze(seq, progress) {
       if (!x.data) continue;
       if (/LABELSET/i.test(x.name) && lIdx.has(x.data[1])) o.ops.push([lIdx.get(x.data[1]), 1, +x.data[0]]);
       else if (/LABELINC/i.test(x.name) && lIdx.has(x.data[1])) o.ops.push([lIdx.get(x.data[1]), 0, +x.data[0]]);
-      else if (/TRIGGER/i.test(x.name)) o.trig.push([(+x.data[2] || 0) * 1e-6, (+x.data[3] || 0) * 1e-6]);
+      else if (/TRIGGER/i.test(x.name)) o.trig.push([(+x.data[2] || 0) * 1e-6, (+x.data[3] || 0) * 1e-6, +x.data[0] || 0, +x.data[1] || 0]);
     }
     extCache.set(id, o); return o;
   };
@@ -8502,7 +8507,7 @@ function analyze(seq, progress) {
           if (nv < r.mn) r.mn = nv; if (nv > r.mx) r.mx = nv;
         }
       }
-      for (const [d, du] of o.trig) trig.push({ block: i, t: bs[i] + d, dur: du });
+      for (const [d, du, ty, ch] of o.trig) trig.push({ block: i, t: bs[i] + d, dur: du, type: ty, ch });
     }
     // k at block start
     for (let a = 0; a < 3; a++) kS[a][i] = raw[a] + off[a];
@@ -8829,7 +8834,7 @@ function transferList(root) {
   }
   return [...bufs];
 }
-if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, geoRfRe, geoRfIm, buildPyramid, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, computeKspace, md5, verifySignature, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active };
+if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, geoRfRe, geoRfIm, buildPyramid, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, computeKspace, md5, verifySignature, trigName, trigText, TRIG_TYPES, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active };
 
 /* ===== Seqret image simulation =====
    Forward model for every imaging ADC sample j of a chosen image (one slice of one volume):
@@ -10769,7 +10774,7 @@ void main() {
 'use strict';
 const $ = s => document.querySelector(s);
 const S = {
-  seq: null, name: '', t0: 0, t1: 1, sel: -1, hoverT: null, autoY: false,
+  seq: null, name: '', t0: 0, t1: 1, sel: -1, hoverT: null, autoY: false, pauseHatch: true,
   gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'high', lineMode: 'exact', sideHidden: false,
   vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, pns: false, cns: false },
   stimNorm: true, combineG: true, rfMode: 'mag', kColor: 'order', linkMode: 'off',
@@ -10797,6 +10802,7 @@ function labelRows() {
   const s = S.seq, rows = [];
   if (s.adcBlocks.length) rows.push({ kind: 'type', name: 'ADC type' });
   for (const tr of s.labels) rows.push({ kind: tr.flag ? 'flag' : 'count', name: tr.name, tr });
+  if (s.triggers.length) rows.push({ kind: 'trig', name: 'TRIG' }); // trigger events (TRIGGERS extension), drawn like a flag
   return rows;
 }
 function labelsLaneH(availH) {
@@ -10809,7 +10815,7 @@ const USE = { e: 'excitation', r: 'refocusing', i: 'inversion', s: 'saturation',
 let C = {}; // resolved colors
 function readColors() {
   const cs = getComputedStyle(document.documentElement);
-  for (const k of ['bg', 'plot', 'ink', 'muted', 'faint', 'line', 'line-soft', 'c-rf', 'c-ph', 'c-gx', 'c-gy', 'c-gz', 'c-adc', 'c-ref', 'c-refima', 'c-noise', 'c-nav', 'sel', 'shade'])
+  for (const k of ['bg', 'plot', 'ink', 'muted', 'faint', 'line', 'line-soft', 'c-rf', 'c-ph', 'c-gx', 'c-gy', 'c-gz', 'c-adc', 'c-ref', 'c-refima', 'c-noise', 'c-nav', 'sel', 'shade', 'warn'])
     C[k.replace('c-', '')] = cs.getPropertyValue('--' + k).trim();
   C.font = cs.getPropertyValue('--font');
 }
@@ -11352,6 +11358,7 @@ function render() {
     for (const [xa, w] of partial) { pctx.globalAlpha = (w - 2) / 4; pctx.fillRect(xa, 0, w, bot); }
     pctx.globalAlpha = 1;
   }
+  if (S.pauseHatch && !BENCH.skip.pause) drawPauses(s, X, t0, t1, x0, pw, lanes); // faint hatch over blocks without events
   const sr = selRange();
   if (sr) {
     const xa = X(sr[0]), xb = X(sr[1]);
@@ -11498,6 +11505,45 @@ function m0ViewMax(t0, t1) {
   return m > 0 ? m * 1.05 : 1;
 }
 /* longest block per group of 64 (seconds), for skipping narrow stretches in the shading and boundary loops */
+/* pauses: runs of consecutive blocks without RF, gradients, ADC or trigger (labels and delays are allowed), found once per
+   file; start and end times in two sorted arrays */
+function pauseRuns(seq) {
+  if (seq._pause) return seq._pause;
+  const B = seq.B, nb = seq.nb, bs = seq.blockStart, trg = new Uint8Array(nb), a = [], b = [];
+  for (const tr of seq.triggers) trg[tr.block] = 1;
+  let open = -1;
+  for (let i = 0; i <= nb; i++) {
+    const p = i < nb && !B.rf[i] && !B.pgx[i] && !B.pgy[i] && !B.pgz[i] && !B.adc[i] && !trg[i] && bs[i + 1] > bs[i];
+    if (p && open < 0) open = i; else if (!p && open >= 0) { a.push(bs[open]); b.push(bs[i]); open = -1; }
+  }
+  const g = new Float64Array(Math.ceil(a.length / 64)); for (let k = 0; k < a.length; k++) g[k >> 6] = Math.max(g[k >> 6], b[k] - a[k]);
+  return (seq._pause = { t0: Float64Array.from(a), t1: Float64Array.from(b), gmax: g }); // gmax: longest run per group of 64
+}
+/* a faint diagonal hatch (16 CSS px apart), made once per theme; drawn over the RF and gradient lanes only (Display ›
+   View › Mark pauses), one fillRect per lane and visible pause run */
+let pauseHatch = null;
+const PAUSE_LANES = new Set(['rfMag', 'rfPh', 'g', 'gx', 'gy', 'gz']);
+function drawPauses(s, X, t0, t1, x0, pw, lanes) {
+  const LS = lanes.filter(L => PAUSE_LANES.has(L.key)); if (!LS.length) return;
+  const P = pauseRuns(s), n = P.t0.length; if (!n) return;
+  if (!pauseHatch || pauseHatch.key !== C.faint + pdpr) {
+    const d = Math.max(1, Math.round(pdpr)), q = 16 * d, c = document.createElement('canvas'); c.width = c.height = q;
+    const g = c.getContext('2d'); g.strokeStyle = C.faint; g.lineWidth = d; g.globalAlpha = 0.28;
+    g.beginPath(); for (const o of [-q, 0, q]) { g.moveTo(o, q); g.lineTo(o + q, 0); } g.stroke();
+    pauseHatch = { key: C.faint + pdpr, pat: pctx.createPattern(c, 'repeat'), d };
+  }
+  const pat = pauseHatch.pat, sc = pw / (t1 - t0);
+  let i = Math.max(0, ub(P.t1, t0) - 1); if (P.t1[i] < t0) i++;
+  pctx.fillStyle = pat;
+  for (; i < n && P.t0[i] <= t1; i++) {
+    if ((i & 63) === 0 && P.gmax[i >> 6] * sc < 4) { i += 63; continue; } // a whole group too narrow on screen
+    const w = (P.t1[i] - P.t0[i]) * sc; if (w < 4) continue; // too narrow to read; fades in up to 10 px
+    const xa = X(P.t0[i]), xs = Math.max(x0 - 1, xa), xe = Math.min(x0 + pw + 1, xa + w);
+    pat.setTransform(new DOMMatrix([1 / pauseHatch.d, 0, 0, 1 / pauseHatch.d, xa, 0])); // anchored to the pause, so it moves with it
+    pctx.globalAlpha = w >= 10 ? 1 : (w - 4) / 6; for (const L of LS) pctx.fillRect(xs, L.y, xe - xs, L.h);
+  }
+  pctx.globalAlpha = 1;
+}
 function blockDurMax(seq) {
   if (seq.durMax64) return seq.durMax64;
   const n = Math.ceil(seq.nb / 64), d = new Float64Array(n), bs = seq.blockStart;
@@ -11554,7 +11600,7 @@ async function diagBench() {
   if (!DIAG.on) diagToggle();
   const CASES = [['normal, panning', 'pan', {}], ['normal, zooming', 'zoom', {}],
     ['without block shading', 'pan', { skip: { shade: 1 } }], ['without min/max bands', 'pan', { skip: { env: 1 } }],
-    ['without area under RF', 'pan', { skip: { area: 1 } }], ['without labels lane', 'pan', { skip: { labels: 1 } }],
+    ['without area under RF', 'pan', { skip: { area: 1 } }], ['without labels lane', 'pan', { skip: { labels: 1 } }], ['without pause texture', 'pan', { skip: { pause: 1 } }],
     ['without overview', 'pan', { skip: { ov: 1 } }], ['without page updates', 'pan', { skip: { dom: 1 } }],
     ['blank diagram', 'pan', { skip: { draw: 1 } }], ['blank diagram, no page updates', 'pan', { skip: { draw: 1, dom: 1, ov: 1 } }],
     [S.lineMode === 'exact' ? 'peaks per column' : 'peaks exact', 'pan', { lineMode: S.lineMode === 'exact' ? 'columns' : 'exact' }],
@@ -11691,9 +11737,13 @@ function drawLabelsLane(L, X, t0, t1, x0, pw) {
     pctx.textBaseline = 'middle'; pctx.textAlign = 'left'; pctx.font = `600 10.5px ${C.font}`; pctx.fillStyle = C.ink;
     pctx.fillText(row.name, 16, y + rh / 2);
     if (row.kind === 'count' && rh >= 13) { pctx.textAlign = 'right'; pctx.font = `400 10px ${C.font}`; pctx.fillStyle = C.muted; pctx.fillText(`${row.tr.min}–${row.tr.max}`, x0 - 6, y + rh / 2); }
+    if (row.kind === 'trig' && rh >= 13) { // the channels in use, where they fit beside the row name
+      const nw = pctx.measureText(row.name).width; pctx.textAlign = 'right'; pctx.font = `400 10px ${C.font}`; pctx.fillStyle = C.muted;
+      const tx = trigChannels(); if (pctx.measureText(tx).width < x0 - 6 - (16 + nw + 6)) pctx.fillText(tx, x0 - 6, y + rh / 2); }
     pctx.strokeStyle = C['line-soft']; pctx.lineWidth = 1; pctx.beginPath(); pctx.moveTo(x0, Math.round(y + rh) + 0.5); pctx.lineTo(x0 + pw, Math.round(y + rh) + 0.5); pctx.stroke();
     pctx.save(); pctx.beginPath(); pctx.rect(x0, y, pw, rh); pctx.clip();
     if (row.kind === 'type') drawTypeBar(y + 2, rh - 4, X, t0, t1, x0, pw);
+    else if (row.kind === 'trig') drawTrigRow(y, rh, X, t0, t1, x0, pw);
     else {
       const tr = row.tr, n = tr.t.length, i0 = Math.max(0, ub(tr.t, t0) - 1), i1 = Math.min(n, lb(tr.t, t1));
       const end = i => i + 1 < n ? tr.t[i + 1] : T;
@@ -11719,6 +11769,38 @@ function drawLabelsLane(L, X, t0, t1, x0, pw) {
     }
     pctx.restore();
   }
+}
+/* trigger events: a bar from the trigger's start to its end, at least 2 px wide; output pulses in ink, waits for an
+   external trigger in the warning colour. Zoomed out, at most one bar per pixel column is drawn (binary search to the
+   next column), so the cost does not grow with the number of triggers. */
+function trigChannels() {
+  const s = S.seq; if (s._trigCh) return s._trigCh;
+  const names = new Set(); for (const tr of s.triggers) { names.add(trigName(tr.type, tr.ch)); if (names.size > 3) break; }
+  return (s._trigCh = [...names].slice(0, 3).join(', ') + (names.size > 3 ? ', …' : ''));
+}
+function drawTrigRow(y, rh, X, t0, t1, x0, pw) {
+  const TR = S.seq.triggers, n = TR.length, sc = pw / (t1 - t0);
+  const first = t => { let a = 0, b = n; while (a < b) { const m = (a + b) >> 1; if (TR[m].t + TR[m].dur < t) a = m + 1; else b = m; } return a; };
+  const out = new Path2D(), wait = new Path2D(); let i = first(t0);
+  while (i < n && TR[i].t <= t1) {
+    const tr = TR[i], xa = X(tr.t), w = Math.max(2, tr.dur * sc);
+    (TRIG_TYPES[tr.type] && TRIG_TYPES[tr.type].kind === 'wait' ? wait : out).rect(xa, y + 3, w, rh - 6);
+    const nx = Math.floor(xa) + 1; i = Math.max(i + 1, first(t0 + (nx - x0) / sc)); // next pixel column
+  }
+  pctx.globalAlpha = 0.85; pctx.fillStyle = C.ink; pctx.fill(out); pctx.fillStyle = C.warn; pctx.fill(wait); pctx.globalAlpha = 1;
+  // zoomed in: the channel name inside bars wide enough for it
+  if (rh >= 12) {
+    pctx.font = `500 10px ${C.font}`; pctx.textAlign = 'center'; pctx.textBaseline = 'middle'; pctx.fillStyle = C.plot;
+    for (let j = first(t0); j < n && TR[j].t <= t1; j++) {
+      const tr = TR[j], xa = Math.max(x0, X(tr.t)), xb = Math.min(x0 + pw, X(tr.t + tr.dur)); if (xb - xa < 30) { if (xb - xa < 1) j = Math.max(j, first(t0 + (Math.floor(X(tr.t)) + 1 - x0) / sc) - 1); continue; }
+      const txt = trigName(tr.type, tr.ch); if (pctx.measureText(txt).width + 6 < xb - xa) pctx.fillText(txt, (xa + xb) / 2, y + rh / 2 + 0.5);
+    }
+  }
+}
+function trigAt(t) { // the trigger event whose span contains time t, or null
+  const TR = S.seq.triggers; let a = 0, b = TR.length; while (a < b) { const m = (a + b) >> 1; if (TR[m].t <= t) a = m + 1; else b = m; }
+  for (let i = a - 1; i >= 0 && i >= a - 8; i--) if (t <= TR[i].t + TR[i].dur) return TR[i];
+  return null;
 }
 function drawADC(L, X, t0, t1, pw, x0) {
   const s = S.seq, y1 = L.y + L.h - 5, y0 = L.y + 5, mid = (y0 + y1) / 2;
@@ -11820,6 +11902,7 @@ function drawOverlay() {
       rows.forEach((row, r) => {
         let txt = '';
         if (row.kind === 'type') { const j = adcAt(t); if (j >= 0) txt = TYPE_NAME[S.seq.adcType[j]]; }
+        else if (row.kind === 'trig') { const tg = trigAt(t); if (tg) txt = `${trigName(tg.type, tg.ch)} ${TRIG_TYPES[tg.type] ? TRIG_TYPES[tg.type].kind : ''}`.trim(); }
         else { const i = ub(row.tr.t, t) - 1; if (i >= 0) txt = row.kind === 'flag' ? (row.tr.v[i] ? 'on' : '') : String(row.tr.v[i]); }
         if (!txt) return;
         const ty = L.y + 3 + r * rh + rh / 2, tw = octx.measureText(txt).width, tx = right ? x + 6 : x - 6 - tw;
@@ -12098,6 +12181,7 @@ $('#gUnit').onchange = e => { S.gUnit = e.target.value; request(); renderSeqInfo
 $('#rfUnit').onchange = e => { S.rfUnit = e.target.value; request(); renderSeqInfo(); renderBlock(); };
 $('#rfMode').onchange = e => { S.rfMode = e.target.value; request(); };
 $('#autoY').onchange = e => { S.autoY = e.target.checked; request(); };
+$('#pauseHatch').onchange = e => { S.pauseHatch = e.target.checked; request(); };
 $('#diagRes').onchange = e => { S.diagRes = e.target.value; resize(); };
 /* the side panel (tabs) can be hidden for a wider diagram (1.24.1): button in the toolbar, or the \ key; remembered */
 function setSide(hidden) {
@@ -12467,7 +12551,7 @@ function renderBlock() {
       const d = x.data || [];
       if (/LABELSET/i.test(x.name)) return ['Set label', `${esc(d[1])} = ${esc(d[0])}`];
       if (/LABELINC/i.test(x.name)) return ['Increment label', `${esc(d[1])} += ${esc(d[0])}`];
-      if (/TRIGGER/i.test(x.name)) return ['Trigger', `type ${esc(d[0])}, channel ${esc(d[1])}, delay ${esc(d[2])} µs, ${esc(d[3])} µs long`];
+      if (/TRIGGER/i.test(x.name)) return ['Trigger', `${esc(trigText(+d[0], +d[1]))}, delay ${esc(d[2])} µs, ${esc(d[3])} µs long <span class="muted">(type ${esc(d[0])}, channel ${esc(d[1])})</span>`];
       if (/^ROTATIONS?$/i.test(x.name)) return ['Rotation', rotText(d.slice(0, 4).map(Number))];
       return [esc(x.name), esc(d.join(' '))];
     })) + '</div>';
@@ -13300,7 +13384,7 @@ async function load(bytes, name, opts = {}) {
     seq.shotsExc = seq.shots;
     linkApplying = true;
     Object.assign(S, { seq, name, sel: -1, hoverT: null, hist: [] }); kInvalidate(); gMaxAll = 0; imgReset();
-    S.vis.labels = seq.labels.length > 0 && S.labelsPref; buildChips();
+    S.vis.labels = (seq.labels.length > 0 || seq.triggers.length > 0) && S.labelsPref; buildChips();
     applyShots(); fillVolMenu(); applyVols(); $('#backBtn').disabled = true;
     $('#fname').textContent = name;
     $('#fmeta').textContent = `v${seq.version.major}.${seq.version.minor}.${seq.version.revision} · ${seq.nb.toLocaleString()} blocks · ${fmtT(seq.totalDur)}`;
@@ -13405,7 +13489,7 @@ window.addEventListener('drop', e => {
 });
 
 /* ---------- settings kept between sessions (browser local storage) ---------- */
-const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kColor', 'kTraj'];
+const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'pauseHatch', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kColor', 'kTraj'];
 const DEFAULTS = JSON.parse(JSON.stringify({ vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) }));
 function saveSettings() {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ v: 1, app: APP.version, vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) })); } catch (_) { }
@@ -13421,7 +13505,7 @@ function applySettings(o) {
   if (ok('lineMode', ['exact', 'columns'])) S.lineMode = o.lineMode;
   if (typeof o.sideHidden === 'boolean') setSide(o.sideHidden);
   if (ok('diagRes', ['ultra', 'high', 'standard', 'fast', 'sharp'])) S.diagRes = o.diagRes === 'sharp' ? 'high' : o.diagRes; // 'sharp' (1.17.0) was the default; takes effect at the next resize()
-  for (const k of ['autoY', 'combineG', 'labelsPref', 'kTraj', 'stimNorm']) if (typeof o[k] === 'boolean') S[k] = o[k];
+  for (const k of ['autoY', 'pauseHatch', 'combineG', 'labelsPref', 'kTraj', 'stimNorm']) if (typeof o[k] === 'boolean') S[k] = o[k];
   if (ok('shotMode', ['exc', 'prep', 'off'])) S.shotMode = o.shotMode;
   if (typeof o.volPref === 'string' && /^(auto|off|label:.+)$/.test(o.volPref)) S.volPref = S.volMode = o.volPref;
   if (ok('kRange', ['view', 'shot', 'vol'])) S.kRange = o.kRange; // "all" was removed in 1.0.2
@@ -13438,7 +13522,7 @@ function applySettings(o) {
   }
   syncSimControls();
   // reflect in the controls
-  $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#rfMode').value = S.rfMode; $('#diagRes').value = S.diagRes; $('#lineMode').value = S.lineMode; $('#autoY').checked = S.autoY; $('#combG').checked = S.combineG;
+  $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#rfMode').value = S.rfMode; $('#diagRes').value = S.diagRes; $('#lineMode').value = S.lineMode; $('#autoY').checked = S.autoY; $('#pauseHatch').checked = S.pauseHatch; $('#combG').checked = S.combineG;
   $('#shotSel').value = S.shotMode; $('#kTraj').checked = S.kTraj;
   segPress('#kRange', S.kRange); segPress('#kProj', S.kProj); segPress('#kColor', S.kColor);
   buildChips();
@@ -13447,7 +13531,7 @@ function resetSettings() {
   try { localStorage.removeItem(SETTINGS_KEY); } catch (_) { }
   applySettings(JSON.parse(JSON.stringify(DEFAULTS)));
   resize();
-  if (S.seq) { S.vis.labels = S.seq.labels.length > 0 && S.labelsPref; buildChips(); applyShots(); fillVolMenu(); applyVols(); kInvalidate(); ovCache = null; renderSeqInfo(); renderBlock(); request(); requestK(); }
+  if (S.seq) { S.vis.labels = (S.seq.labels.length > 0 || S.seq.triggers.length > 0) && S.labelsPref; buildChips(); applyShots(); fillVolMenu(); applyVols(); kInvalidate(); ovCache = null; renderSeqInfo(); renderBlock(); request(); requestK(); }
 }
 try { const o = JSON.parse(lsGet('settings') || 'null'); if (o && typeof o === 'object') applySettings(o); } catch (_) { }
 // save shortly after any change made through the controls
