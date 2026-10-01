@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.29.0 (2026-09-30) - Pulseq sequence viewer
+  Seqret 1.30.1 (2026-10-01) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.29.0">
-<meta name="description" content="Seqret 1.29.0: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.30.1">
+<meta name="description" content="Seqret 1.30.1: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -341,7 +341,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.29.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.30.1</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -489,6 +489,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
       </div>
       <button class="btn small" id="imPng">Save image as PNG</button>
       </div>
+      <div class="echonav" id="imNav" hidden><button class="btn small" id="imNavPrev" aria-label="Previous image" title="Previous image in the selection">‹</button><span id="imNavTxt"></span><button class="btn small" id="imNavNext" aria-label="Next image" title="Next image in the selection">›</button></div>
       <div class="echonav" id="imEcho" hidden><button class="btn small" id="imEchoPrev" aria-label="Previous echo" title="Previous echo">‹</button><span id="imEchoTxt"></span><button class="btn small" id="imEchoNext" aria-label="Next echo" title="Next echo">›</button></div>
       <div class="kwrap"><canvas id="ic" aria-label="Simulated image"></canvas><div class="busy" id="imBusy"><div class="busybox"><div id="imBusyTxt">Simulating…</div></div></div></div>
       <div class="kwrap v3wrap"><canvas id="i3gl" aria-hidden="true"></canvas><canvas id="i3" aria-label="3D view of the phantom and the slice"></canvas></div>
@@ -7761,7 +7762,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.29.0", "date": "2026-09-30", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.29.0", "date": "2026-09-30", "notes": ["Pauses: the hatch lines are twice as far apart (16 px) and drawn only in the RF and gradient lanes. Display › View › Mark pauses turns them on or off; the choice is remembered."]}, {"version": "1.28.0", "date": "2026-09-30", "notes": ["Pauses: blocks without RF, gradients, ADC or trigger (delays, and blocks that only set labels) get a faint diagonal hatch over the lanes, so it is clear that nothing happens there. Consecutive pause blocks share one hatch; it fades in when a pause is 4–10 px wide on screen and moves with the diagram when panning.", "The cost is small: the pauses are found once per file (18 ms for 744,000 blocks), and drawing them takes under 0.03 ms per frame even in the whole-file view of that file. The frame-rate test has a new case without the texture, for comparison on real hardware."]}, {"version": "1.27.0", "date": "2026-09-29", "notes": ["Triggers: trigger events (Pulseq TRIGGERS extension) are shown as a TRIG row at the bottom of the labels lane, from their start to their end. Output pulses (osc0, osc1, ext1) are dark; waits for an external trigger (physio1, physio2) are orange. Zoomed in, each bar is labelled with its channel; hovering shows e.g. 'osc0 output'; the Selection tab describes them ('output pulse on osc0, delay 100 µs, 1000 µs long'). The labels lane now also appears for files with triggers but no labels.", "Checked on a generated sequence with both kinds (tools/make_triggers.py): the times, durations and channels of all 34 triggers agree with PyPulseq's reading of the file (largest difference 2e-16 s)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.30.1", "date": "2026-10-01", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.30.1", "date": "2026-10-01", "notes": ["Fixed: with the Image tab open, Ctrl+clicking a second volume did not outline its slices in the 3D view until another image was chosen with the arrows. The image shown stays the same, so the cached result was reused with the selection it was computed for. The 3D view now always uses the current selection and is redrawn when it changes."]}, {"version": "1.30.0", "date": "2026-10-01", "notes": ["Volumes and shots: a click on a bar above the diagram selects it without zooming; a double-click zooms to it.", "Stepping through volumes or shots (arrows, steppers) keeps the zoom and keeps the left edge of the selected item where it was on screen, instead of centring the next one.", "Several volumes or shots can be selected: Ctrl+click (Cmd+click on a Mac) adds or removes one, Shift+click selects the range from the last clicked one, Ctrl+Shift+click adds that range. Arrow keys step from the focused one and select it alone.", "Image tab: when the selection holds several images (several slices of a volume, or several volumes or shots), arrows step through them ('Image 2 / 6 · volume 3 · shot 14'); the echo arrows stay as before. The 3D view outlines the slices of the other selected images with dashed lines, numbered as in the arrows, so fields of view in other positions or orientations (e.g. rotated stacks) are seen together. The outlines are drawn on top of the phantom (tissue in front does not hide them). Their planes equal those of the simulated images to within 4e-13 (checked on 11 rotated stacks, oblique slabs and the demo)."]}, {"version": "1.29.1", "date": "2026-09-30", "notes": ["Fixed: the OFF label (data not for online reconstruction; Pulseq specification and MATLAB toolbox) was shown as a counter. It is now a flag, drawn and read out like NAV or REF.", "Fixed: for a sequence without excitation pulses the Image tab stayed blank; it now says that there are no shots to simulate."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -8342,8 +8343,8 @@ function labelNames(seq) {
   for (const [type, name] of seq.extTypes) if (/LABEL/i.test(name)) for (const d of seq.extSpecs.get(type).values()) if (d[1]) out.add(d[1]);
   return [...out];
 }
-const LABEL_ORDER = ['SLC', 'SEG', 'REP', 'AVG', 'SET', 'ECO', 'PHS', 'LIN', 'PAR', 'ACQ', 'TRID', 'NAV', 'REV', 'SMS', 'REF', 'IMA', 'NOISE', 'PMC', 'NOROT', 'NOPOS', 'NOSCL', 'ONCE'];
-const LABEL_FLAGS = new Set(['NAV', 'REV', 'SMS', 'REF', 'IMA', 'NOISE', 'PMC', 'NOROT', 'NOPOS', 'NOSCL', 'ONCE']);
+const LABEL_ORDER = ['SLC', 'SEG', 'REP', 'AVG', 'SET', 'ECO', 'PHS', 'LIN', 'PAR', 'ACQ', 'TRID', 'NAV', 'REV', 'SMS', 'REF', 'IMA', 'NOISE', 'OFF', 'PMC', 'NOROT', 'NOPOS', 'NOSCL', 'ONCE'];
+const LABEL_FLAGS = new Set(['NAV', 'REV', 'SMS', 'REF', 'IMA', 'NOISE', 'OFF', 'PMC', 'NOROT', 'NOPOS', 'NOSCL', 'ONCE']);
 
 /* growable typed buffer */
 class GBuf { constructor(T, n = 1024) { this.T = T; this.a = new T(n); this.n = 0; } push(x) { if (this.n === this.a.length) { const b = new this.T(this.n * 2); b.set(this.a); this.a = b; } this.a[this.n++] = x; } done() { return this.a.slice(0, this.n); } }
@@ -9117,6 +9118,25 @@ function sliceGeometry(seq, inf, e1s, e2s, e3s, k3, orient, fixedAt) {
   const o = n.map(x => x * s0);
   const nd = mode === 'slice' ? 5 : mode === 'nonselective' ? 15 : 1;
   return { n, e1, e2, o, s0, thick, nd, mode, bw, G: Gm, M, fixed };
+}
+/* the slice plane of the image whose reference shot is ref, without simulating it (for showing the planes of other
+   selected images in the 3D view): normal and position from the excitation pulse (rfSlice, as sliceGeometry), first
+   in-plane axis along the readout (the direction k moves in the shot's first imaging ADC), second = normal × first.
+   Phantom coordinates (mm), as sliceGeometry. Null for a non-selective excitation or a shot without readout. */
+function imagePlaneQuick(seq, shots, ref, opt) {
+  const sh = shots[ref], B = seq.B; if (!sh) return null;
+  let exc = -1; for (let b = sh.b0; b <= sh.b1; b++) if (B.rf[b] && rfSt(seq, B.rf[b]).use === 'e') { exc = b; break; }
+  if (exc < 0) return null;
+  const rs = rfSlice(seq, exc, opt.B0); if (!rs || !rs.selective) return null;
+  let j = -1; for (let q = sh.j0; q < sh.j1; q++) if (seq.adcType[q] === 0 || seq.adcType[q] === 2) { j = q; break; }
+  if (j < 0) j = sh.j1 > sh.j0 ? sh.j0 : -1; if (j < 0) return null;
+  const K = kSamples(seq, j, j + 1); if (K.n < 2) return null;
+  const nS = rs.n, dk = [0, 1, 2].map(a => K.k[a][K.n - 1] - K.k[a][0]), dn = dot3(dk, nS);
+  let e1s = dk.map((x, a) => x - dn * nS[a]); const L = Math.hypot(...e1s); if (L < 1e-9) return null; e1s = e1s.map(x => x / L);
+  const e2s = [nS[1] * e1s[2] - nS[2] * e1s[1], nS[2] * e1s[0] - nS[0] * e1s[2], nS[0] * e1s[1] - nS[1] * e1s[0]];
+  const M = ORIENT_M[opt.orient || 'ax'] || ORIENT_M.ax, n = mulM(M, nS), e1 = mulM(M, e1s), e2 = mulM(M, e2s);
+  const s0 = opt.slicePos === false ? dot3(n, SIM_PHANTOMS3D[opt.phantom].bubble.c) : rs.s0 * 1e3;
+  return { n, e1, e2, o: n.map(x => x * s0), s0, thick: rs.thick * 1e3 };
 }
 /* anatomical letter of a phantom direction */
 function dirLetter(v) { const a = [Math.abs(v[0]), Math.abs(v[1]), Math.abs(v[2])], i = a.indexOf(Math.max(...a)); return [['R', 'L'], ['P', 'A'], ['I', 'S']][i][v[i] > 0 ? 1 : 0]; }
@@ -10239,7 +10259,7 @@ function lsq3(X, Y, Z) { // fit z ≈ c0 + c1·x + c2·y
 }
 function hashU(i) { let a = (i * 2654435761 + 0x6D2B79F5) | 0, t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return (((t ^ (t >>> 14)) >>> 0) + 0.5) / 4294967297; }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { mlite, SIM_TASKS, setSimPool: p => { SIM_POOL = p; }, eddyTrack, eddyShift, sampleChannel, EDDY, sectionPhantom, build3D, tissueAt3, sectionEllipse, eig3, runSimulation, simulateImage, TISSUES, bValue, shotInfo, tauAt, lsq3, rfSlice, rfFreqHz, invCycle, MzInv, Mz };
+if (typeof module !== 'undefined' && module.exports) module.exports = { imagePlaneQuick, mlite, SIM_TASKS, setSimPool: p => { SIM_POOL = p; }, eddyTrack, eddyShift, sampleChannel, EDDY, sectionPhantom, build3D, tissueAt3, sectionEllipse, eig3, runSimulation, simulateImage, TISSUES, bValue, shotInfo, tauAt, lsq3, rfSlice, rfFreqHz, invCycle, MzInv, Mz };
 
 /* ===== nerve stimulation: the SAFE model (Hebrank & Gebhardt, ISMRM 2000, abstract 2007) as implemented in
    safe_pns_prediction by F. Szczepankiewicz and T. Witzel (github.com/filip-szczepankiewicz/safe_pns_prediction).
@@ -10774,7 +10794,7 @@ void main() {
 'use strict';
 const $ = s => document.querySelector(s);
 const S = {
-  seq: null, name: '', t0: 0, t1: 1, sel: -1, hoverT: null, autoY: false, pauseHatch: true,
+  seq: null, name: '', t0: 0, t1: 1, sel: -1, selItems: [], selAnchor: -1, imgIdx: 0, hoverT: null, autoY: false, pauseHatch: true,
   gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'high', lineMode: 'exact', sideHidden: false,
   vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, pns: false, cns: false },
   stimNorm: true, combineG: true, rfMode: 'mag', kColor: 'order', linkMode: 'off',
@@ -11359,8 +11379,8 @@ function render() {
     pctx.globalAlpha = 1;
   }
   if (S.pauseHatch && !BENCH.skip.pause) drawPauses(s, X, t0, t1, x0, pw, lanes); // faint hatch over blocks without events
-  const sr = selRange();
-  if (sr) {
+  for (const sr of selRanges()) {
+    if (sr[1] < t0 || sr[0] > t1) continue;
     const xa = X(sr[0]), xb = X(sr[1]);
     pctx.globalAlpha = S.selKind === 'block' ? 0.18 : 0.1; pctx.fillStyle = C.sel; pctx.fillRect(xa, 0, Math.max(2, xb - xa), bot);
     pctx.globalAlpha = 1; pctx.fillRect(xa, bot - 3, Math.max(2, xb - xa), 3);
@@ -11394,8 +11414,8 @@ function render() {
     }
   }
   pctx.restore();
-  if (volsOn()) drawStrip(S.vols, vi0, vi1, volY(), 'Volumes', 'vol', volOfBlock(S.sel), S.selKind === 'vol', v => !v.nSamples, X, x0, pw);
-  if (shotsOn()) drawStrip(s.shots, si0, si1, shotY(), 'Shots', 'shot', S.selKind === 'vol' ? -1 : shotOfBlock(S.sel), S.selKind === 'shot', v => !v.nADC, X, x0, pw);
+  if (volsOn()) drawStrip(S.vols, vi0, vi1, volY(), 'Volumes', 'vol', S.selKind === 'vol' ? selSet() : new Set([volOfBlock(S.sel)]), S.selKind === 'vol', v => !v.nSamples, X, x0, pw);
+  if (shotsOn()) drawStrip(s.shots, si0, si1, shotY(), 'Shots', 'shot', S.selKind === 'vol' ? new Set() : S.selKind === 'shot' ? selSet() : new Set([shotOfBlock(S.sel)]), S.selKind === 'shot', v => !v.nADC, X, x0, pw);
 
   // lanes
   pctx.font = `500 11.5px ${C.font}`; pctx.textBaseline = 'middle';
@@ -11669,13 +11689,40 @@ function shotOfBlock(b) { const sh = S.seq.shots; if (!sh.length || b < 0) retur
 function shotAt(t) { return S.seq.shots.length ? Math.max(0, Math.min(S.seq.shots.length - 1, ub(S.shotT0, t) - 1)) : -1; }
 function volOfBlock(b) { const v = S.vols; if (!v.length || b < 0) return -1; let lo = 0, hi = v.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (v[m].b0 <= b) lo = m; else hi = m - 1; } return lo; }
 function volAt(t) { return S.vols.length ? Math.max(0, Math.min(S.vols.length - 1, ub(S.volT0, t) - 1)) : -1; }
+/* multiple selection of shots or volumes (S.selItems, sorted indices; S.sel is the first block of the focused one).
+   Click: one item. Ctrl/Cmd+click: add or remove one. Shift+click: the range from the anchor (the last plain or
+   Ctrl click). Ctrl+Shift+click: add that range. As in a file manager. */
+function selSet() { return new Set(S.selItems.length ? S.selItems : [S.selKind === 'vol' ? volOfBlock(S.sel) : shotOfBlock(S.sel)]); }
+function selRanges() {
+  const s = S.seq; if (!s || S.sel < 0) return [];
+  if ((S.selKind === 'shot' || S.selKind === 'vol') && S.selItems.length > 1) {
+    const L = S.selKind === 'shot' ? s.shots : S.vols, out = [];
+    for (const k of S.selItems) { const x = L[k]; if (!x) continue; if (out.length && Math.abs(out[out.length - 1][1] - x.t0) < 1e-12) out[out.length - 1][1] = x.t1; else out.push([x.t0, x.t1]); }
+    return out;
+  }
+  const r = selRange(); return r ? [r] : [];
+}
+function clickItem(kind, k, e) {
+  const L = kind === 'vol' ? S.vols : S.seq.shots; if (!L[k]) return;
+  const ctrl = e.ctrlKey || e.metaKey, same = S.selKind === kind && S.sel >= 0;
+  const cur = same ? [...selSet()] : [];
+  const range = (a, b) => { const r = []; for (let i = Math.min(a, b); i <= Math.max(a, b); i++) r.push(i); return r; };
+  let items, focus = k, anchor = S.selAnchor;
+  if (e.shiftKey && same && anchor >= 0) items = ctrl ? [...new Set([...cur, ...range(anchor, k)])] : range(anchor, k);
+  else if (ctrl && same) { items = cur.includes(k) ? cur.filter(i => i !== k) : cur.concat(k); anchor = k; if (!items.includes(k)) focus = items.length ? items.reduce((a, b) => Math.abs(b - k) < Math.abs(a - k) ? b : a) : -1; }
+  else { items = [k]; anchor = k; }
+  items.sort((a, b) => a - b);
+  if (!items.length) { S.sel = -1; S.selKind = null; S.selItems = []; S.selAnchor = -1; renderBlock(); request(); requestImg(); return; }
+  S.selAnchor = anchor;
+  selectBlock(L[focus].b0, { tab: true, kind, items });
+}
 function selRange() {
   const s = S.seq; if (!s || S.sel < 0) return null;
   if (S.selKind === 'shot' && s.shots.length) { const x = s.shots[shotOfBlock(S.sel)]; return [x.t0, x.t1]; }
   if (S.selKind === 'vol' && S.vols.length) { const x = S.vols[volOfBlock(S.sel)]; return [x.t0, x.t1]; }
   return [s.blockStart[S.sel], s.blockStart[S.sel + 1]];
 }
-function drawStrip(items, i0, i1, y, title, word, selIdx, strong, isEmpty, X, x0, pw) {
+function drawStrip(items, i0, i1, y, title, word, selIdx, strong, isEmpty, X, x0, pw) { // selIdx: Set of selected indices
   const h = SHOTH;
   pctx.save(); pctx.beginPath(); pctx.rect(x0, y - 1, pw, h + 2); pctx.clip();
   pctx.font = `500 11px ${C.font}`; pctx.textBaseline = 'middle'; pctx.textAlign = 'center';
@@ -11684,7 +11731,7 @@ function drawStrip(items, i0, i1, y, title, word, selIdx, strong, isEmpty, X, x0
     pctx.fillStyle = C.muted; pctx.fillText(`${(i1 - i0 + 1).toLocaleString()} ${title.toLowerCase()} in view · zoom in to see them`, x0 + pw / 2, y + h / 2 + 0.5);
   } else {
     for (let k = i0; k <= i1; k++) {
-      const it = items[k], a = X(it.t0), b = X(it.t1), w = b - a, empty = isEmpty(it), sel = k === selIdx;
+      const it = items[k], a = X(it.t0), b = X(it.t1), w = b - a, empty = isEmpty(it), sel = selIdx.has(k);
       pctx.fillStyle = sel ? C.sel : C.ink;
       pctx.globalAlpha = sel ? (strong ? 0.7 : 0.32) : empty ? 0.04 : (k % 2 ? 0.14 : 0.08);
       pctx.fillRect(a + 0.5, y, Math.max(1, w - 1), h); pctx.globalAlpha = 1;
@@ -11978,9 +12025,9 @@ function back() { const v = S.hist.pop(); if (v) setView(v[0], v[1]); $('#backBt
 function zoomToRange(t0, t1, hist = true) { const d = t1 - t0; if (hist) pushHist(); setView(t0 - d * 0.03, t1 + d * 0.03); }
 function zoomToShot(k, hist = true) { const sh = S.seq.shots[k]; if (sh) zoomToRange(sh.t0, sh.t1, hist); }
 function zoomToVol(k, hist = true) { const v = S.vols[k]; if (v) zoomToRange(v.t0, v.t1, hist); }
-/* Go to shot/volume k. If the view shows the whole current item (or not that item at all), the
-   whole new item is shown; if the user has zoomed inside it, the same zoom is kept, shifted so
-   it sits at the same place relative to the start of the new item. */
+/* Go to shot/volume k. A first selection shows the whole item. Stepping keeps the zoom (the time span) and puts
+   the start of the new item where the start of the current one was on screen (left edges stay in place; setView
+   keeps the view inside the sequence, so near the ends it can shift). */
 function gotoItem(kind, k) {
   const list = kind === 'shot' ? S.seq.shots : S.vols; if (!list.length) return;
   k = Math.max(0, Math.min(list.length - 1, k));
@@ -11988,10 +12035,7 @@ function gotoItem(kind, k) {
   const stepping = S.selKind === kind && S.sel >= 0, span = S.t1 - S.t0, c = list[cur], nx = list[k];
   selectBlock(nx.b0, { kind });
   if (!stepping) { (kind === 'shot' ? zoomToShot : zoomToVol)(k, true); return; } // a first selection shows the whole item
-  // stepping keeps the zoom (the time span): zoomed inside the item → same offset into the next one;
-  // otherwise → centred on the next one
-  const inside = c && S.t0 >= c.t0 - 1e-9 && S.t1 <= c.t1 + 1e-9 && span < c.t1 - c.t0;
-  if (inside) { const d = nx.t0 - c.t0; setView(S.t0 + d, S.t1 + d); }
+  if (c) { const d = nx.t0 - c.t0; setView(S.t0 + d, S.t1 + d); }
   else { const m = (nx.t0 + nx.t1) / 2; setView(m - span / 2, m + span / 2); }
 }
 function stepShot(dir) {
@@ -12050,6 +12094,8 @@ function zoomToBlock(b) { const s = S.seq, a = s.blockStart[b], d = s.blockStart
 function selectBlock(b, opts = {}) {
   if (!S.seq) return;
   b = Math.max(0, Math.min(S.seq.nb - 1, b)); S.sel = b; S.selKind = opts.kind || 'block';
+  if (S.selKind === 'shot' || S.selKind === 'vol') { const k = S.selKind === 'vol' ? volOfBlock(b) : shotOfBlock(b); S.selItems = opts.items || [k]; if (!opts.items) S.selAnchor = k; }
+  else { S.selItems = []; S.selAnchor = -1; }
   if (opts.ensureVisible) { const s = S.seq, a = s.blockStart[b], e = s.blockStart[b + 1]; if (a < S.t0 || e > S.t1) { const sp = S.t1 - S.t0; if (e - a > sp) zoomToBlock(b); else setView(a - (sp - (e - a)) / 2, a - (sp - (e - a)) / 2 + sp); } }
   renderBlock(); if (opts.tab && S.tab !== 'k' && S.tab !== 'img') setTab('blk'); request(); if (S.kRange === 'shot' || S.kRange === 'vol') requestK(); requestImg();
 }
@@ -12090,8 +12136,8 @@ function endPtr(e) {
   } else if (!drag.moved && e.type === 'pointerup' && e.offsetX > GUT && !drag.button) {
     const t = xToT(e.offsetX); S.hoverT = t;
     const y = e.offsetY;
-    if (volsOn() && y >= volY() - 2 && y < volY() + SHOTH + 2) { const k = volAt(t); selectBlock(S.vols[k].b0, { tab: true, kind: 'vol' }); zoomToVol(k); }
-    else if (shotsOn() && y >= shotY() - 2 && y < shotY() + SHOTH + 2) { const k = shotAt(t); selectBlock(S.seq.shots[k].b0, { tab: true, kind: 'shot' }); zoomToShot(k); }
+    if (volsOn() && y >= volY() - 2 && y < volY() + SHOTH + 2) clickItem('vol', volAt(t), e); // double-click zooms (below)
+    else if (shotsOn() && y >= shotY() - 2 && y < shotY() + SHOTH + 2) clickItem('shot', shotAt(t), e);
     else if (y >= topH() - 4) selectBlock(blockAt(t), { tab: true });
   }
   boxSel = null;
@@ -12099,7 +12145,13 @@ function endPtr(e) {
 }
 ovl.addEventListener('pointerup', endPtr); ovl.addEventListener('pointercancel', endPtr);
 ovl.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !drag) { S.hoverT = null; requestOverlay(); linkSendHover(); } });
-ovl.addEventListener('dblclick', e => { if (S.seq && e.offsetX > GUT && e.offsetY >= topH() - 4) { const b = blockAt(xToT(e.offsetX)); selectBlock(b); pushHist(); zoomToBlock(b); } });
+ovl.addEventListener('dblclick', e => {
+  if (!S.seq || e.offsetX <= GUT || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  const t = xToT(e.offsetX), y = e.offsetY;
+  if (volsOn() && y >= volY() - 2 && y < volY() + SHOTH + 2) zoomToVol(volAt(t));
+  else if (shotsOn() && y >= shotY() - 2 && y < shotY() + SHOTH + 2) zoomToShot(shotAt(t));
+  else if (y >= topH() - 4) { const b = blockAt(t); selectBlock(b); pushHist(); zoomToBlock(b); }
+});
 ovl.addEventListener('auxclick', e => { if (e.button === 1) e.preventDefault(); });
 ovl.addEventListener('contextmenu', e => e.preventDefault()); // right-drag pans the diagram
 ovl.addEventListener('wheel', e => {
@@ -12141,7 +12193,7 @@ document.addEventListener('keydown', e => {
     case 'f': case '0': case 'Home': fitAll(); break;
     case ']': selectBlock((S.sel < 0 ? blockAt(S.t0) : S.sel + 1), { ensureVisible: true }); break;
     case '[': selectBlock((S.sel < 0 ? blockAt(S.t0) : S.sel - 1), { ensureVisible: true }); break;
-    case 'Escape': S.sel = -1; S.selKind = null; renderBlock(); request(); break;
+    case 'Escape': S.sel = -1; S.selKind = null; S.selItems = []; S.selAnchor = -1; renderBlock(); request(); requestImg(); break;
     case ';': stepVol(-1); break;
     case "'": stepVol(1); break;
     case ',': stepShot(-1); break;
@@ -12492,8 +12544,9 @@ function renderBlock() {
   const skH = s.shots.length && shotsOn() ? shotOfBlock(S.sel) : -1, vkH = volsOn() ? volOfBlock(S.sel) : -1;
   const where = [skH >= 0 ? `shot ${skH + 1} of ${s.shots.length.toLocaleString()}` : '', vkH >= 0 ? `volume ${vkH + 1} of ${S.vols.length.toLocaleString()}` : ''].filter(Boolean);
   let head;
-  if (S.selKind === 'vol' && vkH >= 0) head = `<div class="selmain"><b>Volume ${vkH + 1}</b> <span class="muted">of ${S.vols.length.toLocaleString()}</span></div><div class="selsub">${S.vols[vkH].nShots} shots · starts with block ${b.id}: ${esc(describeBlock(S.sel))}</div>`;
-  else if (S.selKind === 'shot' && skH >= 0) head = `<div class="selmain"><b>Shot ${skH + 1}</b> <span class="muted">of ${s.shots.length.toLocaleString()}</span></div><div class="selsub">${vkH >= 0 ? `volume ${vkH + 1} · ` : ''}starts with block ${b.id}: ${esc(describeBlock(S.sel))}</div>`;
+  const nSel = S.selItems.length > 1 ? ` <span class="muted">· ${S.selItems.length} selected (Ctrl+click to add or remove, Shift+click for a range)</span>` : '';
+  if (S.selKind === 'vol' && vkH >= 0) head = `<div class="selmain"><b>Volume ${vkH + 1}</b> <span class="muted">of ${S.vols.length.toLocaleString()}</span>${nSel}</div><div class="selsub">${S.vols[vkH].nShots} shots · starts with block ${b.id}: ${esc(describeBlock(S.sel))}</div>`;
+  else if (S.selKind === 'shot' && skH >= 0) head = `<div class="selmain"><b>Shot ${skH + 1}</b> <span class="muted">of ${s.shots.length.toLocaleString()}</span>${nSel}</div><div class="selsub">${vkH >= 0 ? `volume ${vkH + 1} · ` : ''}starts with block ${b.id}: ${esc(describeBlock(S.sel))}</div>`;
   else head = `<div class="selmain"><b>Block ${b.id}</b> <span class="desc">${esc(describeBlock(S.sel))}</span></div><div class="selsub">${where.length ? 'in ' + where.join(' · ') : `of ${s.nb.toLocaleString()} blocks`}</div>`;
   let h = '';
   h += `<h3>Block ${b.id} <span class="tag">${esc(describeBlock(S.sel))}</span></h3>` + kv([['Start', fmtT(t0)], ['Duration', fmtT(b.dur)], ['k at the end', `${[0, 1, 2].map(a => fmt(s.kStart[a][S.sel + 1] * mF(), 4)).join(', ')} <span class="muted">${mU()}</span>`], ...stimRows(t0, t0 + b.dur)]) +
@@ -12809,11 +12862,48 @@ for (const [id, k] of [['simT1', 't1'], ['simT2', 't2'], ['simFat', 'fatShift'],
 $('#sim3d').onchange = e => { S.sim.show3d = e.target.checked; $('.v3wrap').style.display = S.sim.show3d ? '' : 'none'; I3W = I3H = 0; resize(); if (S.sim.show3d) drawSlice3D(); };
 const echoStep = d => { if (!imgRes || !imgRes.nEcho) return; const e = Math.max(0, Math.min(imgRes.nEcho - 1, (imgRes.echo || 0) + d)); if (e !== imgRes.echo) { S.sim.echo = e; requestImg(true); } };
 $('#imEchoPrev').onclick = () => echoStep(-1); $('#imEchoNext').onclick = () => echoStep(1);
+const imStep = d => { const L = imgList(); if (!L || L.length < 2) return; const i = Math.max(0, Math.min(L.length - 1, S.imgIdx + d)); if (i !== S.imgIdx) { S.imgIdx = i; updateImNav(); requestImg(true); } };
+$('#imNavPrev').onclick = () => imStep(-1); $('#imNavNext').onclick = () => imStep(1);
+function updateImNav() { // arrows between the images of a selection of several shots or volumes
+  const L = S.tab === 'img' ? imgList() : null, nav = $('#imNav'); nav.hidden = !L || L.length < 2; if (nav.hidden) return;
+  const i = Math.max(0, Math.min(L.length - 1, S.imgIdx)), it = L[i];
+  $('#imNavTxt').textContent = `Image ${i + 1} / ${L.length}${L.length >= IMG_LIST_MAX ? '+' : ''} · ${it.vi >= 0 ? `volume ${it.vi + 1} · ` : ''}shot ${it.ref + 1}`;
+  $('#imNavPrev').disabled = i <= 0; $('#imNavNext').disabled = i >= L.length - 1;
+}
 $('#imPng').onclick = () => { if (imgRes && !imgRes.error) savePNG(ic, `${S.name.replace(/\.seq$/i, '')}_image.png`); };
 /* which image: the selected volume (or the one at the view centre), slice of the selected shot */
+/* the images in a selection of several shots or volumes, in time order: one per volume and excited slice (the
+   shots of a volume whose excitation has the same frequency, as imageSet groups them), with its first shot with
+   an imaging readout as reference. Several selected shots of the same image count once. Cached per selection. */
+let imgListCache = null;
+const IMG_LIST_MAX = 2000;
+function imgList() {
+  const s = S.seq; if (!s || S.sel < 0 || (S.selKind !== 'vol' && S.selKind !== 'shot') || !s.shots.length) return null;
+  const items = [...selSet()]; if (S.selKind === 'shot' && items.length < 2) return null;
+  const key = [S.selKind, items.join(','), S.vols.length, S.sim.B0].join('|');
+  if (imgListCache && imgListCache.key === key) return imgListCache.list;
+  const shots = s.shots, B = s.B, out = [], seen = new Set();
+  const freqOf = k => { const sh = shots[k]; for (let b = sh.b0; b <= sh.b1; b++) if (B.rf[b] && rfSt(s, B.rf[b]).use === 'e') return Math.round(rfFreqHz(s.rf.get(B.rf[b]), S.sim.B0)); return null; };
+  const imaging = k => { const sh = shots[k]; for (let j = sh.j0; j < sh.j1; j++) if (s.adcType[j] === 0 || s.adcType[j] === 2) return true; return false; };
+  const volOf = k => S.vols.length ? volOfBlock(shots[k].b0) : -1;
+  const add = (k, vi) => { const f = freqOf(k); if (f === null) return; const id = vi + '|' + f; if (seen.has(id)) return; seen.add(id); out.push({ ref: k, vi }); };
+  if (S.selKind === 'vol') for (const vi of items) {
+    const v = S.vols[vi]; if (!v) continue; let any = false;
+    for (let k = v.s0; k <= v.s1 && out.length < IMG_LIST_MAX; k++) if (shots[k].nADC && imaging(k)) { add(k, vi); any = true; }
+    if (!any) for (let k = v.s0; k <= v.s1 && out.length < IMG_LIST_MAX; k++) if (shots[k].nADC) add(k, vi);
+  } else for (const k of items) if (shots[k] && shots[k].nADC && out.length < IMG_LIST_MAX) add(k, volOf(k));
+  imgListCache = { key, list: out }; S.imgIdx = 0;
+  return out;
+}
 function imgTarget() {
   const s = S.seq; if (!s) return null;
   const shots = s.shots.length ? s.shots : (s.shotsExc || []); if (!shots.length) return null;
+  const L = imgList();
+  if (L && L.length) { // an image of a multiple selection
+    const it = L[Math.max(0, Math.min(L.length - 1, S.imgIdx))];
+    const vol = it.vi >= 0 ? S.vols[it.vi] : { s0: it.ref, s1: it.ref };
+    return { shots, vol, vi: it.vi, ref: it.ref, list: L };
+  }
   const c = (S.t0 + S.t1) / 2, blk = S.sel >= 0 ? S.sel : blockAt(c);
   const shotIdx = b => { let lo = 0, hi = shots.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (shots[m].b0 <= b) lo = m; else hi = m - 1; } return lo; };
   let vol, vi = -1;
@@ -12829,15 +12919,17 @@ function imgTarget() {
 }
 function requestImg(now) {
   if (S.tab !== 'img' || !S.seq) return;
+  updateImNav();
   clearTimeout(imgTimer); imgTimer = setTimeout(computeImg, now ? 0 : 200);
 }
 async function computeImg() {
-  const T = imgTarget(); if (!T) return;
+  const T = imgTarget();
+  if (!T) { if (S.seq && !imgRes) { imgRes = { error: 'No image: the sequence has no excitation pulses, so there are no shots to simulate.' }; imgKey = null; drawImg(); } return; }
   if (T.none) { imgRes = { error: 'This volume has no readout (no ADC events): there is no data to reconstruct.' }; imgKey = null; drawImg(); return; }
   if (T.dummy !== undefined) { imgRes = { error: `Shot ${T.dummy + 1} has no readout (no ADC events), e.g. a dummy scan: there is no data to reconstruct. Select a shot with a readout, or the whole volume.` }; imgKey = null; drawImg(); return; }
   const opt = { ...S.sim, bubbleField: true, noise: S.sim.noise ? 1 : 0 }; delete opt.view; delete opt.show3d;
   const key = [imgLoadId, T.vol.s0, T.vol.s1, T.ref, JSON.stringify(opt)].join('|');
-  if (key === imgKey) return;
+  if (key === imgKey) { v3Request(); return; } // same image; the selection may have changed (outlines in the 3D view)
   if (imgCache.has(key)) { const r = imgCache.get(key); imgCache.delete(key); imgCache.set(key, r); imgRun++; poolCancel(); imgRes = r; imgKey = key; $('#imBusy').classList.remove('on'); drawImg(); return; }
   if (!SIM_POOL && poolInit()) SIM_POOL = poolRun;
   if (!SIM_GPU && S.sim.gpu !== false && SIMGL.available()) SIM_GPU = SIMGL.run; // the graphics card, when there is a real one
@@ -12981,6 +13073,21 @@ function gl3Draw(s) {
    their true depths, so tissue in front of a plane hides part of it and the plane hides what lies behind. */
 const V3_SIG = { fat: 0.0028, wm: 0.0022, gm: 0.012, csf: 0.02, lesion: 0.05, blood: 0.05, muscle: 0.0075, liver: 0.008, kidney: 0.012, fluid: 0.012, marrow: 0.012, air: 0.03 };
 let v3Off = null;
+/* planes of the other images in the current multiple selection (imagePlaneQuick), except the slices of the shown
+   image's own volume, which are drawn already (sliceOffsets); at most 400, cached per selection and view settings */
+let otherPlanesCache = null;
+function otherPlanes(R) {
+  const T = R.target, L = T ? imgList() : null; if (!L || L.length < 2) return []; // the current selection (a cached image may be from an earlier one)
+  const opt = { B0: S.sim.B0, orient: S.sim.orient, slicePos: S.sim.slicePos, phantom: R.phantomKey };
+  const key = [imgListCache && imgListCache.key, T.ref, T.vi, JSON.stringify(opt)].join('|');
+  if (otherPlanesCache && otherPlanesCache.key === key) return otherPlanesCache.out;
+  const out = [];
+  for (let i = 0; i < L.length && out.length < 400; i++) {
+    const it = L[i]; if (it.ref === T.ref || (it.vi >= 0 && it.vi === T.vi)) continue;
+    const q = imagePlaneQuick(S.seq, S.seq.shots, it.ref, opt); if (q) out.push({ q, i });
+  }
+  otherPlanesCache = { key, out }; return out;
+}
 function drawSlice3D() {
   const ctx = i3ctx, W3 = I3W, H3 = I3H; if (W3 <= 0 || !S.sim.show3d) return;
   const R = imgRes;
@@ -13023,6 +13130,22 @@ function drawSlice3D() {
     for (const [v, lab, col] of [[[1, 0, 0], 'L', '#ff7a7a'], [[0, 1, 0], 'A', '#7ddc7d'], [[0, 0, 1], 'S', '#7fb0ff']]) {
       const px = dot3(v, right), py = dot3(v, up); ctx.strokeStyle = col; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + px * L, ty - py * L); ctx.stroke(); ctx.fillStyle = col; ctx.fillText(lab, tx + px * (L + 9), ty - py * (L + 9));
+    }
+    // the slices of the other images of a multiple selection (other volumes or fields of view): outlines of their
+    // fields of view, numbered as in the image arrows; drawn on top, so tissue in front does not hide them
+    const others = otherPlanes(R);
+    if (others.length) {
+      const hRO = R.roAxis === 1 ? fy : fx, hPE = R.roAxis === 1 ? fx : fy;
+      ctx.setLineDash([4, 3]); ctx.lineWidth = 1.2; ctx.font = `600 10px ${C.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      for (const { q, i } of others) {
+        const cs = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => { const p = addS(addS(rel(q.o), q.e1, a * hRO), q.e2, b * hPE); return [W3 / 2 + sc * dot3(p, right), H3 / 2 - sc * dot3(p, up)]; });
+        ctx.beginPath(); cs.forEach((c, k) => k ? ctx.lineTo(c[0], c[1]) : ctx.moveTo(c[0], c[1])); ctx.closePath();
+        ctx.strokeStyle = 'rgba(245,197,24,.7)'; ctx.stroke();
+        if (others.length <= 40) { ctx.fillStyle = 'rgba(245,197,24,.95)'; ctx.fillText(String(i + 1), cs[2][0], cs[2][1]); }
+      }
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.font = `11px ${C.font}`;
+      ctx.fillText(`${others.length} other selected image${others.length > 1 ? 's' : ''}: dashed outlines (drawn on top)`, 8, 8);
     }
     ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.font = `11px ${C.font}`;
     ctx.fillText('drag to rotate · scroll to zoom · double-click to reset', W3 - 8, H3 - 8);
@@ -13383,7 +13506,7 @@ async function load(bytes, name, opts = {}) {
     window.__loadTimes = seq.loadTimes; seq.loadTimes.worker = performance.now() - tL;
     seq.shotsExc = seq.shots;
     linkApplying = true;
-    Object.assign(S, { seq, name, sel: -1, hoverT: null, hist: [] }); kInvalidate(); gMaxAll = 0; imgReset();
+    Object.assign(S, { seq, name, sel: -1, selKind: null, selItems: [], selAnchor: -1, imgIdx: 0, hoverT: null, hist: [] }); kInvalidate(); gMaxAll = 0; imgReset();
     S.vis.labels = (seq.labels.length > 0 || seq.triggers.length > 0) && S.labelsPref; buildChips();
     applyShots(); fillVolMenu(); applyVols(); $('#backBtn').disabled = true;
     $('#fname').textContent = name;
@@ -13393,7 +13516,7 @@ async function load(bytes, name, opts = {}) {
     ovCache = null; readColors();
     if (prev) { // reload: same view, selection and history where they still exist in the new file
       setView(prev.t0, prev.t1); S.hist = prev.hist; $('#backBtn').disabled = !S.hist.length;
-      if (prev.sel >= 0 && prev.sel < seq.nb) { S.sel = prev.sel; S.selKind = prev.selKind; }
+      if (prev.sel >= 0 && prev.sel < seq.nb) { S.sel = prev.sel; S.selKind = prev.selKind; S.selItems = []; S.selAnchor = -1; }
     } else { fitAll(); if (seq.shots.length) zoomToShot(0); }
     renderSeqInfo(); renderDefs(); renderBlock(); requestK(); if (prev) requestImg();
     SRC = opts.src || null; $('#reloadBtn').hidden = !(SRC && (SRC.handle || SRC.file)); if (!prev) fnote('');
