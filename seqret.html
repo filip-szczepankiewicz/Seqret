@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.34.0 (2026-10-02) - Pulseq sequence viewer
+  Seqret 1.37.0 (2026-10-02) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.34.0">
-<meta name="description" content="Seqret 1.34.0: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.37.0">
+<meta name="description" content="Seqret 1.37.0: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -67,6 +67,40 @@
   --sel:#F5C518; --focus:#5AA3FF; --ok:#4ADE80; --warn:#FBBF24; --bad:#F87171; --shade:rgba(255,255,255,.035);
   color-scheme: dark;
 }
+/* RedZ: the dark theme with grey x and y gradients, a pale red z, near-white RF and a pale orange RF phase */
+:root[data-theme="redz"]{
+  --bg:#131A22; --surface:#19222C; --plot:#1B2530; --ink:#E4EAF0; --muted:#9DAAB8; --faint:#6E7C8B;
+  --line:#2E3B49; --line-soft:#26313D; --chip:#223040;
+  --c-rf:#F2F0EA; --c-ph:#F2B880; --c-gx:#D2D6DB; --c-gy:#8D949D; --c-gz:#CC4040; --c-adc:#9FB2C6;
+  --c-ref:#3CCBD6; --c-refima:#8FC2D2; --c-noise:#D4B485; --c-nav:#E08AE6;
+  --sel:#B8B2A2; --focus:#5AA3FF; --ok:#4ADE80; --warn:#FBBF24; --bad:#F87171; --shade:rgba(255,255,255,.035);
+  color-scheme: dark;
+}
+:root[data-theme="paper"]{ /* for figures: white, no lane shading, dark traces that stay apart in greyscale */
+  --bg:#F2F2F0; --surface:#FFFFFF; --plot:#FFFFFF; --ink:#111111; --muted:#555555; --faint:#9A9A9A;
+  --line:#D6D6D6; --line-soft:#ECECEC; --chip:#F0F0EE;
+  --c-rf:#111111; --c-ph:#7A7A7A; --c-gx:#1F4E9E; --c-gy:#0F7A6E; --c-gz:#D1471B; --c-adc:#5E5E5E;
+  --c-ref:#2A8FBF; --c-refima:#8AB4C8; --c-noise:#A08A5C; --c-nav:#A2477F;
+  --sel:#D8C27A; --focus:#1F4E9E; --ok:#15803D; --warn:#B45309; --bad:#B91C1C; --shade:rgba(0,0,0,0);
+  color-scheme: light;
+}
+:root[data-theme="universal"]{ /* Okabe–Ito palette (Color Universal Design): distinguishable with the common colour-vision deficiencies */
+  --bg:#E7ECF1; --surface:#F6F8FA; --plot:#FFFFFF; --ink:#18212C; --muted:#5A6676; --faint:#8B96A3;
+  --line:#CDD5DE; --line-soft:#E2E7EC; --chip:#EDF1F5;
+  --c-rf:#D55E00; --c-ph:#CC79A7; --c-gx:#0072B2; --c-gy:#009E73; --c-gz:#E69F00; --c-adc:#555555;
+  --c-ref:#56B4E9; --c-refima:#9CCBE6; --c-noise:#A89A6A; --c-nav:#CC79A7;
+  --sel:#E8DC8A; --focus:#0072B2; --ok:#009E73; --warn:#E69F00; --bad:#D55E00; --shade:rgba(24,33,44,.035);
+  color-scheme: light;
+}
+:root[data-theme="forest"]{ /* dark green-grey, calm muted traces */
+  --bg:#1C2822; --surface:#23312A; --plot:#283830; --ink:#E6EEE8; --muted:#AABDB1; --faint:#7C9184;
+  --line:#3B5045; --line-soft:#31443A; --chip:#2E4037;
+  --c-rf:#E8D59A; --c-ph:#C7A3D6; --c-gx:#8CC4A0; --c-gy:#BFCB7E; --c-gz:#DE8C6A; --c-adc:#A6BAAD;
+  --c-ref:#6CC4B8; --c-refima:#9AC2B6; --c-noise:#B9A882; --c-nav:#D99BBE;
+  --sel:#A6CC8E; --focus:#8CC4A0; --ok:#7FD39A; --warn:#E8B44F; --bad:#E78A7A; --shade:rgba(255,255,255,.035);
+  color-scheme: dark;
+}
+.themeseg{display:flex;align-items:center;gap:10px;padding:4px 8px}
 *{box-sizing:border-box}
 :root{box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -235,7 +269,20 @@ a{color:var(--c-gx)}
 .vtag{border:1px solid var(--line);background:transparent;border-radius:999px;padding:1px 8px;font-size:11.5px;color:var(--muted);cursor:pointer;font-weight:500;margin-left:2px}
 .vtag:hover{color:var(--ink);border-color:var(--faint)}
 dialog#about{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(640px,92vw);max-height:86vh}
-dialog#about::backdrop,dialog#safeDlg::backdrop{background:rgba(10,15,20,.4)}
+dialog#figDlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(680px,94vw);max-height:92vh}
+#figBody{padding:4px 20px 18px;overflow:auto;max-height:calc(92vh - 80px);font-size:13.5px}
+#figBody .fgrid{display:grid;grid-template-columns:auto 1fr;gap:9px 12px;align-items:center;margin-bottom:10px}
+#figBody .fgrid>span,#figBody .fgrid>label{color:var(--muted)}
+#figBody .fgrid>.seg{justify-self:start}
+#figBody .sel,#figBody .fnum{border:1px solid var(--line);background:var(--plot);border-radius:6px;padding:3px 6px}
+.frow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.frow.fend{justify-content:flex-end;margin-top:12px}
+#figBody .fnum{width:84px}
+#figBody h6{margin:12px 0 6px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.fchips{display:flex;flex-wrap:wrap;gap:6px}
+#figBody .fsec{border-top:1px solid var(--line-soft);margin-top:10px;padding-top:2px}
+#figBody .note{margin:8px 0 0}
+dialog#figDlg::backdrop,dialog#about::backdrop,dialog#safeDlg::backdrop{background:rgba(10,15,20,.4)}
 dialog#safeDlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(720px,94vw);max-height:90vh}
 #safeBody{padding:0 20px 20px;overflow:auto;max-height:calc(90vh - 80px);font-size:13.5px}
 #safeBody code{font-size:12.5px}
@@ -341,7 +388,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.34.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.37.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -357,7 +404,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
           <p class="note">Mirrors zoom, position and cursor between Seqret tabs in this browser.</p></section>
         <section><button class="btn menuitem" id="specMenuBtn">System specifications (PNS, CNS)…</button></section>
         <section><button class="btn menuitem" id="diagBtn" title="Frame times of the diagram (Shift+D), for reporting performance">Show frame times</button><button class="btn menuitem" id="benchBtn" title="Moves the view on every frame for about half a minute and measures the frame rate, also with parts of the drawing left out. For reporting performance.">Run frame-rate test</button></section>
-        <section><button class="btn menuitem" id="themeBtn">Dark theme</button></section>
+        <section><div class="themeseg"><span>Theme</span><div class="seg" id="themeSeg" role="group" aria-label="Colour theme"><button data-v="light" aria-pressed="false">Light</button><button data-v="dark" aria-pressed="false">Dark</button><button data-v="redz" aria-pressed="false" title="Dark, with grey x and y gradients, a pale red z gradient, near-white RF and pale orange RF phase">RedZ</button><button data-v="paper" aria-pressed="false" title="For figures: white, no lane shading, dark traces that stay apart in greyscale">Paper</button><button data-v="universal" aria-pressed="false" title="Okabe–Ito colours (Color Universal Design), distinguishable with the common colour-vision deficiencies">Universal</button><button data-v="forest" aria-pressed="false" title="Dark green-grey with calm, muted colours">Forest</button></div></div></section>
       </div>
     </div>
   </div>
@@ -401,7 +448,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
               <select id="shotSel"><option value="exc">One per excitation</option><option value="prep">Split at prep. pulses</option><option value="off">Hidden</option></select>
               <label for="volSel">Volumes</label>
               <select id="volSel"><option value="auto">Auto (repeated k-space)</option><option value="off">Hidden</option></select></div></section>
-          <section><button class="btn menuitem" id="pngBtn">Save diagram as PNG</button></section>
+          <section><button class="btn menuitem" id="pngBtn">Save diagram as PNG (as on screen)</button><button class="btn menuitem" id="figBtn">Save figure… (size, resolution, text)</button></section>
         </div>
       </div>
       <button class="btn icon" id="sideBtn" aria-pressed="false" aria-label="Hide the side panel" title="Hide the side panel, for a wider diagram (\)"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><path d="M10 3v10" stroke="currentColor"/><path id="sideIco" d="M11.5 5.5v5" stroke="currentColor" stroke-width="2"/></svg></button>
@@ -455,7 +502,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
       <div class="popbody inline" id="kOpts" hidden>
         <div class="pgrid"><span>Path</span><label><input type="checkbox" id="kTraj" checked> Show</label></div>
         <p class="note">The arrows above the plot step through the kinds of readout (imaging, reference, navigator, noise, from the Pulseq flag labels), each coloured by acquisition order (dark to bright); the last view shows all readouts together, coloured by kind and imaging by image. k is reset at excitation pulses and mirrored at refocusing pulses, evaluated at the RF centre (as in Pulseq's calculateKspacePP). Drag the plot to rotate, scroll to zoom.</p>
-        <button class="btn small" id="kPng">Save k-space as PNG</button>
+        <div class="frow"><button class="btn small" id="kPng">Save k-space as PNG</button><button class="btn small" id="kFig">Save figure…</button></div>
       </div>
       <div class="echonav" id="kNav" hidden><button class="btn small" id="kNavPrev" aria-label="Previous readout type" title="Previous kind of readout">‹</button><span id="kNavTxt"></span><button class="btn small" id="kNavNext" aria-label="Next readout type" title="Next kind of readout">›</button></div>
       <div class="kwrap"><canvas id="kc" aria-label="k-space trajectory plot. Drag to rotate, right-drag to pan, scroll to zoom."></canvas></div>
@@ -487,7 +534,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
         <span class="lab">Oversampling</span>
         <div class="row"><div class="seg" id="simCrop" title="Readout oversampling: show the prescribed FOV (cropped, as a scanner does) or the whole sampled FOV. The image is always reconstructed from all samples, so nothing outside the prescribed FOV folds in."><button data-v="crop" aria-pressed="true">Crop to FOV</button><button data-v="all" aria-pressed="false">Show all</button></div></div>
       </div>
-      <button class="btn small" id="imPng">Save image as PNG</button>
+      <div class="frow"><button class="btn small" id="imPng">Save image as PNG</button><button class="btn small" id="imFig">Save figure…</button></div>
       </div>
       <div class="echonav" id="imNav" hidden><button class="btn small" id="imNavPrev" aria-label="Previous image" title="Previous image in the selection">‹</button><span id="imNavTxt"></span><button class="btn small" id="imNavNext" aria-label="Next image" title="Next image in the selection">›</button></div>
       <div class="echonav" id="imEcho" hidden><button class="btn small" id="imEchoPrev" aria-label="Previous echo" title="Previous echo">‹</button><span id="imEchoTxt"></span><button class="btn small" id="imEchoNext" aria-label="Next echo" title="Next echo">›</button></div>
@@ -510,6 +557,39 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
       <input type="file" id="safeFile" accept=".asc,text/plain" multiple hidden></div>
     <p class="note" id="safeNotes" role="status" aria-live="polite"></p>
     <div id="safeForms"></div>
+  </div>
+</dialog>
+<dialog id="figDlg" aria-labelledby="figTitle">
+  <div class="about-head">
+    <div><h2 id="figTitle">Save figure</h2><p class="muted">A PNG at the size, resolution and text size you choose, for publications and slides</p></div>
+    <button class="btn icon" id="figClose" aria-label="Close">✕</button>
+  </div>
+  <div id="figBody">
+    <div class="fgrid">
+      <span>View</span><div class="seg" id="figWhat"><button data-v="diag" aria-pressed="true">Sequence diagram</button><button data-v="k" aria-pressed="false">k-space</button><button data-v="img" aria-pressed="false">Image</button></div>
+      <label for="figPreset">Size</label><div class="frow"><select id="figPreset" class="sel"><option value="">Custom</option><option value="85">1 column, 85 mm wide</option><option value="120">1.5 columns, 120 mm wide</option><option value="175">2 columns, 175 mm wide</option><option value="slide">Slide 16:9, 254 × 143 mm</option></select>
+        <span class="muted">Journals differ: check the author guidelines.</span></div>
+      <span></span><div class="frow"><label>Width <input type="number" id="figW" class="fnum" min="1" step="any"></label><label>Height <input type="number" id="figH" class="fnum" min="1" step="any"></label>
+        <select id="figUnit" class="sel" aria-label="Unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
+      <label for="figDpi">Resolution</label><div class="frow"><input type="number" id="figDpi" class="fnum" min="50" max="2400" step="1"> dpi <span id="figPx" class="muted num"></span></div>
+      <label for="figPt">Text</label><div class="frow"><input type="number" id="figPt" class="fnum" min="4" max="30" step="0.5"> pt at the printed size
+        <select id="figFont" class="sel" aria-label="Font"><option value="arial">Arial</option><option value="helvetica">Helvetica</option><option value="times">Times</option><option value="">System font</option></select></div>
+      <label for="figLw">Lines</label><div class="frow"><input type="number" id="figLw" class="fnum" min="0.1" max="6" step="0.05"> pt <span class="muted">traces; axes and ticks a little thinner</span></div>
+      <label for="figTheme">Colours</label><div class="frow"><select id="figTheme" class="sel"><option value="">Current theme</option><option value="light">Light</option><option value="dark">Dark</option><option value="redz">RedZ</option><option value="paper">Paper</option><option value="universal">Universal</option><option value="forest">Forest</option></select>
+        <label>Background <select id="figBg" class="sel"><option value="theme">Theme</option><option value="white">White</option><option value="none">Transparent</option></select></label></div>
+    </div>
+    <section class="fsec" data-for="diag"><h6>Lanes</h6><div class="fchips" id="figLanes"></div>
+      <div class="fchips" style="margin-top:6px"><label class="chip tg" title="Gx, Gy and Gz in one lane, or a lane each"><input type="checkbox" id="figCombineG">Gradients on one axis</label><label class="chip tg" title="A faint area between a trace and its zero line (RF, a gradient in its own lane)"><input type="checkbox" id="figFill">Fill under traces</label></div>
+      <h6>Strips, axes and labels</h6><div class="fchips"><label class="chip tg"><input type="checkbox" id="figVols">Volumes</label><label class="chip tg"><input type="checkbox" id="figShots">Shots</label><label class="chip tg"><input type="checkbox" id="figAxis">Time axis</label><label class="chip tg"><input type="checkbox" id="figNames">Lane names and units</label><label class="chip tg"><input type="checkbox" id="figYNums">Value ranges</label><label class="chip tg"><input type="checkbox" id="figBlockNums">Block numbers</label></div>
+      <h6>Marks</h6><div class="fchips"><label class="chip tg"><input type="checkbox" id="figShade">Block shading</label><label class="chip tg"><input type="checkbox" id="figSel">Selection</label><label class="chip tg"><input type="checkbox" id="figPause">Pause hatching</label></div>
+      <p class="note">The figure shows the time range now in view. Lane heights follow the figure height.</p></section>
+    <section class="fsec" data-for="k"><h6>Contents</h6><div class="fchips"><label class="chip tg"><input type="checkbox" id="figKPath">Trajectory path</label><label class="chip tg"><input type="checkbox" id="figKAxes">Axes</label><label class="chip tg"><input type="checkbox" id="figKRange">|k| range</label><label class="chip tg" title="All readouts by type"><input type="checkbox" id="figKLegend">Legend</label><label class="chip tg" title="All readouts by type"><input type="checkbox" id="figKBoxes">Group boxes</label></div>
+      <p class="note">The figure shows the k-space view as it is now (readouts, projection, zoom). It is square: the height follows the width.</p></section>
+    <section class="fsec" data-for="img"><h6>Contents</h6><div class="fchips"><label class="chip tg"><input type="checkbox" id="figImText">Text</label><label class="chip tg"><input type="checkbox" id="figImDirs">Directions</label><label class="chip tg"><input type="checkbox" id="figImScout">Scout</label><label class="chip tg" title="Leave out the black margins around a non-square image"><input type="checkbox" id="figImCrop">Crop to the image</label><label class="chip tg" title="Each image pixel as a sharp square, rather than interpolated"><input type="checkbox" id="figImSharp">Sharp pixels</label></div>
+      <p class="note">The figure shows the simulated image as it is now. The height follows the width (and the image's aspect ratio when cropped).</p></section>
+    <div class="fchips" style="margin-top:12px"><label class="chip tg"><input type="checkbox" id="figStamp">Seqret version, file and date below</label></div>
+    <p class="note" id="figNote" role="status" aria-live="polite"></p>
+    <div class="frow fend"><button class="btn" id="figCancel">Cancel</button><button class="btn primary" id="figSave">Save PNG</button></div>
   </div>
 </dialog>
 <dialog id="about" aria-labelledby="aboutTitle">
@@ -7762,7 +7842,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.34.0", "date": "2026-10-02", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.34.0", "date": "2026-10-02", "notes": ["Multi-echo sequences (several images per excitation, e.g. multi-spin echo): the k-space arrows show each echo's readouts separately (Imaging readouts, echo 1, echo 2, …), each with its own trajectory, and the last view, all readouts by type, gives each echo's image its own colour. Echoes are found from the ECO label, or else from the k-space lines: readouts at the same position in each shot that cover the same lines are echoes of separate images, also when a refocusing pulse mirrors echo 2 onto the opposite line. Turbo spin echo and EPI trains stay one image.", "All readouts by type: where samples of two images lie on each other (echoes or slices covering the same k-space), their colours mix half and half, so the overlap shows; a lone image keeps its full colour. Dots are sized by the largest image rather than all samples together, so overlapping images do not shrink them.", "The image tab uses the same echo detection (a multi-spin echo without ECO label was one image before), and the phase-encoding line statistics are per echo, in both tabs."]}, {"version": "1.33.6", "date": "2026-10-02", "notes": ["k-space: the Colour option (acquisition order or ADC type) is gone. The arrows above the plot are always shown and step through the kinds of readout (imaging, reference, navigator, noise), each coloured by acquisition order; the last view shows all readouts together, coloured by type (and imaging by image). With one kind of readout, the arrows switch between it and that last view."]}, {"version": "1.33.5", "date": "2026-10-02", "notes": ["Slew rate: the trace no longer runs diagonally from the end of a ramp to the next event, as it still did in 1.33.4 at some zoom levels, e.g. right before and after the 180° pulses of the demo. Where a ramp ends at its block's end, the rounding of the two blocks' edge times could put the zero after the ramp before the ramp's last value in a pixel column, in exact peaks mode. Slew is now zero whenever the gradient is constant or off."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.37.0", "date": "2026-10-02", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.37.0", "date": "2026-10-02", "notes": ["Save figure, diagram: traces are drawn as one line of even width everywhere (steep ramps and readout trains were thinner than the rest), with the line width chosen in pt.", "Y axes with round values: each lane's scale goes up to the next round value above its peak (58.3 mT/m: 60; 19.3 µT: 20), with an axis line and ticks at round steps (e.g. 0, ±30, ±60), as many as fit; the time axis has a title, Time (ms). The coloured bars beside the lanes are left out.", "New options: gradients on one axis or a lane each (independent of the screen), fill under traces on or off, font (Arial, Helvetica, Times or the system font). Block shading stays its own switch."]}, {"version": "1.36.0", "date": "2026-10-02", "notes": ["Save figure… (Display menu, and next to Save as PNG in the k-space and Image tabs): a PNG of the sequence diagram, k-space or simulated image for publications. Choose the printed size (mm or inches, with column-width presets), the resolution (dpi) and the text size in points at that size; lines and marks scale with the text. The PNG carries its resolution, so layout programs place it at the chosen size.", "Contents: for the diagram the lanes (independent of the screen), the volume and shot strips, time axis, lane names and units, value ranges, block numbers, block shading, selection and pause hatching; for k-space the path, axes, |k| range, legend and group boxes; for the image the text, directions, scout, cropping to the image and sharp pixels. Colours from any theme (e.g. Paper while working in Dark), with the theme's, a white or a transparent background, and optionally the Seqret version, file and date below. The figure shows the current view (time range, k-space view, image)."]}, {"version": "1.35.1", "date": "2026-10-02", "notes": ["Selection colour (selected volume, shot or block) toned down in the newer themes: warm grey in RedZ, muted ochre in Paper, soft yellow in Universal, sage green in Forest.", "Forest is a little brighter (background, panels, plot and grid lines)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -10935,7 +11015,7 @@ function labelRows() {
 }
 function labelsLaneH(availH) {
   const n = labelRows().length; if (!n) return 0;
-  const rh = Math.max(11, Math.min(18, (availH * 0.42 - 6) / n));
+  const rh = Math.max(EXP ? 6 : 11, Math.min(18, (availH * 0.42 - 6) / n)); // a figure: within 42 % of the height
   return n * rh + 6;
 }
 const GLANE = { key: 'g', label: 'Gradients', w: 1.9, col: 'gx', kind: 'sym' };
@@ -10991,9 +11071,10 @@ let W = 0, H = 0, OW = 0, OH = 0, KW = 0, dpr = 1;
    them up. For browsers whose drawing is limited by the number of pixels. The cursor overlay, k-space and image stay at
    the screen's density. PNG export always draws at the screen's density (PNG_FULL). */
 let pdpr = 1, PNG_FULL = false;
-const GUT = 84, AXH = 26, SHOTH = 20;
-const shotsOn = () => S.seq && S.shotMode !== 'off' && S.seq.shots.length > 0;
-const volsOn = () => S.seq && S.volMode !== 'off' && S.vols.length > 0;
+let EXP = null; // while a figure is drawn for Save figure… (figure export, below): its options
+let GUT = 84, AXH = 26; const SHOTH = 20; // GUT, AXH: smaller in a figure without lane names or time axis (EXP)
+const shotsOn = () => S.seq && S.shotMode !== 'off' && S.seq.shots.length > 0 && (!EXP || EXP.shots);
+const volsOn = () => S.seq && S.volMode !== 'off' && S.vols.length > 0 && (!EXP || EXP.vols);
 const volY = () => 4, shotY = () => 4 + (volsOn() ? SHOTH + 4 : 0);
 const topH = () => (shotsOn() ? shotY() + SHOTH + 8 : volsOn() ? volY() + SHOTH + 8 : 6);
 function sizeCanvas(cv, ctx, w, h, d = dpr) { // only touch the canvas when its size really changes (resizing clears it)
@@ -11025,7 +11106,7 @@ function lanesGeom() {
   const vis = [];
   for (const l of LANES) {
     const isG = l.key === 'gx' || l.key === 'gy' || l.key === 'gz';
-    if (isG && S.combineG) { if (!vis.includes(GLANE) && (S.vis.gx || S.vis.gy || S.vis.gz)) vis.push(GLANE); continue; }
+    if (isG && (EXP ? EXP.combineG : S.combineG)) { if (!vis.includes(GLANE) && (S.vis.gx || S.vis.gy || S.vis.gz)) vis.push(GLANE); continue; }
     if (S.vis[l.key]) vis.push(l.key === 'rfMag' && S.rfMode === 'complex' ? { ...l, kind: 'sym', label: 'RF B1' } : l);
   }
   const tot = vis.reduce((s, l) => s + l.w, 0) || 1, TOP = topH();
@@ -11138,6 +11219,7 @@ let traceR = 1;
    their shape (thin RF pulses, fine readout trains) instead of widening to whole CSS pixels. Costs more rectangles
    and, zoomed out, up to about twice Seqret's time per frame on small files (15-30 % more on large ones). 'standard' is the drawing of 1.14.2-1.17.0, 'fast' is standard at 1× density. */
 function chooseTraceR(t0, t1, pw) {
+  if (EXP) return Math.min(8, Math.max(1, Math.round(pdpr))); // a figure: one column per output pixel
   const q = BENCH.quality || S.diagRes;
   if (q === 'ultra') return Math.min(6, 2 * Math.max(1, pdpr || 1)); // two columns per screen pixel, drawn anti-aliased
   if (q === 'high') return Math.min(3, Math.max(1, pdpr || 1));
@@ -11151,7 +11233,7 @@ function traceChan(key, t0, t1, x0, w) {
   colHas.fill(0, 0, nc); colBrk.fill(0, 0, nc); ensurePre(nc); preHas.fill(0, 0, nc); brkPre.fill(0, 0, nc);
   const col = t => { const k = Math.floor((t - t0) * sc * r); return k < 0 ? -1 : k >= nc ? nc : k; };
   let pre = null, post = null;
-  ensureTimes(nc); const exactMode = (BENCH.lineMode || S.lineMode) === 'exact';
+  ensureTimes(nc); const exactMode = !!EXP || (BENCH.lineMode || S.lineMode) === 'exact';
   // tmn, tmx, tf, tl: times of the minimum, maximum, first and last value (undefined: not known, e.g. from a summary)
   const agg = (k, mn, mx, first, last, x, cnt, tmn, tmx, tf, tl) => {
     const ex = tmn !== undefined;
@@ -11237,7 +11319,7 @@ function traceChan(key, t0, t1, x0, w) {
     }
     if (colHas[k]) {
       if (cN[k] === 1) { pts.push(cX[k], colFirst[k]); if (run) { run.x.push(cX[k]); run.mn.push(colFirst[k]); run.mx.push(colFirst[k]); } } // a single sample continues a band
-      else if (exactMode && colEx[k] && colRun[k] < SPAN_MIN) { // first, minimum, maximum and last in time order, where they happen
+      else if (exactMode && colEx[k] && (EXP || colRun[k] < SPAN_MIN)) { // first, minimum, maximum and last in time order, where they happen
         q4.length = 0; q4.push(colTf[k], colFirst[k], colTmn[k], colMin[k], colTmx[k], colMax[k], colTl[k], colLast[k]);
         /* the first value first and the last value last, the minimum and maximum between them in time order: vertex
            times are sums (block start + event time) and can be out of order by rounding where a block's last vertex
@@ -11247,6 +11329,9 @@ function traceChan(key, t0, t1, x0, w) {
         const ord = q4[2] <= q4[4] ? [0, 2, 4, 6] : [0, 4, 2, 6]; let lt = NaN, lv = NaN;
         for (const j of ord) { if (q4[j] === lt && q4[j + 1] === lv) continue; pts.push(tx(q4[j]), q4[j + 1]); lt = q4[j]; lv = q4[j + 1]; }
         run = null;
+      }
+      else if (EXP) { // a figure: the column's values as points of one stroked path (no bands), at the device-pixel column
+        const x = x0 + (k + 0.5) / r, up = colFirst[k] <= colLast[k]; pts.push(x, colFirst[k], x, up ? colMin[k] : colMax[k], x, up ? colMax[k] : colMin[k], x, colLast[k]); run = null;
       }
       else {
         const x = x0 + (k + 0.5) / r; pts.push(x, colFirst[k], x, colLast[k]);
@@ -11346,9 +11431,10 @@ function fillEnvelope(ctx, env, yOf, color) {
 function strokePts(ctx, pts, yOf, color, fillBase) {
   if (!pts.length) return;
   fillEnvelope(ctx, pts.env, yOf, color);
-  const LW = 1.35, hw = LW / 2;
-  // dense columns (runs of points at the same x) become spans; the rest is one anti-aliased path
-  let nDense = 0; for (let i = 2; i < pts.length; i += 2) if (pts[i] === pts[i - 2]) nDense++;
+  const LW = EXP ? EXP.lwCss : 1.35, hw = LW / 2;
+  // dense columns (runs of points at the same x) become spans; the rest is one anti-aliased path (a figure: all path,
+  // so the line has the same width everywhere)
+  let nDense = 0; if (!EXP) for (let i = 2; i < pts.length; i += 2) if (pts[i] === pts[i - 2]) nDense++;
   const useSpans = nDense >= SPAN_MIN, spans = [];
   /* the path is clipped to the lane's rows (RY0..RY1) as it is built: a value far outside the lane's scale (the k-vector
      after the last readout) otherwise gives segments millions of pixels long, which the browser strokes very slowly
@@ -11389,7 +11475,7 @@ function strokePts(ctx, pts, yOf, color, fillBase) {
     if (!pen) { M_(x, y); pen = true; if (fx === null) fx = x; } else L_(x, y);
     px = x; py = y; i += 2;
   }
-  ctx.strokeStyle = color; ctx.lineWidth = LW; ctx.lineJoin = 'round'; ctx.stroke();
+  ctx.strokeStyle = color; ctx.lineWidth = LW; ctx.lineJoin = 'round'; if (EXP) ctx.lineCap = 'round'; ctx.stroke(); ctx.lineCap = 'butt';
   if (spans.length) { ctx.fillStyle = color; const sp = rectRun(ctx); for (let k = 0; k < spans.length; k += 3) sp.add(spans[k] - cw / 2, cy(spans[k + 1]) - hw, cw, cy(spans[k + 2]) - cy(spans[k + 1]) + LW); sp.flush(); }
   if (fillBase !== undefined && fx !== null && !BENCH.skip.area) areaRects(ctx, pts, yOf, fillBase, color);
 }
@@ -11480,7 +11566,7 @@ function render() {
   // changes while panning), fading in between 2 and 6 px, so panning never switches it on and off
   const wOf = b => (s.blockStart[b + 1] - s.blockStart[b]) / (t1 - t0) * pw;
   const dmax = blockDurMax(s), pxPerS = pw / (t1 - t0); // skip groups of 64 blocks too narrow on screen to draw (exact)
-  if (nVis < 2e5 && !BENCH.skip.shade) {
+  if (nVis < 2e5 && !BENCH.skip.shade && (!EXP || EXP.shade)) {
     pctx.fillStyle = C.shade; pctx.beginPath(); const partial = [];
     for (let b = b0 | 1; b <= b1; b += 2) {
       if ((b & 63) < 2 && dmax[b >> 6] * pxPerS < 2) { b = (((b >> 6) + 1) << 6) - 1; continue; } // next odd block after this group
@@ -11491,14 +11577,14 @@ function render() {
     for (const [xa, w] of partial) { pctx.globalAlpha = (w - 2) / 4; pctx.fillRect(xa, 0, w, bot); }
     pctx.globalAlpha = 1;
   }
-  if (S.pauseHatch && !BENCH.skip.pause) drawPauses(s, X, t0, t1, x0, pw, lanes); // faint hatch over blocks without events
-  for (const sr of selRanges()) {
+  if ((EXP ? EXP.pause : S.pauseHatch) && !BENCH.skip.pause) drawPauses(s, X, t0, t1, x0, pw, lanes); // faint hatch over blocks without events
+  for (const sr of EXP && !EXP.sel ? [] : selRanges()) {
     if (sr[1] < t0 || sr[0] > t1) continue;
     const xa = X(sr[0]), xb = X(sr[1]);
     pctx.globalAlpha = S.selKind === 'block' ? 0.18 : 0.1; pctx.fillStyle = C.sel; pctx.fillRect(xa, 0, Math.max(2, xb - xa), bot);
     pctx.globalAlpha = 1; pctx.fillRect(xa, bot - 3, Math.max(2, xb - xa), 3);
   }
-  if (nVis < 2e5) { // block boundaries where both neighbouring blocks are at least 7 px wide
+  if (nVis < 2e5 && (!EXP || EXP.shade)) { // block boundaries where both neighbouring blocks are at least 7 px wide
     pctx.strokeStyle = C['line-soft']; pctx.lineWidth = 1; pctx.beginPath();
     for (let b = b0; b <= b1 + 1 && b <= nb; b++) {
       if (b < nb && (b & 63) === 0 && dmax[b >> 6] * pxPerS < 7 && b + 64 <= nb) { b += 63; continue; } // every block in the group < 7 px: no boundary inside or at its start
@@ -11527,8 +11613,9 @@ function render() {
     }
   }
   pctx.restore();
-  if (volsOn()) drawStrip(S.vols, vi0, vi1, volY(), 'Volumes', 'vol', S.selKind === 'vol' ? selSet() : new Set([volOfBlock(S.sel)]), S.selKind === 'vol', v => !v.nSamples, X, x0, pw);
-  if (shotsOn()) drawStrip(s.shots, si0, si1, shotY(), 'Shots', 'shot', S.selKind === 'vol' ? new Set() : S.selKind === 'shot' ? selSet() : new Set([shotOfBlock(S.sel)]), S.selKind === 'shot', v => !v.nADC, X, x0, pw);
+  const noSel = EXP && !EXP.sel;
+  if (volsOn()) drawStrip(S.vols, vi0, vi1, volY(), 'Volumes', 'vol', noSel ? new Set() : S.selKind === 'vol' ? selSet() : new Set([volOfBlock(S.sel)]), S.selKind === 'vol', v => !v.nSamples, X, x0, pw);
+  if (shotsOn()) drawStrip(s.shots, si0, si1, shotY(), 'Shots', 'shot', noSel || S.selKind === 'vol' ? new Set() : S.selKind === 'shot' ? selSet() : new Set([shotOfBlock(S.sel)]), S.selKind === 'shot', v => !v.nADC, X, x0, pw);
 
   // lanes
   pctx.font = `500 11.5px ${C.font}`; pctx.textBaseline = 'middle';
@@ -11549,11 +11636,26 @@ function render() {
     if (S.autoY && L.key !== 'rfPh' && L.key !== 'adc' && L.key !== 'm0') { let mv = 0; for (const [, c] of chans) mv = Math.max(mv, chanRange(c, t0, t1)); if (mv > 0) m = mv; }
     if (!(m > 0)) m = 1;
     const pad = 4;
+    /* a figure: the scale goes up to the next multiple of half a power of ten above the largest value (58.3 mT/m:
+       60; 19.3 µT: 20), with ticks dividing it into round steps (1, 2, 2.5 or 5 × 10^n: 60 by 2 → 30, by 3 → 20), as
+       many as fit at least 20 px apart */
+    let ticks = null;
+    if (EXP && L.key !== 'adc') {
+      if (L.kind === 'phase') ticks = [[-Math.PI, '−π'], [0, '0'], [Math.PI, 'π']];
+      else {
+        const sym = L.kind === 'sym', room = (sym ? L.h / 2 : L.h) - 2 * pad, nT = Math.max(1, Math.floor(room / 20)), v = m * f;
+        const p = Math.pow(10, Math.floor(Math.log10(v))) / 2, M = Math.ceil(v / p - 1e-9) * p;
+        const nice = x => { const q = x / Math.pow(10, Math.floor(Math.log10(x) + 1e-9)); return [1, 2, 2.5, 5, 10].some(c => Math.abs(q - c) < 1e-6); };
+        let n = 1; for (let d = Math.min(nT, 10); d >= 1; d--) if (nice(M / d)) { n = d; break; }
+        const step = M / n; m = M / f; ticks = [];
+        for (let q = sym ? -n : 0; q <= n; q++) ticks.push([q * step / f, (q < 0 ? '−' : '') + String(+Math.abs(q * step).toPrecision(6))]);
+      }
+    }
     let yOf, base;
     if (L.kind === 'sym' || L.kind === 'phase') { const mid = L.y + L.h / 2, hh = L.h / 2 - pad; yOf = v => mid - v / m * hh; base = mid; }
     else { const b = L.y + L.h - pad, hh = L.h - 2 * pad; yOf = v => b - v / m * hh; base = b; }
     // zero line
-    pctx.strokeStyle = C.line; pctx.lineWidth = 1; pctx.setLineDash(L.kind === 'sym' || L.kind === 'phase' ? [3, 3] : []);
+    pctx.strokeStyle = C.line; pctx.lineWidth = 1; pctx.setLineDash(!EXP && (L.kind === 'sym' || L.kind === 'phase') ? [3, 3] : []);
     pctx.beginPath(); pctx.moveTo(x0, Math.round(base) + 0.5); pctx.lineTo(x0 + pw, Math.round(base) + 0.5); pctx.stroke(); pctx.setLineDash([]);
     // gutter
     const multi = L.key === 'slew' || L.key === 'g' || L.key === 'm0', color = multi ? C.ink : C[L.col];
@@ -11575,9 +11677,17 @@ function render() {
         pctx.font = `400 10.5px ${C.font}`; pctx.fillStyle = C.muted;
       }
       pctx.textAlign = 'right';
+      if (ticks) { // a figure: an axis line with ticks and their values
+        const ya = yOf(ticks[ticks.length - 1][0]), yb = yOf(ticks[0][0]), ax = x0 - 0.5;
+        pctx.strokeStyle = C.muted; pctx.lineWidth = Math.max(0.5, EXP.lwCss * 0.6); pctx.beginPath(); pctx.moveTo(ax, ya); pctx.lineTo(ax, yb);
+        for (const [v] of ticks) { const y = yOf(v); pctx.moveTo(ax, y); pctx.lineTo(ax - 4, y); }
+        pctx.stroke(); pctx.lineWidth = 1; pctx.textBaseline = 'middle';
+        for (const [v, t] of ticks) pctx.fillText(t, x0 - 7, yOf(v));
+      } else {
       pctx.fillText(top, x0 - 6, L.y + 7);
       if (L.kind !== 'pos') pctx.fillText(L.kind === 'phase' ? '−π' : '−' + fmt(m * f, 3), x0 - 6, L.y + L.h - 7);
       else pctx.fillText('0', x0 - 6, L.y + L.h - 7);
+      }
     }
     pctx.save(); pctx.beginPath(); pctx.rect(x0, L.y - 1, pw, L.h + 2); pctx.clip(); RY0 = L.y - 8; RY1 = L.y + L.h + 8;
     if (L.key === 'adc') drawADC(L, X, t0, t1, pw, x0);
@@ -11592,33 +11702,38 @@ function render() {
         if (xa - xp >= 1) pctx.fillRect(xp, L.y - 1, xa - xp, L.h + 2); if (xb > xp) xp = xb;
       }
       if (x0 + pw - xp >= 1) pctx.fillRect(xp, L.y - 1, x0 + pw - xp, L.h + 2); pctx.globalAlpha = 1;
-      for (const [col, c] of chans) solidTrace(pctx, traceChan(c, t0, t1, x0, pw), yOf, C[col]);
+      for (const [col, c] of chans) { const p = traceChan(c, t0, t1, x0, pw); if (EXP) strokePts(pctx, p, yOf, C[col]); else solidTrace(pctx, p, yOf, C[col]); }
     }
     else for (const [col, c] of chans) {
       const pts = traceChan(c, t0, t1, x0, pw);
-      strokePts(pctx, pts, yOf, C[col], L.kind === 'phase' || chans.length > 1 ? undefined : base);
+      strokePts(pctx, pts, yOf, C[col], L.kind === 'phase' || chans.length > 1 || (EXP && !EXP.fill) ? undefined : base);
     }
     pctx.restore(); RY0 = -1e6; RY1 = 1e6; // only this lane's rows were limited
   }
-  // time axis
+  // time axis (the unit in the gutter; in a figure with a narrow gutter, after the last tick value)
+  if (!EXP || EXP.axis) {
   const span = t1 - t0, [uf, un] = timeUnit(span);
-  const step = niceStep(span / Math.max(2, pw / 95));
-  pctx.strokeStyle = C.line; pctx.beginPath(); pctx.moveTo(x0, bot + 0.5); pctx.lineTo(x0 + pw, bot + 0.5); pctx.stroke();
+  const step = niceStep(span / Math.max(2, pw / 95)), narrow = GUT < 40;
+  pctx.strokeStyle = EXP ? C.muted : C.line; if (EXP) pctx.lineWidth = Math.max(0.5, EXP.lwCss * 0.6); pctx.beginPath(); pctx.moveTo(x0, bot + 0.5); pctx.lineTo(x0 + pw, bot + 0.5); pctx.stroke();
   pctx.fillStyle = C.muted; pctx.textAlign = 'center'; pctx.font = `400 11px ${C.font}`;
   const dec = Math.max(0, -Math.floor(Math.log10(step * uf) + 1e-9));
   for (let t = Math.ceil(t0 / step) * step; t <= t1; t += step) {
     const x = X(t); pctx.beginPath(); pctx.moveTo(x, bot); pctx.lineTo(x, bot + 4); pctx.stroke();
+    if (narrow && !EXP && x > x0 + pw - 40) continue;
     pctx.fillText((t * uf).toFixed(dec), x, bot + 15);
   }
-  pctx.textAlign = 'left'; pctx.fillText(un, 14, bot + 15);
+  if (EXP) pctx.fillText(`Time (${un})`, x0 + pw / 2, bot + 31); // a figure: an axis title
+  else if (narrow) { pctx.textAlign = 'right'; pctx.fillText(un, x0 + pw, bot + 15); } else { pctx.textAlign = 'left'; pctx.fillText(un, 14, bot + 15); }
+  }
   // block numbers
-  if (nVis < pw / 34) {
+  if (nVis < pw / 34 && (!EXP || EXP.blockNums)) {
     pctx.font = `500 10.5px ${C.font}`; pctx.fillStyle = C.faint; pctx.textAlign = 'center';
     for (let b = b0; b <= b1; b++) {
       const xa = Math.max(x0, X(s.blockStart[b])), xb = Math.min(x0 + pw, X(s.blockStart[b + 1]));
       if (xb - xa > 26) pctx.fillText(s.B.id[b], (xa + xb) / 2, bot - 8);
     }
   }
+  if (EXP) return; // a figure: nothing else
   { const dt = performance.now() - renderT0; if (!BENCH.run && DIAG.on) diagShow(dt, dLane); }
   if (!BENCH.skip.ov) drawOverview(); drawOverlay(); if (!BENCH.skip.dom) { updateReadout(); updateNav(); updateLegend(); }
   if (S.tab === 'img' && S.sel < 0 && !S.sideHidden) requestImg();
@@ -12410,17 +12525,164 @@ function savePNG(cv, name) {
   x.fillStyle = C.line; x.fillRect(0, cv.height, c.width, Math.max(1, Math.round(dpr)));
   c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); });
 }
-$('#themeBtn').onclick = () => {
-  const r = document.documentElement, dark = matchMedia('(prefers-color-scheme: dark)').matches;
-  const cur = r.dataset.theme || (dark ? 'dark' : 'light');
-  r.dataset.theme = cur === 'dark' ? 'light' : 'dark';
-  try { localStorage.setItem('seqret-theme', r.dataset.theme); } catch (_) { }
-  themeChanged(); themeLabel();
+/* ---------- Save figure…: a PNG at a chosen physical size, resolution and text size ----------
+   The view is drawn again by its own code (render, drawK, drawImg) on its canvas, temporarily resized: text set in
+   CSS px at 11 px, so a text size of p pt at d dpi is a pixel ratio r = (p·d/72)/11 output pixels per CSS px, and the
+   layout is width/r CSS px wide. Lines, dots and marks scale with the text. EXP holds the options the drawing code
+   reads (what to leave out); everything (sizes, theme, canvases) is restored afterwards. The PNG carries its
+   resolution (pHYs chunk), so layout programs place it at the chosen size. */
+const FIG_DEF = { what: 'diag', preset: '175', w: 175, h: 100, unit: 'mm', dpi: 600, pt: 8, lw: 0.75, font: 'arial', theme: '', bg: 'theme', combineG: true, fill: true,
+  vols: true, shots: true, axis: true, names: true, yNums: true, blockNums: false, shade: true, sel: false, pause: false,
+  kPath: true, kAxes: true, kRange: true, kLegend: true, kBoxes: true,
+  imText: false, imDirs: true, imScout: false, imCrop: true, imSharp: false, stamp: false };
+const FIG_FLAGS = ['combineG', 'fill', 'vols', 'shots', 'axis', 'names', 'yNums', 'blockNums', 'shade', 'sel', 'pause', 'kPath', 'kAxes', 'kRange', 'kLegend', 'kBoxes', 'imText', 'imDirs', 'imScout', 'imCrop', 'imSharp', 'stamp'];
+const FIG_ID = k => 'fig' + k[0].toUpperCase() + k.slice(1);
+let FIG = { ...FIG_DEF }, figLanes = null;
+try { const o = JSON.parse(lsGet('fig') || 'null'); if (o && typeof o === 'object') for (const k in FIG_DEF) if (typeof o[k] === typeof FIG_DEF[k]) FIG[k] = o[k]; } catch (_) { }
+const figSaveOpts = () => { try { localStorage.setItem('seqret-fig', JSON.stringify(FIG)); } catch (_) { } };
+const FIG_MAX_SIDE = 16384, FIG_MAX_PX = 2.4e8; // browser canvas limits (Chromium: 16384 per side by default on some GPUs)
+function figImgAspect() { // height / width of the cropped image
+  const R = imgRes; if (!R || R.error || S.sim.view === 'k') return 1;
+  const I = R.img, ax = I.fovX * imgCrop(I, 'x'), ay = I.fovY * imgCrop(I, 'y'); return ay / ax;
+}
+function figGeom() {
+  const f = FIG.unit === 'in' ? 1 : 1 / 25.4, wIn = FIG.w * f;
+  let hIn = FIG.h * f; if (FIG.what === 'k' || (FIG.what === 'img' && !FIG.imCrop)) hIn = wIn; else if (FIG.what === 'img') hIn = wIn * figImgAspect();
+  const pxW = Math.round(wIn * FIG.dpi), pxH = Math.round(hIn * FIG.dpi), r = FIG.pt * FIG.dpi / 72 / 11;
+  const cssW = pxW / r, cssH = pxH / r;
+  let err = '';
+  if (!(pxW > 0 && pxH > 0 && r > 0 && FIG.lw > 0)) err = 'Enter a size, resolution, text size and line width.';
+  else if (Math.max(pxW, pxH) > FIG_MAX_SIDE || pxW * pxH > FIG_MAX_PX) err = `Too large for the browser (${pxW.toLocaleString()} × ${pxH.toLocaleString()} px; at most ${FIG_MAX_SIDE.toLocaleString()} per side): lower the resolution or the size.`;
+  else if (FIG.what === 'diag' && (cssW < 260 || cssH < 120)) err = 'The text is too large for this size: the diagram would have no room. Use smaller text or a larger figure.';
+  else if (FIG.what !== 'diag' && cssW < 120) err = 'The text is too large for this size. Use smaller text or a larger figure.';
+  else if (FIG.what === 'img' && (!imgRes || imgRes.error)) err = 'No simulated image yet: open the Image tab first.';
+  else if (!S.seq) err = 'No sequence loaded.';
+  return { pxW, pxH, r, cssW, cssH, err };
+}
+function figSync() { // dialog from FIG
+  segPress('#figWhat', FIG.what);
+  $('#figPreset').value = FIG.preset; $('#figW').value = +FIG.w.toFixed(2); $('#figH').value = +FIG.h.toFixed(2); $('#figUnit').value = FIG.unit;
+  $('#figDpi').value = FIG.dpi; $('#figPt').value = FIG.pt; $('#figLw').value = FIG.lw; $('#figFont').value = FIG.font; $('#figTheme').value = FIG.theme; $('#figBg').value = FIG.bg;
+  for (const k of FIG_FLAGS) $('#' + FIG_ID(k)).checked = FIG[k];
+  for (const sec of document.querySelectorAll('#figDlg .fsec')) sec.hidden = sec.dataset.for !== FIG.what;
+  $('#figH').disabled = FIG.what !== 'diag';
+  const L = $('#figLanes'); L.innerHTML = '';
+  for (const l of LANES) {
+    if (l.key === 'labels' && !(S.seq && (S.seq.labels.length || S.seq.triggers.length || S.seq.adcBlocks.length))) continue;
+    const lab = document.createElement('label'); lab.className = 'chip tg';
+    lab.innerHTML = `<input type="checkbox">${esc(CHIP_LABEL[l.key] || l.label)}`; const cb = lab.firstChild; cb.checked = !!figLanes[l.key];
+    cb.onchange = () => { figLanes[l.key] = cb.checked; figUpdate(); }; L.append(lab);
+  }
+  figUpdate();
+}
+function figUpdate() { // the pixel size and any problem
+  const g = figGeom(), note = $('#figNote');
+  $('#figPx').textContent = g.pxW > 0 && g.pxH > 0 ? `${g.pxW.toLocaleString()} × ${g.pxH.toLocaleString()} px` : '';
+  const anyLane = FIG.what !== 'diag' || LANES.some(l => figLanes[l.key]);
+  note.textContent = g.err || (anyLane ? '' : 'Choose at least one lane.');
+  $('#figSave').disabled = !!g.err || !anyLane;
+  if (FIG.what === 'img' && FIG.imCrop) $('#figH').value = +(FIG.w * figImgAspect()).toFixed(2); else if (FIG.what !== 'diag') $('#figH').value = +FIG.w.toFixed(2);
+}
+function openFigDialog(what) {
+  FIG.what = what || FIG.what; figLanes = { ...S.vis, labels: false }; // the lanes on screen, without the labels lane (it needs the height)
+  figSync(); const d = $('#figDlg'); if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
+}
+const figClose = () => { const d = $('#figDlg'); if (d.close) d.close(); else d.removeAttribute('open'); };
+$('#figClose').onclick = $('#figCancel').onclick = figClose;
+$('#figBtn').onclick = () => openFigDialog('diag');
+$('#kFig').onclick = () => openFigDialog('k');
+$('#imFig').onclick = () => openFigDialog('img');
+$('#figWhat').querySelectorAll('button').forEach(b => b.onclick = () => { FIG.what = b.dataset.v; figSync(); });
+$('#figPreset').onchange = e => {
+  const v = e.target.value; FIG.preset = v; if (!v) return figUpdate();
+  const toU = mm => FIG.unit === 'in' ? mm / 25.4 : mm;
+  if (v === 'slide') { FIG.w = toU(254); FIG.h = toU(143); } else { const r = FIG.h / FIG.w; FIG.w = toU(+v); FIG.h = FIG.w * (r > 0 ? r : 0.57); }
+  figSync();
 };
+$('#figUnit').onchange = e => { const u = e.target.value; if (u !== FIG.unit) { const f = u === 'in' ? 1 / 25.4 : 25.4; FIG.w *= f; FIG.h *= f; FIG.unit = u; } figSync(); };
+for (const [id, k] of [['#figW', 'w'], ['#figH', 'h'], ['#figDpi', 'dpi'], ['#figPt', 'pt'], ['#figLw', 'lw']]) $(id).oninput = e => { FIG[k] = +e.target.value; if (k === 'w' || k === 'h') { FIG.preset = ''; $('#figPreset').value = ''; } figUpdate(); };
+$('#figTheme').onchange = e => { FIG.theme = e.target.value; };
+$('#figFont').onchange = e => { FIG.font = e.target.value; };
+$('#figBg').onchange = e => { FIG.bg = e.target.value; };
+for (const k of FIG_FLAGS) $('#' + FIG_ID(k)).onchange = e => { FIG[k] = e.target.checked; figUpdate(); };
+$('#figSave').onclick = () => { const g = figGeom(); if (g.err) return; figSaveOpts(); figClose(); setTimeout(() => figExport(g), 30); };
+/* draw the figure and save it */
+function figExport(g) {
+  const root = document.documentElement, theme0 = root.dataset.theme, o = FIG, what = o.what;
+  if (o.theme) { root.dataset.theme = o.theme; readColors(); }
+  const FONTS = { arial: 'Arial, "Liberation Sans", Helvetica, sans-serif', helvetica: 'Helvetica, Arial, "Liberation Sans", sans-serif', times: '"Times New Roman", Times, "Liberation Serif", serif' };
+  if (FONTS[o.font]) C.font = FONTS[o.font];
+  EXP = { ...o, lwCss: o.lw * 11 / o.pt }; let src = null, rect = null; // line width in pt → CSS px of the layout
+  const sv = { W, H, pdpr, dpr, GUT, AXH, vis: S.vis, KW, IW, kTraj: S.kTraj, kFast, kBusy: kData_busy, tab: S.tab };
+  try {
+    if (what === 'diag') {
+      S.vis = { ...figLanes }; AXH = o.axis ? 40 : 6;
+      { // the gutter: the widest lane name or unit, then the tick values
+        pctx.font = `600 12px ${C.font}`; let nw = 0; for (const L of lanesGeom()) nw = Math.max(nw, pctx.measureText(L.label).width);
+        pctx.font = `400 10.5px ${C.font}`; for (const L of lanesGeom()) nw = Math.max(nw, pctx.measureText(laneUnit(L.key)).width);
+        const tw = pctx.measureText('−000.0').width;
+        GUT = Math.ceil(o.names ? 16 + nw + 10 + (o.yNums ? tw + 8 : 0) : o.yNums ? tw + 12 : 6);
+      }
+      W = g.cssW; H = g.cssH; pdpr = g.r; sizeCanvas(plot, pctx, W, H, g.r);
+      /* lane names and value ranges are left out by what they are: names, units, legends and strip titles are
+         left-aligned text starting within the screen's gutter (x < 84, also where the figure's gutter is narrower),
+         with the colour bars at x = 8; ranges are right-aligned text ending at the plot (x < GUT); the time axis
+         below is neither */
+      const ft = pctx.fillText, fr = pctx.fillRect, bot = H - AXH;
+      pctx.fillText = function (t, x, y, mw) {
+        if (y < bot && (this.textAlign === 'right' ? x < GUT && !o.yNums : this.textAlign === 'left' && x < Math.max(84, GUT) && !o.names)) return;
+        return mw === undefined ? ft.call(this, t, x, y) : ft.call(this, t, x, y, mw);
+      };
+      pctx.fillRect = function (x, y, w, h) { if (x === 8 && w === 3) return; return fr.call(this, x, y, w, h); }; // no colour bars in a figure
+      try { render(); } finally { delete pctx.fillText; delete pctx.fillRect; }
+      src = plot;
+    } else if (what === 'k') {
+      S.kTraj = o.kPath; kFast = false; kData_busy = true; S.tab = 'k'; // computed here and now, whatever the tab
+      KW = g.cssW; dpr = g.r; sizeCanvas(kc, kctx, KW, KW, g.r); kKey = null; drawK(); src = kc;
+    } else {
+      IW = g.cssW; sizeCanvas(ic, ictx, IW, IW, g.r); drawImg(); src = ic;
+      if (o.imCrop && EXP.imRect) { const [x, y, w, h] = EXP.imRect.map(v => v * g.r); rect = [Math.round(x), Math.round(y), Math.round(w), Math.round(h)]; }
+    }
+    if (!rect) rect = [0, 0, src.width, src.height];
+    const ptPx = o.pt * o.dpi / 72, foot = o.stamp ? Math.round(ptPx * 1.6) : 0, c = document.createElement('canvas');
+    c.width = rect[2]; c.height = rect[3] + foot; const x = c.getContext('2d');
+    if (o.bg !== 'none') { x.fillStyle = o.bg === 'white' ? '#FFFFFF' : C.plot; x.fillRect(0, 0, c.width, c.height); }
+    x.drawImage(src, rect[0], rect[1], rect[2], rect[3], 0, 0, rect[2], rect[3]);
+    if (o.stamp) {
+      x.font = `${Math.round(ptPx * 0.8)}px ${C.font}`; x.textAlign = 'right'; x.textBaseline = 'middle'; x.fillStyle = C.faint;
+      x.fillText(`${APP.name} ${APP.version} · ${S.name} · ${new Date().toISOString().slice(0, 10)}`, c.width - ptPx * 0.5, rect[3] + foot / 2);
+    }
+    const unit = o.unit === 'in' ? 'in' : 'mm', name = `${S.name.replace(/\.seq$/i, '')}_${{ diag: 'diagram', k: 'kspace', img: 'image' }[what]}_${+o.w.toFixed(1)}${unit}_${o.dpi}dpi.png`;
+    c.toBlob(b => b && pngWithDpi(b, o.dpi).then(b2 => { const a = document.createElement('a'); a.href = URL.createObjectURL(b2); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }));
+  } catch (e) { console.error(e); setTimeout(() => { openFigDialog(what); $('#figNote').textContent = `Could not make the figure: ${e.message}`; }, 50); }
+  finally {
+    EXP = null; Object.assign(S, { vis: sv.vis, kTraj: sv.kTraj, tab: sv.tab }); GUT = sv.GUT; AXH = sv.AXH; KW = sv.KW; IW = sv.IW; dpr = sv.dpr; kFast = sv.kFast; kData_busy = sv.kBusy;
+    if (o.theme) { if (theme0) root.dataset.theme = theme0; else delete root.dataset.theme; }
+    if (IW > 0) sizeCanvas(ic, ictx, IW, IW);
+    themeChanged(); resize(); // back to the screen: sizes, colours, every view drawn again
+  }
+}
+/* the PNG with its resolution: a pHYs chunk (pixels per metre) after IHDR */
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+async function pngWithDpi(blob, dpi) {
+  const u = new Uint8Array(await blob.arrayBuffer()), ppm = Math.round(dpi / 0.0254);
+  const ch = new Uint8Array(21), dv = new DataView(ch.buffer);
+  dv.setUint32(0, 9); ch.set([112, 72, 89, 115], 4); dv.setUint32(8, ppm); dv.setUint32(12, ppm); ch[16] = 1; dv.setUint32(17, crc32(ch.subarray(4, 17)));
+  const at = 8 + 25; // signature, then IHDR (4 length + 4 type + 13 data + 4 CRC)
+  const out = new Uint8Array(u.length + 21); out.set(u.subarray(0, at)); out.set(ch, at); out.set(u.subarray(at), at + 21);
+  return new Blob([out], { type: 'image/png' });
+}
+// themes: light, dark, redz ('graphite' in 1.34.1), paper, universal, forest (style.css); without a choice, light or dark as the system is set
+$('#themeSeg').querySelectorAll('button').forEach(b => b.onclick = () => {
+  document.documentElement.dataset.theme = b.dataset.v;
+  try { localStorage.setItem('seqret-theme', b.dataset.v); } catch (_) { }
+  themeChanged(); themeLabel();
+});
 /* storage keys were 'seqview-*' before the rename to Seqret (1.12.0): read the old key when the new one is absent */
 function lsGet(k) { try { const v = localStorage.getItem('seqret-' + k); return v !== null ? v : localStorage.getItem('seqview-' + k); } catch (_) { return null; } }
-try { const t = lsGet('theme'); if (t) document.documentElement.dataset.theme = t; } catch (_) { }
-function themeLabel() { const t = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); $('#themeBtn').textContent = t === 'dark' ? 'Light theme' : 'Dark theme'; }
+try { const t = lsGet('theme'); if (['light', 'dark', 'redz', 'graphite', 'paper', 'universal', 'forest'].includes(t)) document.documentElement.dataset.theme = t === 'graphite' ? 'redz' : t; } catch (_) { }
+function themeLabel() { const t = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); segPress('#themeSeg', t); }
 themeLabel(); matchMedia('(prefers-color-scheme: dark)').addEventListener('change', themeLabel);
 function themeChanged() { readColors(); ovCache = null; kInvalidate(); request(); drawK(); drawImg(); }
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', themeChanged);
@@ -12908,7 +13170,7 @@ function drawK() {
   ctx.strokeStyle = C.line; ctx.lineWidth = 1;
   const axes = [['kx', 'gx', [1, 0, 0]], ['ky', 'gy', [0, 1, 0]], ['kz', 'gz', [0, 0, 1]]];
   ctx.setLineDash([3, 4]);
-  for (const [, , d] of axes) { const [xa, ya] = P(-d[0] * m, -d[1] * m, -d[2] * m), [xb, yb] = P(d[0] * m, d[1] * m, d[2] * m); if (Math.hypot(xb - xa, yb - ya) < 4) continue; ctx.beginPath(); ctx.moveTo(xa, ya); ctx.lineTo(xb, yb); ctx.stroke(); }
+  if (!EXP || EXP.kAxes) for (const [, , d] of axes) { const [xa, ya] = P(-d[0] * m, -d[1] * m, -d[2] * m), [xb, yb] = P(d[0] * m, d[1] * m, d[2] * m); if (Math.hypot(xb - xa, yb - ya) < 4) continue; ctx.beginPath(); ctx.moveTo(xa, ya); ctx.lineTo(xb, yb); ctx.stroke(); }
   ctx.setLineDash([]);
   // path, simplified in screen space (points closer than ~0.6 px to the last drawn one are skipped)
   if (S.kTraj && p1 > p0) {
@@ -12922,7 +13184,7 @@ function drawK() {
       if (ns < PS.length && i >= PS[ns]) { while (ns < PS.length && i >= PS[ns]) ns++; ctx.moveTo(x, y); lx = x; ly = y; continue; }
       if ((x > lx ? x - lx : lx - x) + (y > ly ? y - ly : ly - y) > tol || i === p1 - 1 || (ns < PS.length && i + ps >= PS[ns])) { ctx.lineTo(x, y); lx = x; ly = y; }
     }
-    ctx.strokeStyle = C.muted; ctx.globalAlpha = 0.45; ctx.lineWidth = 0.8; ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = C.muted; ctx.globalAlpha = 0.45; ctx.lineWidth = EXP ? EXP.lwCss * 0.6 : 0.8; ctx.stroke(); ctx.globalAlpha = 1;
   }
   // ADC points into a device-pixel buffer
   let thinned = kData.smp.thinned;
@@ -12982,27 +13244,28 @@ function drawK() {
       ctx.save(); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.2;
       // the box of each group in k-space (its range of kx, ky, kz), projected as the samples are, so it turns with the view
       const pad = 0.03 * m; // a little outside the samples (3 % of the plot's k range), so the box does not hide under them
-      SG.list.forEach(g => { const b0 = g.bb; if (!b0 || !(b0[3] >= b0[0])) return; const b = [b0[0] - pad, b0[1] - pad, b0[2] - pad, b0[3] + pad, b0[4] + pad, b0[5] + pad]; ctx.strokeStyle = colOf(g); ctx.globalAlpha = 0.7; ctx.beginPath();
+      if (!EXP || EXP.kBoxes) SG.list.forEach(g => { const b0 = g.bb; if (!b0 || !(b0[3] >= b0[0])) return; const b = [b0[0] - pad, b0[1] - pad, b0[2] - pad, b0[3] + pad, b0[4] + pad, b0[5] + pad]; ctx.strokeStyle = colOf(g); ctx.globalAlpha = 0.7; ctx.beginPath();
         const c = q => P(q & 1 ? b[3] : b[0], q & 2 ? b[4] : b[1], q & 4 ? b[5] : b[2]);
         for (const [u, w] of [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]]) { const A = c(u), Bq = c(w); ctx.moveTo(A[0], A[1]); ctx.lineTo(Bq[0], Bq[1]); }
         ctx.stroke(); });
       ctx.restore();
       ctx.font = `500 11px ${C.font}`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-      SG.list.slice(0, 12).forEach((g, k) => { const y = 14 + k * 15; ctx.globalAlpha = 0.85; ctx.fillStyle = C.plot; const t = `${g.label} · ${g.n.toLocaleString()}`, w = ctx.measureText(t).width; ctx.fillRect(6, y - 7, w + 22, 14);
+      if (!EXP || EXP.kLegend) SG.list.slice(0, 12).forEach((g, k) => { const y = 14 + k * 15; ctx.globalAlpha = 0.85; ctx.fillStyle = C.plot; const t = `${g.label} · ${g.n.toLocaleString()}`, w = ctx.measureText(t).width; ctx.fillRect(6, y - 7, w + 22, 14);
         ctx.globalAlpha = 1; ctx.fillStyle = colOf(g); ctx.fillRect(9, y - 4, 9, 9); ctx.fillStyle = C.ink; ctx.fillText(t, 23, y); });
-      if (SG.list.length > 12) { ctx.fillStyle = C.muted; ctx.fillText(`… ${SG.list.length - 12} more groups`, 9, 14 + 12 * 15); }
+      if (SG.list.length > 12 && (!EXP || EXP.kLegend)) { ctx.fillStyle = C.muted; ctx.fillText(`… ${SG.list.length - 12} more groups`, 9, 14 + 12 * 15); }
     }
   }
   // gizmo
   const gx0 = 34, gy0 = KW - 34; ctx.font = `600 11px ${C.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  for (const [lab, col, d] of axes) {
+  if (!EXP || EXP.kAxes) for (const [lab, col, d] of axes) {
     const vx = R[0][0] * d[0] + R[0][1] * d[1] + R[0][2] * d[2], vy = R[1][0] * d[0] + R[1][1] * d[1] + R[1][2] * d[2];
     if (Math.hypot(vx, vy) < 0.08) continue;
     ctx.strokeStyle = C[col]; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx0, gy0); ctx.lineTo(gx0 + vx * 20, gy0 - vy * 20); ctx.stroke();
     ctx.fillStyle = C[col]; ctx.fillText(lab, gx0 + vx * 29, gy0 - vy * 29);
   }
   ctx.fillStyle = C.muted; ctx.textAlign = 'right'; ctx.font = `400 11px ${C.font}`;
-  ctx.fillText(`|k| ≤ ${fmt(m / S.kZoom, 4)} m⁻¹`, KW - 10, KW - 12);
+  if (!EXP || EXP.kRange) ctx.fillText(`|k| ≤ ${fmt(m / S.kZoom, 4)} m⁻¹`, KW - 10, KW - 12);
+  if (EXP) return; // a figure: not the page's texts
   const kTxt = n ? `${kData.total.toLocaleString()} ${grp && gs0.length > 1 ? grp.label.split(' ')[0].toLowerCase() + ' ' : ''}ADC samples${what}${allMode ? ', all kinds, coloured by group (not by time)' : ''}${thinned ? ` (${Math.min(n, kFast ? 2e5 : K_MAX_PTS).toLocaleString()} shown)` : ''}. Max |k| component ${fmt(m, 4)} m⁻¹ (≈ ${fmt(1e3 / (2 * m), 3)} mm resolution).` : 'No ADC samples in range.';
   // phase-encoding lines of the image of the selected shot (or the shot at the view centre)
   let kLines = ''; if (n && s.shots.length) { const k = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt((S.t0 + S.t1) / 2), im = k >= 0 ? shotImage(k) : null;
@@ -13542,7 +13805,7 @@ function drawImg() {
   // keep the physical aspect ratio (FOV) of the image
   // readout oversampling: the image covers the whole sampled FOV; cropping draws only its central part (display only)
   const cx = view === 'k' ? 1 : imgCrop(I, 'x'), cy = view === 'k' ? 1 : imgCrop(I, 'y');
-  ctx.imageSmoothingEnabled = view !== 'k';
+  ctx.imageSmoothingEnabled = view !== 'k' && !(EXP && EXP.imSharp);
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, IW, IW);
   let w, h, kE = 0;
   if (view === 'k') {
@@ -13561,13 +13824,14 @@ function drawImg() {
     const sw = G * cx, sh = G * cy; // source rectangle: centred (the image rows are stored with y up, the crop is symmetric)
     ctx.drawImage(imgOff, (G - sw) / 2, (G - sh) / 2, sw, sh, (IW - w) / 2, (IW - h) / 2, w, h);
   }
+  if (EXP) EXP.imRect = [(IW - w) / 2, (IW - h) / 2, w, h]; // the image's area (a figure can be cropped to it)
   ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.font = `11px ${C.font}`; ctx.textAlign = 'left';
-  const T = R.target;
-  ctx.fillText(view === 'k' ? 'k-space: grey acquired, amber filled' : `${S.vols.length ? `volume ${T.vi + 1} · ` : ''}shot ${T.ref + 1}`, 8, 16);
+  const T = R.target, ann = !EXP || EXP.imText;
+  if (ann) ctx.fillText(view === 'k' ? 'k-space: grey acquired, amber filled' : `${S.vols.length ? `volume ${T.vi + 1} · ` : ''}shot ${T.ref + 1}`, 8, 16);
   if (view !== 'k') {
-    ctx.textAlign = 'right'; ctx.fillText(`FOV ${fmt(I.fovX * cx, 3)} × ${fmt(I.fovY * cy, 3)} mm${R.osRO > 1 ? ` · ${fmt(R.osRO, 3)}× readout oversampling${cx < 1 || cy < 1 ? ', cropped' : ''}` : ''}`, IW - 8, IW - 8);
+    ctx.textAlign = 'right'; if (ann) ctx.fillText(`FOV ${fmt(I.fovX * cx, 3)} × ${fmt(I.fovY * cy, 3)} mm${R.osRO > 1 ? ` · ${fmt(R.osRO, 3)}× readout oversampling${cx < 1 || cy < 1 ? ', cropped' : ''}` : ''}`, IW - 8, IW - 8);
     const g = R.geom;
-    if (g) { // anatomical directions at the edges of the image
+    if (g && (!EXP || EXP.imDirs)) { // anatomical directions at the edges of the image
       const x0i = (IW - w) / 2, y0i = (IW - h) / 2, neg = v => v.map(x => -x);
       ctx.font = `600 12px ${C.font}`; ctx.fillStyle = 'rgba(255,214,120,.95)'; ctx.textBaseline = 'middle';
       ctx.textAlign = 'right'; ctx.fillText(dirLetter(g.e1), x0i + w - 5, y0i + h / 2);
@@ -13575,9 +13839,10 @@ function drawImg() {
       ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(dirLetter(g.e2), x0i + w / 2, y0i + 5);
       ctx.textBaseline = 'bottom'; ctx.fillText(dirLetter(neg(g.e2)), x0i + w / 2, y0i + h - 5);
       ctx.textBaseline = 'alphabetic';
-      drawScout(ctx, R, 8, IW - 8 - Math.round(IW * 0.3), Math.round(IW * 0.3));
     }
+    if (g && (!EXP || EXP.imScout)) drawScout(ctx, R, 8, IW - 8 - Math.round(IW * 0.3), Math.round(IW * 0.3));
   }
+  if (EXP) return; // a figure: not the page's texts
   // info
   const f = x => isFinite(x) ? fmt(x, 3) : '∞';
   const parts = [
@@ -14047,7 +14312,7 @@ function stimLine(pts, yOf, color, fillBase) { // pts: x, v pairs; NaN breaks th
     if (pen) { area.lineTo(xl, fillBase); area.lineTo(x0, fillBase); area.closePath(); }
     pctx.globalAlpha = 0.14; pctx.fillStyle = color; pctx.fill(area); pctx.globalAlpha = 1;
   }
-  pctx.strokeStyle = color; pctx.lineWidth = 1.3; pctx.lineJoin = 'bevel'; pctx.stroke();
+  pctx.strokeStyle = color; pctx.lineWidth = EXP ? EXP.lwCss : 1.3; pctx.lineJoin = EXP ? 'round' : 'bevel'; pctx.stroke();
 }
 function drawStimLane(L, t0, t1, x0, pw) {
   const k = L.stim, name = STIM_NAME[k], m = STIM ? STIM.idx[k] : undefined;
