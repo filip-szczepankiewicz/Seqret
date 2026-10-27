@@ -2,6 +2,29 @@
 
 All versions, newest first. The About dialog of the page shows the latest 3.
 
+## 1.38.0 (2026-10-27)
+
+- Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.
+- Lane kc: the zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r. It is reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.
+- Lane Maxwell μ (chip μ): the generalized Maxwell index μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T. It is reset at each excitation, and h flips sign at each refocusing pulse. The six distinct components of the integral are computed exactly (the gradients are piecewise linear); the lane is drawn through up to 24 points per gradient stretch. μ depends only on the gradients and B0, and is the same for the physical and the logical gradients.
+- Settings… (in the Concomitant row, or ⋯ › Concomitant gradients…): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. f is constant in time, so with f ≠ 0 Gc is not zero where the gradients are off and kc keeps changing in pauses; the dialog says so.
+- With the lanes on, the cursor readout gives Gc, kc and μ, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.
+- Display panel regrouped: Gx, Gy, Gz and One axis on one row, Slew and k-vector below them, then the gradient unit; Gc, kc, μ and Settings… in the new Concomitant row.
+- Save figure… and Save diagram as PNG include the new lanes (Lanes in the figure dialog). In a figure, lanes too low for the unit on its own line before (k-vector, Gc, kc and μ at the default size) now keep it under the name, with the x y z legend after it; the gutter widens to fit.
+- References in the dialog and under About › Acknowledgements: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; and for the field model Bernstein MA, Zhou XJ, Polzin JA, et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.
+- Checked against separate calculations from PyPulseq's gradient waveforms (sampled every 0.25 µs, integrated with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated: kc agrees to 4·10⁻⁷ of its largest value over three settings including f ≠ 0, the drawn Gc lane to 0.1 %; μ agrees to 3·10⁻⁷, the drawn μ lane to 2.3·10⁻⁴. The k-vector now shares its code with kc and μ and is unchanged, bit for bit (750,430 values compared with 1.37.0).
+
+## 1.37.0 (2026-10-02)
+
+- Save figure, diagram: traces are drawn as one line of even width everywhere (steep ramps and readout trains were thinner than the rest), with the line width chosen in pt.
+- Y axes with round values: each lane's scale goes up to the next round value above its peak (58.3 mT/m: 60; 19.3 µT: 20), with an axis line and ticks at round steps (e.g. 0, ±30, ±60), as many as fit; the time axis has a title, Time (ms). The coloured bars beside the lanes are left out.
+- New options: gradients on one axis or a lane each (independent of the screen), fill under traces on or off, font (Arial, Helvetica, Times or the system font). Block shading stays its own switch.
+
+## 1.36.0 (2026-10-02)
+
+- Save figure… (Display menu, and next to Save as PNG in the k-space and Image tabs): a PNG of the sequence diagram, k-space or simulated image for publications. Choose the printed size (mm or inches, with column-width presets), the resolution (dpi) and the text size in points at that size; lines and marks scale with the text. The PNG carries its resolution, so layout programs place it at the chosen size.
+- Contents: for the diagram the lanes (independent of the screen), the volume and shot strips, time axis, lane names and units, value ranges, block numbers, block shading, selection and pause hatching; for k-space the path, axes, |k| range, legend and group boxes; for the image the text, directions, scout, cropping to the image and sharp pixels. Colours from any theme (e.g. Paper while working in Dark), with the theme's, a white or a transparent background, and optionally the Seqret version, file and date below. The figure shows the current view (time range, k-space view, image).
+
 ## 1.24.2 (2026-09-29)
 
 - Frame-rate test: the suggestion blames Seqret's own work only when it takes most of what the screen allows per frame (80 % of a blank diagram's frame time). Before, it compared Seqret's time with the slow frame itself, so on a wide window at 100 Hz (Seqret 5 ms, frames 10–20 ms, the rest the browser's drawing) it wrongly said Seqret was the limit.
