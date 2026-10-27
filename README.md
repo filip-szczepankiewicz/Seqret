@@ -6,19 +6,23 @@ Open a sequence and interactively explore the RF and gradient waveforms, ADC eve
 
 ## Features
 
-* Responsive sequence diagram with RF, gradients, slew rate, k-vector, ADC and labels
-* Navigate and inspect individual blocks, shots and volumes
-* 2D and 3D k-space trajectory visualization
+* Responsive sequence diagram with RF, gradients, slew rate, k-vector, ADC, labels and more
 * Built-in 3D image simulation using the actual sequence timing and k-space trajectory
 * Simulation of T1/T2/T2\*, fat, diffusion, noise, susceptibility and eddy-current effects
+* Analytic head and abdomen phantoms
+* Automatic identification of shots and volumes (based on RF and flags)
+* Visualization of (multiple) slice/slab positions in 3D space
+* Navigate and inspect individual blocks, shots, and volumes
+* 3D k-space trajectory visualization
 * Peripheral and cardiac nerve-stimulation estimates using the SAFE model
-* Concomitant gradients, their k-space shift and the generalized Maxwell index as functions of time
+* Concomitant gradients, their k-space shift and the generalized Maxwell index
 * Linked browser tabs for comparing sequences
-* PNG export of sequence diagrams, k-space trajectories and simulated images, also as figures at a chosen size, resolution and text size
-* Light and dark themes
-* Pulseq formats **1.2–1.5**
+* PNG export of sequence diagrams
+* Multiple light and dark themes
+* Pulseq formats 1.2–1.5
 * Works offline and keeps sequence data local
 * Built-in frame-rate test, and a lower diagram quality for slower computers
+* Design instructions to enable LLM-support further development
 
 ## Usage
 
@@ -75,7 +79,7 @@ Gc and kc use the field model of Bernstein et al., extended by the asymmetry *a*
 
 > Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med. 2026;96:1178–1191. [doi:10.1002/mrm.70422](https://doi.org/10.1002/mrm.70422)
 
-## Authors
+## Author
 
 Designed and coded by **Filip Szczepankiewicz**, Lund University.  
 HTML implementation and testing scripts by **Claude**, Anthropic.
