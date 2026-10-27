@@ -14,9 +14,9 @@ Open a sequence and interactively explore the RF and gradient waveforms, ADC eve
 * Peripheral and cardiac nerve-stimulation estimates using the SAFE model
 * Concomitant gradients, their k-space shift and the generalized Maxwell index as functions of time
 * Linked browser tabs for comparing sequences
-* PNG export of diagrams
+* PNG export of sequence diagrams, k-space trajectories and simulated images, also as figures at a chosen size, resolution and text size
 * Light and dark themes
-* Pulseq formats versions 1.2–1.5
+* Pulseq formats **1.2–1.5**
 * Works offline and keeps sequence data local
 * Built-in frame-rate test, and a lower diagram quality for slower computers
 
@@ -51,9 +51,11 @@ If panning or zooming feels sluggish:
 
 ### Pulseq
 
-Seqret is based on, and designed for, sequences using the [Pulseq](https://pulseq.github.io/) format.
+Seqret is based on, and designed for, sequences using the [Pulseq](https://pulseq.github.io/) format. [PyPulseq](https://github.com/imr-framework/pypulseq), the Python implementation of Pulseq, was used to validate Seqret. Its test-suite reference files check how files are read and how gradient waveforms and k-space are computed. Its waveforms were also compared with the nerve-stimulation input and used for the independent checks of the concomitant gradients, kc and μ.
 
 > Layton KJ, et al. Pulseq: A rapid and hardware-independent pulse sequence prototyping framework. Magn Reson Med. 2017;77:1544–1552. [doi:10.1002/mrm.26235](https://doi.org/10.1002/mrm.26235)
+
+> Ravi KS, Geethanath S, Vaughan JT. PyPulseq: a Python package for MRI pulse sequence design. J Open Source Softw. 2019;4(42):1725. [doi:10.21105/joss.01725](https://doi.org/10.21105/joss.01725)
 
 ### Nerve stimulation (SAFE model on Siemens systems)
 
