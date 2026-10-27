@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.37.0 (2026-10-02) - Pulseq sequence viewer
+  Seqret 1.38.0 (2026-10-27) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.37.0">
-<meta name="description" content="Seqret 1.37.0: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.38.0">
+<meta name="description" content="Seqret 1.38.0: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -282,7 +282,13 @@ dialog#figDlg{border:1px solid var(--line);border-radius:12px;background:var(--s
 .fchips{display:flex;flex-wrap:wrap;gap:6px}
 #figBody .fsec{border-top:1px solid var(--line-soft);margin-top:10px;padding-top:2px}
 #figBody .note{margin:8px 0 0}
-dialog#figDlg::backdrop,dialog#about::backdrop,dialog#safeDlg::backdrop{background:rgba(10,15,20,.4)}
+dialog#figDlg::backdrop,dialog#about::backdrop,dialog#safeDlg::backdrop,dialog#ccDlg::backdrop{background:rgba(10,15,20,.4)}
+dialog#ccDlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(600px,94vw);max-height:90vh}
+#ccBody{padding:0 20px 20px;overflow:auto;max-height:calc(90vh - 80px);font-size:13.5px}
+.ccgrid{display:grid;grid-template-columns:auto 1fr;gap:9px 12px;align-items:center;margin:12px 0}
+.ccgrid>span,.ccgrid>label{color:var(--muted)}
+.ccgrid input{width:84px;border:1px solid var(--line);background:var(--plot);color:var(--ink);border-radius:6px;padding:3px 6px;font:inherit;font-variant-numeric:tabular-nums;text-align:right}
+.ccgrid input.bad{border-color:var(--c-rf)}
 dialog#safeDlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(720px,94vw);max-height:90vh}
 #safeBody{padding:0 20px 20px;overflow:auto;max-height:calc(90vh - 80px);font-size:13.5px}
 #safeBody code{font-size:12.5px}
@@ -336,6 +342,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
 .popbody .cbody{display:flex;flex-direction:column;gap:6px;min-width:0}
 .popbody .cbody .chips{gap:5px}
 .popbody .cbody .chip{padding:3px 9px 3px 7px}
+.popbody .crow{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
 .popbody .cctl{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
 .popbody .cbody .stimstat{margin:0}
 .popbody .pgrid>span,.popbody .pgrid>label[for]{color:var(--muted)}
@@ -388,7 +395,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.37.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.38.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -402,7 +409,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
           <div class="linkbox"><select id="linkSel" aria-label="Link tabs" title="Mirror zoom, position and cursor between Seqret tabs"><option value="off">Off</option><option value="time">Same time</option><option value="shot">Same shot</option><option value="vol">Same volume</option></select>
           <span id="linkInfo" class="linkinfo"></span></div>
           <p class="note">Mirrors zoom, position and cursor between Seqret tabs in this browser.</p></section>
-        <section><button class="btn menuitem" id="specMenuBtn">System specifications (PNS, CNS)…</button></section>
+        <section><button class="btn menuitem" id="specMenuBtn">System specifications (PNS, CNS)…</button><button class="btn menuitem" id="ccMenuBtn">Concomitant gradients…</button></section>
         <section><button class="btn menuitem" id="diagBtn" title="Frame times of the diagram (Shift+D), for reporting performance">Show frame times</button><button class="btn menuitem" id="benchBtn" title="Moves the view on every frame for about half a minute and measures the frame rate, also with parts of the drawing left out. For reporting performance.">Run frame-rate test</button></section>
         <section><div class="themeseg"><span>Theme</span><div class="seg" id="themeSeg" role="group" aria-label="Colour theme"><button data-v="light" aria-pressed="false">Light</button><button data-v="dark" aria-pressed="false">Dark</button><button data-v="redz" aria-pressed="false" title="Dark, with grey x and y gradients, a pale red z gradient, near-white RF and pale orange RF phase">RedZ</button><button data-v="paper" aria-pressed="false" title="For figures: white, no lane shading, dark traces that stay apart in greyscale">Paper</button><button data-v="universal" aria-pressed="false" title="Okabe–Ito colours (Color Universal Design), distinguishable with the common colour-vision deficiencies">Universal</button><button data-v="forest" aria-pressed="false" title="Dark green-grey with calm, muted colours">Forest</button></div></div></section>
       </div>
@@ -434,7 +441,9 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
               <span class="clab">RF</span>
               <div class="cbody"><div class="chips" data-group="rf" role="group" aria-label="RF channels"></div><div class="cctl"><select id="rfUnit" aria-label="RF unit"><option value="uT">µT</option><option value="Hz">Hz</option></select><label title="Real and imaginary parts show the RF shape with its sign (a sinc's negative lobes); the phase and frequency offsets are not included">as <select id="rfMode" aria-label="RF shown as"><option value="mag">magnitude</option><option value="complex">real and imaginary</option></select></label></div></div>
               <span class="clab">Gradients</span>
-              <div class="cbody"><div class="chips" data-group="g" role="group" aria-label="Gradient channels"></div><div class="cctl"><select id="gUnit" aria-label="Gradient unit"><option value="mT">mT/m</option><option value="Hz">kHz/m</option></select><label title="Draw Gx, Gy and Gz on one shared axis, told apart by colour"><input type="checkbox" id="combG" checked> One axis</label></div></div>
+              <div class="cbody"><div class="crow"><div class="chips" data-group="g" role="group" aria-label="Gradient channels"></div><label title="Draw Gx, Gy and Gz on one shared axis, told apart by colour"><input type="checkbox" id="combG" checked> One axis</label></div><div class="chips" data-group="g2" role="group" aria-label="Slew rate and k-vector"></div><div class="cctl"><select id="gUnit" aria-label="Gradient unit"><option value="mT">mT/m</option><option value="Hz">kHz/m</option></select></div></div>
+              <span class="clab">Concomitant</span>
+              <div class="cbody"><div class="chips" data-group="cc" role="group" aria-label="Concomitant gradient channels"></div><div class="cctl"><button class="btn small" id="ccSpecBtn" title="Position and field model of the concomitant gradients (lanes Gc and kc)">Settings…</button></div></div>
               <span class="clab">Readout</span>
               <div class="cbody"><div class="chips" data-group="acq" role="group" aria-label="Readout channels"></div></div>
               <span class="clab">Stimulation</span>
@@ -557,6 +566,23 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
       <input type="file" id="safeFile" accept=".asc,text/plain" multiple hidden></div>
     <p class="note" id="safeNotes" role="status" aria-live="polite"></p>
     <div id="safeForms"></div>
+  </div>
+</dialog>
+<dialog id="ccDlg" aria-labelledby="ccTitle">
+  <div class="about-head">
+    <div><h2 id="ccTitle">Concomitant gradients</h2><p class="muted">The gradient that spins at one position see, from the full field of the gradient coils</p></div>
+    <button class="btn icon" id="ccClose" aria-label="Close">✕</button>
+  </div>
+  <div id="ccBody">
+    <p class="note">Besides the field along B<sub>0</sub>, the gradient coils make transverse fields. With them the field is B<sub>z</sub> = B<sub>0</sub> + g·r, B<sub>x</sub> = g<sub>x</sub>z − a g<sub>z</sub>x + f y, B<sub>y</sub> = g<sub>y</sub>z + (a − 1) g<sub>z</sub>y + f x, and spins at r precess at γ|B|: the gradient they see is ∇|B| = g + G<sub>c</sub>. Lane <b>Gc</b> shows G<sub>c</sub> at r (computed exactly, not as its second-order expansion; for a = 0.5, f = 0 the Maxwell terms of Bernstein et al., <i>Magn Reson Med</i> 1998;39:300–308). The calculation follows Olsson et al., <i>Magn Reson Med</i> 2026;96(3):1178–1191, <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. Lane <b>kc</b> its zeroth moment k<sub>c</sub> = ∫G<sub>c</sub> dt, the k-space shift of the spins at r, reset at each excitation and sign-flipped at each refocusing pulse like the k-vector. Lane <b>Maxwell μ</b> is the generalized Maxwell index μ = (γ/B<sub>0</sub>)|∫<b>g</b>(t)<sup>⊗2</sup>h(t) dt|<sub>F</sub> in 1/m² (γ = 42.58 MHz/T), from the nominal gradients and B<sub>0</sub> only, reset at each excitation with h flipping sign at each refocusing pulse. From the physical (rotated) gradients; the sequence's x, y and z are taken as the scanner's, with B<sub>0</sub> along z. Turn the lanes on under Display › Concomitant.</p>
+    <div class="ccgrid">
+      <span>Position r</span><div class="frow"><label>x <input type="number" step="any" id="ccX" aria-label="Position x (cm)"></label><label>y <input type="number" step="any" id="ccY" aria-label="Position y (cm)"></label><label>z <input type="number" step="any" id="ccZ" aria-label="Position z (cm)"></label> cm</div>
+      <label for="ccB0">Field strength B<sub>0</sub></label><div class="frow"><input type="number" step="any" min="0" id="ccB0"> T</div>
+      <label for="ccA">Asymmetry a</label><div class="frow"><input type="number" step="any" id="ccA"><span class="muted">of the z coil; 0.5 for a symmetric one</span></div>
+      <label for="ccF">Non-Maxwell term f</label><div class="frow"><input type="number" step="any" id="ccF"> T/m <span class="muted">constant in time; 0 for none</span></div>
+    </div>
+    <p class="note" id="ccNote" role="status" aria-live="polite"></p>
+    <div class="frow"><button class="btn" id="ccDefault">Default values</button></div>
   </div>
 </dialog>
 <dialog id="figDlg" aria-labelledby="figTitle">
@@ -7842,7 +7868,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.37.0", "date": "2026-10-02", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.37.0", "date": "2026-10-02", "notes": ["Save figure, diagram: traces are drawn as one line of even width everywhere (steep ramps and readout trains were thinner than the rest), with the line width chosen in pt.", "Y axes with round values: each lane's scale goes up to the next round value above its peak (58.3 mT/m: 60; 19.3 µT: 20), with an axis line and ticks at round steps (e.g. 0, ±30, ±60), as many as fit; the time axis has a title, Time (ms). The coloured bars beside the lanes are left out.", "New options: gradients on one axis or a lane each (independent of the screen), fill under traces on or off, font (Arial, Helvetica, Times or the system font). Block shading stays its own switch."]}, {"version": "1.36.0", "date": "2026-10-02", "notes": ["Save figure… (Display menu, and next to Save as PNG in the k-space and Image tabs): a PNG of the sequence diagram, k-space or simulated image for publications. Choose the printed size (mm or inches, with column-width presets), the resolution (dpi) and the text size in points at that size; lines and marks scale with the text. The PNG carries its resolution, so layout programs place it at the chosen size.", "Contents: for the diagram the lanes (independent of the screen), the volume and shot strips, time axis, lane names and units, value ranges, block numbers, block shading, selection and pause hatching; for k-space the path, axes, |k| range, legend and group boxes; for the image the text, directions, scout, cropping to the image and sharp pixels. Colours from any theme (e.g. Paper while working in Dark), with the theme's, a white or a transparent background, and optionally the Seqret version, file and date below. The figure shows the current view (time range, k-space view, image)."]}, {"version": "1.35.1", "date": "2026-10-02", "notes": ["Selection colour (selected volume, shot or block) toned down in the newer themes: warm grey in RedZ, muted ochre in Paper, soft yellow in Universal, sage green in Forest.", "Forest is a little brighter (background, panels, plot and grid lines)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.38.0", "date": "2026-10-27", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.38.0", "date": "2026-10-27", "notes": ["Concomitant gradients: two new lanes under Display › Concomitant. Gc is the gradient that spins at a chosen position r see on top of the nominal one, from the full field of the gradient coils (∇|B| − g, exact rather than its second-order expansion), with x, y and z in the gradient colours. kc is its zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r: reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.", "Concomitant gradients… (Settings… under Display › Concomitant, or the ⋯ menu): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. Method: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422 (credited in the dialog and under About › Acknowledgements).", "Generalized Maxwell index (lane Maxwell μ, chip μ under Display › Concomitant): μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T and B0 from the concomitant settings, as in Olsson et al. 2026. Reset at each excitation, with h flipping sign at each refocusing pulse; integrated exactly (the gradients are piecewise linear), shown in the cursor readout, and checked against PyPulseq's waveforms to 3·10⁻⁷ of its largest value.", "Save figure… and Save diagram as PNG include the Gc, kc and Maxwell μ lanes (Lanes in the figure dialog). In a figure, low lanes (k-vector, Gc, kc and μ at the default size) now keep their unit under the name, with the x y z legend after it; the gutter widens to fit.", "With the lanes on, the cursor readout gives Gc and kc, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.", "Checked against a separate calculation (PyPulseq's gradient waveforms sampled every 0.25 µs, the same field model written independently, integration with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated, and three settings including f ≠ 0: kc agrees to 4·10⁻⁷ of its largest value, and the drawn Gc lane to 0.1 % of its largest value. The k-vector now shares its code with kc and is unchanged, bit for bit."]}, {"version": "1.37.0", "date": "2026-10-02", "notes": ["Save figure, diagram: traces are drawn as one line of even width everywhere (steep ramps and readout trains were thinner than the rest), with the line width chosen in pt.", "Y axes with round values: each lane's scale goes up to the next round value above its peak (58.3 mT/m: 60; 19.3 µT: 20), with an axis line and ticks at round steps (e.g. 0, ±30, ±60), as many as fit; the time axis has a title, Time (ms). The coloured bars beside the lanes are left out.", "New options: gradients on one axis or a lane each (independent of the screen), fill under traces on or off, font (Arial, Helvetica, Times or the system font). Block shading stays its own switch."]}, {"version": "1.36.0", "date": "2026-10-02", "notes": ["Save figure… (Display menu, and next to Save as PNG in the k-space and Image tabs): a PNG of the sequence diagram, k-space or simulated image for publications. Choose the printed size (mm or inches, with column-width presets), the resolution (dpi) and the text size in points at that size; lines and marks scale with the text. The PNG carries its resolution, so layout programs place it at the chosen size.", "Contents: for the diagram the lanes (independent of the screen), the volume and shot strips, time axis, lane names and units, value ranges, block numbers, block shading, selection and pause hatching; for k-space the path, axes, |k| range, legend and group boxes; for the image the text, directions, scout, cropping to the image and sharp pixels. Colours from any theme (e.g. Paper while working in Dark), with the theme's, a white or a transparent background, and optionally the Seqret version, file and date below. The figure shows the current view (time range, k-space view, image)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -8131,11 +8157,14 @@ const CHANNELS = {
   gx: { col: 'pgx', fn: geoG, p: false }, gy: { col: 'pgy', fn: geoG, p: false }, gz: { col: 'pgz', fn: geoG, p: false }, // physical (after rotation)
   sx: { col: 'pgx', fn: geoSlew, p: false }, sy: { col: 'pgy', fn: geoSlew, p: false }, sz: { col: 'pgz', fn: geoSlew, p: false },
   rfMag: { col: 'rf', fn: geoRfm, p: false }, rfPh: { col: 'rf', fn: geoRfp, p: true },
-  rfRe: { col: 'rf', fn: geoRfRe, p: false, lazy: true }, rfIm: { col: 'rf', fn: geoRfIm, p: false, lazy: true } // summaries built on first use
+  rfRe: { col: 'rf', fn: geoRfRe, p: false, lazy: true }, rfIm: { col: 'rf', fn: geoRfIm, p: false, lazy: true }, // summaries built on first use
+  // concomitant gradients at the chosen position (ccState must have run): one column of combination ids for all axes
+  cx: { col: 'ccx', fn: (s, id) => ccGeo(s, id).geo[0], p: false, lazy: true, cc: 0 }, cy: { col: 'ccx', fn: (s, id) => ccGeo(s, id).geo[1], p: false, lazy: true, cc: 1 },
+  cz: { col: 'ccx', fn: (s, id) => ccGeo(s, id).geo[2], p: false, lazy: true, cc: 2 }
 };
 /* summary of channel over block i: {has, mn, mx, first, last, brk}; value is 0 outside events (NaN for phase) */
 function blockSummary(seq, key, i, o) {
-  if (key in M0_KEYS) return m0Summary(seq, i, M0_KEYS[key], o);
+  if (key in KINT) return kintSummary(KINT[key][0], seq, i, KINT[key][1], o);
   const ch = CHANNELS[key], id = seq.B[ch.col][i], fn = ch.fn, kind = ch.p ? 'p' : 'g';
   if (!id) { o.n = 0; if (kind === 'p') { o.has = 0; o.brk = 0; } else { o.has = 1; o.mn = o.mx = o.first = o.last = 0; o.brk = 0; } return o; }
   const g = fn === geoSlew ? slewSum(seq, id) : fn(seq, id); o.n = g.n;
@@ -8148,7 +8177,7 @@ function blockSummary(seq, key, i, o) {
 }
 /* exact vertices of block i for drawing (absolute times); push(t, v) */
 function blockVertices(seq, key, i, push) {
-  if (key in M0_KEYS) return m0Vertices(seq, i, M0_KEYS[key], push);
+  if (key in KINT) return kintVertices(KINT[key][0], seq, i, KINT[key][1], push);
   const ch = CHANNELS[key], id = seq.B[ch.col][i], fn = ch.fn, kind = ch.p ? 'p' : 'g', t0 = seq.blockStart[i], t1 = seq.blockStart[i + 1];
   if (!id) { if (kind !== 'p') { push(t0, 0); push(t1, 0); } return; }
   const g = fn(seq, id);
@@ -8160,26 +8189,34 @@ function blockVertices(seq, key, i, push) {
   if (last === 0 && g.v[g.n - 1] !== 0) push(t0 + g.t[g.n - 1], 0);
   push(t1, last);
 }
-/* ---------- zeroth moment m0 = ∫G dt ----------
+/* ---------- zeroth moments drawn as lanes: m0 = ∫G dt (the k-vector) and kc = ∫Gc dt (concomitant) ----------
    With G in Hz/m, m0 is in 1/m and equals k: the same integral as kInBlock, reset at each excitation and sign-flipped
    at each refocusing pulse (both at the RF centre, as Pulseq's calculateKspacePP). Within a block m0 is piecewise
    quadratic, so its extremes lie at the block ends, the gradient's vertices, its zero crossings and the RF centre;
-   ramps get extra points so that the curve draws smoothly. Keys mx, my, mz behave as channels. */
+   ramps get extra points so that the curve draws smoothly. kc follows the same rules for the concomitant gradients
+   (see the concomitant section below).
+   A provider says what is integrated: per block the event id of each axis (ids), the geometry of an event (geo), the
+   running integral's extremes over an event (ext), the values at the block starts (start) and the integral inside a
+   block (inBlock). tok changes when the integrand does (new concomitant parameters), which empties the block memo.
+   Keys mx, my, mz (m0) and qx, qy, qz (kc) behave as channels. */
+const KP_M0 = { name: 'm0', keys: ['mx', 'my', 'mz'], start: s => s.kStart, ids: s => [s.B.pgx, s.B.pgy, s.B.pgz], tok: s => s,
+  geo: (s, id) => geoG(s, id), ext: (s, id) => m0EventExt(s, id), inBlock: (s, i, rel, out, o, nq) => kInBlock(s, i, rel, out, o, nq),
+  st: s => s.m0St || (s.m0St = {}), memo: { tok: null, map: new Map(), nv: 0 } };
 const M0_KEYS = { mx: 0, my: 1, mz: 2 };
-let m0Memo = { seq: null, map: new Map() }; // the last few blocks evaluated (drawing asks for x, y and z in turn)
-function m0Block(seq, i) { // { t: relative times, v: [x, y, z] values } for block i
-  if (m0Memo.seq !== seq) m0Memo = { seq, map: new Map() };
-  const hit = m0Memo.map.get(i); if (hit) return hit;
-  const B = seq.B, dur = seq.blockStart[i + 1] - seq.blockStart[i], T = [0, dur], ids = [B.pgx[i], B.pgy[i], B.pgz[i]];
-  for (const id of ids) {
-    if (!id) continue; const g = geoG(seq, id);
+const KINT = { mx: [KP_M0, 0], my: [KP_M0, 1], mz: [KP_M0, 2] }; // the kc keys are added with the concomitant provider
+function kintBlock(P, seq, i) { // { t: relative times, v: [x, y, z] values } for block i
+  const M = P.memo, tok = P.tok(seq); if (M.tok !== tok) { M.tok = tok; M.map = new Map(); M.nv = 0; }
+  const hit = M.map.get(i); if (hit) return hit;
+  const B = seq.B, dur = seq.blockStart[i + 1] - seq.blockStart[i], T = [0, dur], ids = P.ids(seq);
+  for (let ax = 0; ax < 3; ax++) {
+    const id = ids[ax][i]; if (!id) continue; const g = P.geo(seq, id, ax);
     for (let k = 0; k < g.n; k++) {
       const t = g.t[k]; if (t >= 0 && t <= dur) T.push(t);
       if (k) {
         const ta = g.t[k - 1], va = g.v[k - 1], vb = g.v[k], D = t - ta;
-        if (va !== vb && D > 0) {
+        if ((va !== vb || (P.nl && va !== 0)) && D > 0) { // (μ bends on plateaus too)
           if ((va < 0) !== (vb < 0) && va !== 0 && vb !== 0) T.push(ta + D * va / (va - vb)); // G = 0: an extremum of m0
-          const n = Math.min(8, Math.round(D / 1e-5)); for (let q = 1; q < n; q++) T.push(ta + D * q / n); // quadratic: smooth curve
+          const n = Math.min(P.nl ? 24 : 8, Math.round(D / 1e-5)); for (let q = 1; q < n; q++) T.push(ta + D * q / n); // quadratic (μ: a norm of cubics): smooth curve
         }
       }
     }
@@ -8191,11 +8228,11 @@ function m0Block(seq, i) { // { t: relative times, v: [x, y, z] values } for blo
   let reset = -1; // an excitation resets m0 to zero: the index of the first vertex after the reset (drawn as a new start)
   if (rc >= 0) { const j = t.findIndex(x => Math.abs(x - rc) <= 1e-12); if (j >= 0) { t.splice(j, 1, rc - 1e-12, rc); if (exc) reset = j + 1; } } // both sides of the jump
   const v = [new Float64Array(t.length), new Float64Array(t.length), new Float64Array(t.length)];
-  kInBlock(seq, i, Float64Array.from(t), v, 0);
+  P.inBlock(seq, i, Float64Array.from(t), v, 0);
   // kept up to about a million vertices (~32 MB) rather than 4,096 blocks: a ZTE view can hold thousands of excitation
   // blocks, which are drawn vertex by vertex (their reset breaks the curve), and recomputing them every frame was slow
-  const r = { t, v, reset }; m0Memo.nv = (m0Memo.nv || 0) + t.length;
-  if (m0Memo.nv > 1e6) { m0Memo.map.clear(); m0Memo.nv = t.length; } m0Memo.map.set(i, r); return r;
+  const r = { t, v, reset }; M.nv += t.length;
+  if (M.nv > 1e6) { M.map.clear(); M.nv = t.length; } M.map.set(i, r); return r;
 }
 /* extremes of the running integral of one gradient event (from 0, including 0 and its total area): per event, not
    per block, because a block without an excitation or refocusing pulse only adds its start value */
@@ -8210,58 +8247,67 @@ function m0EventExt(seq, id) {
   return (c[id] = { mn, mx, area: acc });
 }
 function m0Plain(seq, i) { const r = seq.B.rf[i]; if (!r) return true; const u = rfSt(seq, r).use; return u !== 'e' && u !== 'r'; }
-function m0Summary(seq, i, a, o) {
-  if (m0Plain(seq, i)) { // start value plus the event's running integral
-    const k0 = seq.kStart[a][i], id = [seq.B.pgx, seq.B.pgy, seq.B.pgz][a][i];
+function kintSummary(P, seq, i, a, o) {
+  if (!P.nl && m0Plain(seq, i)) { // start value plus the event's running integral
+    const k0 = P.start(seq)[a][i], id = P.ids(seq)[a][i];
     if (!id) { o.has = 1; o.brk = 0; o.n = 2; o.mn = o.mx = o.first = o.last = k0; return o; }
-    const e = m0EventExt(seq, id); o.has = 1; o.brk = 0; o.n = geoG(seq, id).n; o.mn = k0 + e.mn; o.mx = k0 + e.mx; o.first = k0; o.last = k0 + e.area; return o; // n: lets narrow blocks be drawn from the summary
+    const e = P.ext(seq, id, a); o.has = 1; o.brk = 0; o.n = P.geo(seq, id, a).n; o.mn = k0 + e.mn; o.mx = k0 + e.mx; o.first = k0; o.last = k0 + e.area; return o; // n: lets narrow blocks be drawn from the summary
   }
-  const S0 = seq.m0Blk; // per-block summaries kept by m0Pyramids: no recomputation (the memo below holds 4096 blocks;
-  if (S0) { const P = S0[a]; o.has = 1; o.brk = 0; o.n = S0.n[i]; o.mn = P.mn[i]; o.mx = P.mx[i]; o.first = P.first[i]; o.last = P.last[i]; return o; } // a ZTE has one excitation per spoke)
-  const m = m0Block(seq, i), v = m.v[a]; let mn = Infinity, mx = -Infinity;
+  const S0 = P.st(seq).blk; // per-block summaries kept by kintPyramids: no recomputation (the memo below holds 4096 blocks;
+  if (S0) { const Q = S0[a]; o.has = 1; o.brk = 0; o.n = S0.n[i]; o.mn = Q.mn[i]; o.mx = Q.mx[i]; o.first = Q.first[i]; o.last = Q.last[i]; return o; } // a ZTE has one excitation per spoke)
+  const m = kintBlock(P, seq, i), v = m.v[a]; let mn = Infinity, mx = -Infinity;
   for (let k = 0; k < v.length; k++) { if (v[k] < mn) mn = v[k]; if (v[k] > mx) mx = v[k]; }
   o.has = 1; o.brk = 0; o.n = v.length; o.mn = mn; o.mx = mx; o.first = v[0]; o.last = v[v.length - 1]; return o;
 }
-function m0Vertices(seq, i, a, push) { // a NaN at an excitation's reset: the curve starts anew at zero, no line to it
-  const m = m0Block(seq, i), t0 = seq.blockStart[i];
+function kintVertices(P, seq, i, a, push) { // a NaN at an excitation's reset: the curve starts anew at zero, no line to it
+  const m = kintBlock(P, seq, i), t0 = seq.blockStart[i];
   for (let k = 0; k < m.t.length; k++) { if (k === m.reset) push(t0 + m.t[k], NaN); push(t0 + m.t[k], m.v[a][k]); }
 }
-function m0Value(seq, a, t) { const i = blockAtTime(seq, t), out = [new Float64Array(1), new Float64Array(1), new Float64Array(1)]; kInBlock(seq, i, Float64Array.of(t - seq.blockStart[i]), out, 0); return out[a][0]; }
-/* pyramids for mx, my, mz (built on first use); seq.m0Max = largest |m0| */
-function m0Pyramids(seq) {
-  if (seq.pyr.mx) return;
-  const nb = seq.nb, o = {}, per = [0, 1, 2].map(() => ({ mn: new Float32Array(nb), mx: new Float32Array(nb), first: new Float32Array(nb), last: new Float32Array(nb) }));
+function kintValue(P, seq, a, t) { const i = blockAtTime(seq, t), out = [new Float64Array(1), new Float64Array(1), new Float64Array(1)]; P.inBlock(seq, i, Float64Array.of(t - seq.blockStart[i]), out, 0); return out[a][0]; }
+/* pyramids for the provider's three keys (built on first use); P.st(seq).max = largest |value| */
+function kintPyramids(P, seq) {
+  if (seq.pyr[P.keys[0]]) return;
+  const nb = seq.nb, nA = P.keys.length, o = {}, per = P.keys.map(() => ({ mn: new Float32Array(nb), mx: new Float32Array(nb), first: new Float32Array(nb), last: new Float32Array(nb) }));
   let big = 0;
-  const nv = new Uint32Array(nb);
-  for (let i = 0; i < nb; i++) for (let a = 0; a < 3; a++) { m0Summary(seq, i, a, o); if (o.n > nv[i]) nv[i] = o.n; const P = per[a]; P.mn[i] = o.mn; P.mx[i] = o.mx; P.first[i] = o.first; P.last[i] = o.last; big = Math.max(big, Math.abs(o.mn), Math.abs(o.mx)); }
-  ['mx', 'my', 'mz'].forEach((key, a) => {
+  const nv = new Uint32Array(nb), ST = P.st(seq);
+  ST.blk = null; // (summaries from kintBlock while building)
+  for (let i = 0; i < nb; i++) for (let a = 0; a < nA; a++) { kintSummary(P, seq, i, a, o); if (o.n > nv[i]) nv[i] = o.n; const Q = per[a]; Q.mn[i] = o.mn; Q.mx[i] = o.mx; Q.first[i] = o.first; Q.last[i] = o.last; big = Math.max(big, Math.abs(o.mn), Math.abs(o.mx)); }
+  P.keys.forEach((key, a) => {
     const P0 = per[a], out = []; let prev = null; const SIZES = pyrSizes(nb);
     for (let L = 0; L < SIZES.length; L++) {
       const sz = SIZES[L], n = Math.floor(nb / sz); if (n < 2) break;
-      const P = { size: sz, mn: new Float32Array(n), mx: new Float32Array(n), first: new Float32Array(n), last: new Float32Array(n), has: new Uint8Array(n).fill(1), brk: new Uint8Array(n) };
+      const Q = { size: sz, mn: new Float32Array(n), mx: new Float32Array(n), first: new Float32Array(n), last: new Float32Array(n), has: new Uint8Array(n).fill(1), brk: new Uint8Array(n) };
       for (let k = 0; k < n; k++) {
         let mn = Infinity, mx = -Infinity;
-        if (!L) { for (let i = k * sz; i < (k + 1) * sz; i++) { if (P0.mn[i] < mn) mn = P0.mn[i]; if (P0.mx[i] > mx) mx = P0.mx[i]; } P.first[k] = P0.first[k * sz]; P.last[k] = P0.last[(k + 1) * sz - 1]; }
-        else { const r = sz / prev.size; for (let j = k * r; j < (k + 1) * r; j++) { if (prev.mn[j] < mn) mn = prev.mn[j]; if (prev.mx[j] > mx) mx = prev.mx[j]; } P.first[k] = prev.first[k * r]; P.last[k] = prev.last[(k + 1) * r - 1]; }
-        P.mn[k] = mn; P.mx[k] = mx;
+        if (!L) { for (let i = k * sz; i < (k + 1) * sz; i++) { if (P0.mn[i] < mn) mn = P0.mn[i]; if (P0.mx[i] > mx) mx = P0.mx[i]; } Q.first[k] = P0.first[k * sz]; Q.last[k] = P0.last[(k + 1) * sz - 1]; }
+        else { const r = sz / prev.size; for (let j = k * r; j < (k + 1) * r; j++) { if (prev.mn[j] < mn) mn = prev.mn[j]; if (prev.mx[j] > mx) mx = prev.mx[j]; } Q.first[k] = prev.first[k * r]; Q.last[k] = prev.last[(k + 1) * r - 1]; }
+        Q.mn[k] = mn; Q.mx[k] = mx;
       }
-      out.push(P); prev = P;
+      out.push(Q); prev = Q;
     }
     seq.pyr[key] = out;
   });
-  seq.m0Max = big;
-  seq.m0Blk = Object.assign(per, { n: nv }); // per-block summaries for m0Summary
-  // tables for rangeSummary: per gradient event its integral extremes and area, per RF event whether it leaves m0 alone
-  const B = seq.B, ids = [B.pgx, B.pgy, B.pgz]; let maxG = 0, maxR = 0;
+  ST.max = big;
+  ST.blk = Object.assign(per, { n: nv }); // per-block summaries for kintSummary
+  if (P.nl) return; // μ: no per-event shortcut (it is not a sum of per-event parts)
+  // tables for rangeSummary: per event and axis its integral extremes and area, per RF event whether it leaves m0 alone
+  const B = seq.B, ids = P.ids(seq); let maxG = 0, maxR = 0;
   for (let i = 0; i < nb; i++) { for (let a = 0; a < 3; a++) if (ids[a][i] > maxG) maxG = ids[a][i]; if (B.rf[i] > maxR) maxR = B.rf[i]; }
-  const T = { ids, mn: new Float64Array(maxG + 1), mx: new Float64Array(maxG + 1), area: new Float64Array(maxG + 1), plainRf: new Uint8Array(maxR + 1) };
-  const seenG = new Uint8Array(maxG + 1), seenR = new Uint8Array(maxR + 1);
+  const T = { ids, mn: [0, 1, 2].map(() => new Float64Array(maxG + 1)), mx: [0, 1, 2].map(() => new Float64Array(maxG + 1)), area: [0, 1, 2].map(() => new Float64Array(maxG + 1)), plainRf: new Uint8Array(maxR + 1) };
+  const seen = [0, 1, 2].map(() => new Uint8Array(maxG + 1)), seenR = new Uint8Array(maxR + 1);
   for (let i = 0; i < nb; i++) {
-    for (let a = 0; a < 3; a++) { const id = ids[a][i]; if (id && !seenG[id]) { const e = m0EventExt(seq, id); T.mn[id] = e.mn; T.mx[id] = e.mx; T.area[id] = e.area; seenG[id] = 1; } }
+    for (let a = 0; a < 3; a++) { const id = ids[a][i]; if (id && !seen[a][id]) { const e = P.ext(seq, id, a); T.mn[a][id] = e.mn; T.mx[a][id] = e.mx; T.area[a][id] = e.area; seen[a][id] = 1; } }
     const r = B.rf[i]; if (r && !seenR[r]) { const u = rfSt(seq, r).use; T.plainRf[r] = u !== 'e' && u !== 'r' ? 1 : 0; seenR[r] = 1; }
   }
-  seq.m0Ev = T;
+  ST.ev = T;
+  if (P === KP_M0) seq.m0Max = big; // (kept for scripts that read it)
 }
+/* the k-vector under its former names */
+function m0Block(seq, i) { return kintBlock(KP_M0, seq, i); }
+function m0Summary(seq, i, a, o) { return kintSummary(KP_M0, seq, i, a, o); }
+function m0Vertices(seq, i, a, push) { return kintVertices(KP_M0, seq, i, a, push); }
+function m0Value(seq, a, t) { return kintValue(KP_M0, seq, a, t); }
+function m0Pyramids(seq) { return kintPyramids(KP_M0, seq); }
 /* stretches where m0 matters: from each excitation's RF centre to the end of the last readout before the next
    excitation (none if there is no readout in between): [starts, ends], sorted */
 function m0Active(seq) {
@@ -8276,13 +8322,266 @@ function m0Active(seq) {
   }
   return (seq.m0Act = { a: Float64Array.from(a), b: Float64Array.from(b) });
 }
+/* ---------- concomitant gradients ----------
+   The field of the gradient coils (as in fwf.gwf.toActual by F. Szczepankiewicz, after Bernstein et al. 1998;
+   method: Olsson et al., Magn Reson Med 2026;96(3):1178-1191, doi:10.1002/mrm.70422):
+     Bz = B0 + g·r,   Bx = gx z − a gz x + f y,   By = gy z + (a − 1) gz y + f x
+   a: asymmetry of the z coil (0.5 for a symmetric one), f: a further, non-Maxwell term (T/m), constant in time. Spins at r
+   precess at γ|B|, so the gradient they see is ∇|B| = g + gc. With p = v·r, q = w·r, v = (−a gz, f, gx),
+   w = (f, (a − 1) gz, gy), Bd = B0 + g·r and N = |B| = √(Bd² + p² + q²):
+     ∇|B| = (Bd g + v p + w q) / N,   gc = ∇|B| − g = [v p + w q − g (p² + q²)/(Bd + N)] / N
+   The second form avoids subtracting two nearly equal numbers (gc is often 10⁻⁶ of g). Computed from the physical
+   (rotated) gradients at one position r in the sequence's x, y, z (taken as the scanner's, B0 along z).
+   Every block is computed from the events it plays together (its "combination": the three gradient event ids and the
+   block duration), once per combination. Where all three gradients are linear in time, gc is a smooth, nearly quadratic
+   function of time: each such stretch is cut into up to 8 pieces, gc is evaluated exactly at the ends and the middle of
+   each piece, and integrals use Simpson's rule on the pieces (exact up to cubic terms in time; the rest is of relative
+   order (g·r/B0)²). Gradients are 0 outside their events; with f ≠ 0, gc is not zero there (the static f term), so
+   then every block is covered from its start to its end.
+   kc = ∫gc dt (1/m), the k-space shift of the spins at r, follows the k-vector's rules: reset at each excitation, sign
+   flipped at each refocusing pulse, both at the RF centre. */
+const CC_DEF = { r: [0.05, 0.06, 0.07], B0: 3, a: 0.5, f: 0 };
+function ccEval(gx, gy, gz, P, out) { // g in T/m → gc in T/m
+  const x = P.r[0], y = P.r[1], z = P.r[2], a = P.a, f = P.f;
+  const Bd = P.B0 + gx * x + gy * y + gz * z, p = -a * gz * x + f * y + gx * z, q = f * x + (a - 1) * gz * y + gy * z;
+  const N = Math.sqrt(Bd * Bd + p * p + q * q), s = (p * p + q * q) / (Bd + N);
+  out[0] = (-a * gz * p + f * q - gx * s) / N; out[1] = (f * p + (a - 1) * gz * q - gy * s) / N; out[2] = (gx * p + gy * q - gz * s) / N;
+  return out;
+}
+/* blocks grouped by the gradient events they play (physical ids) and their duration; independent of the parameters */
+function ccCombos(seq) {
+  if (seq.ccCombo) return seq.ccCombo;
+  const B = seq.B, nb = seq.nb, bs = seq.blockStart, map = new Map(), of = new Uint32Array(nb), list = [null]; // id 0: none
+  for (let i = 0; i < nb; i++) {
+    const x = B.pgx[i], y = B.pgy[i], z = B.pgz[i], key = x + ',' + y + ',' + z + ',' + Math.round((bs[i + 1] - bs[i]) * 1e9);
+    let c = map.get(key);
+    if (c === undefined) { c = list.length; list.push({ ids: [x, y, z], dur: bs[i + 1] - bs[i], none: !x && !y && !z }); map.set(key, c); }
+    of[i] = c;
+  }
+  return (seq.ccCombo = { of, list });
+}
+/* everything that depends on the parameters P = { r (m), B0 (T), a, f (T/m) }: the block column B.ccx (combination id,
+   0 where gc is 0 throughout), the geometries (on demand) and kc at every block start. Rebuilt when P changes. */
+function ccState(seq, P) {
+  const key = JSON.stringify([P.r, P.B0, P.a, P.f]);
+  if (seq.cc && seq.cc.key === key) return seq.cc;
+  const C = ccCombos(seq), nb = seq.nb, B = seq.B, col = new Uint32Array(nb);
+  for (let i = 0; i < nb; i++) { const c = C.of[i]; col[i] = P.f === 0 && C.list[c].none ? 0 : c; }
+  B.ccx = col;
+  for (const k of ['cx', 'cy', 'cz', 'qx', 'qy', 'qz']) { if (seq.pyr) delete seq.pyr[k]; if (seq.evt) delete seq.evt[k]; } // made with the old parameters
+  seq.kcSt = {};
+  const cc = seq.cc = { key, P: { r: P.r.slice(), B0: P.B0, a: P.a, f: P.f }, geo: [], kStart: null, max: [0, 0, 0] };
+  const kS = [new Float64Array(nb + 1), new Float64Array(nb + 1), new Float64Array(nb + 1)], raw = [0, 0, 0]; let off = [0, 0, 0];
+  for (let i = 0; i < nb; i++) { // as the k-vector's start values in analyze()
+    for (let a = 0; a < 3; a++) kS[a][i] = raw[a] + off[a];
+    const id = col[i], G = id ? ccGeo(seq, id) : null;
+    if (B.rf[i]) {
+      const st = rfSt(seq, B.rf[i]);
+      if (st.use === 'e' || st.use === 'r') {
+        const rc = [0, 1, 2].map(a => raw[a] + (G ? ccPartial(G, a, st.center) : 0));
+        off = st.use === 'e' ? rc.map(x => -x) : rc.map((x, a) => -2 * x - off[a]);
+      }
+    }
+    if (G) for (let a = 0; a < 3; a++) raw[a] += G.area[a];
+  }
+  for (let a = 0; a < 3; a++) kS[a][nb] = raw[a] + off[a];
+  cc.kStart = kS;
+  return cc;
+}
+/* geometry of combination id under the current parameters: Simpson pieces (t0, t1, values at both ends and the middle,
+   per axis, Hz/m), cumulative integrals, and per axis a drawing geometry (geoFinish) */
+function ccGeo(seq, id) {
+  const cc = seq.cc; let G = cc.geo[id]; if (G) return G;
+  const c = seq.ccCombo.list[id], P = cc.P, L = c.ids.map(e => e ? geoG(seq, e) : null);
+  const ts = []; for (const g of L) if (g) for (let k = 0; k < g.n; k++) ts.push(g.t[k]);
+  if (P.f !== 0 || !ts.length) ts.push(0, c.dur);
+  ts.sort((x, y) => x - y); const u = []; for (const x of ts) if (!u.length || x - u[u.length - 1] > 1e-11) u.push(x);
+  const valAt = (g, t) => { // piecewise linear, 0 outside the event (t lies strictly inside a stretch between vertices)
+    if (!g || t < g.t[0] || t > g.t[g.n - 1]) return 0;
+    let lo = 0, hi = g.n - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (g.t[m] <= t) lo = m; else hi = m; }
+    const d = g.t[hi] - g.t[lo]; return d > 0 ? g.v[lo] + (g.v[hi] - g.v[lo]) * (t - g.t[lo]) / d : g.v[hi];
+  };
+  const T0 = [], T1 = [], V = [[[], [], []], [[], [], []], [[], [], []]]; // V[end: 0 start, 1 middle, 2 end][axis]
+  const gi = 1 / GAMMA, o3 = [0, 0, 0], g25 = [0, 0, 0], g75 = [0, 0, 0];
+  for (let k = 0; k + 1 < u.length; k++) {
+    const ta = u[k], tb = u[k + 1], D = tb - ta; if (D <= 1e-11) continue;
+    // the three gradients are linear inside (ta, tb): two inner samples give them, also at the ends (steps at the ends are
+    // the neighbours' business)
+    for (let a = 0; a < 3; a++) { g25[a] = valAt(L[a], ta + 0.25 * D); g75[a] = valAt(L[a], ta + 0.75 * D); }
+    const flat = g25[0] === g75[0] && g25[1] === g75[1] && g25[2] === g75[2];
+    const n = flat ? 1 : Math.max(1, Math.min(8, Math.round(D / 1e-5)));
+    const at = (s, e) => { // gc (Hz/m) at fraction s of the stretch, into V[e]
+      const w = (s - 0.25) * 2;
+      ccEval((g25[0] + (g75[0] - g25[0]) * w) * gi, (g25[1] + (g75[1] - g25[1]) * w) * gi, (g25[2] + (g75[2] - g25[2]) * w) * gi, P, o3);
+      for (let a = 0; a < 3; a++) V[e][a].push(o3[a] * GAMMA);
+    };
+    for (let q = 0; q < n; q++) { T0.push(ta + D * q / n); T1.push(ta + D * (q + 1) / n); at(q / n, 0); at((q + 0.5) / n, 1); at((q + 1) / n, 2); }
+  }
+  const ns = T0.length, F = a => Float64Array.from(a);
+  G = { n: ns, t0: F(T0), t1: F(T1), v0: V[0].map(F), vm: V[1].map(F), v1: V[2].map(F), cum: [], area: [0, 0, 0], geo: [], ext: [] };
+  for (let a = 0; a < 3; a++) {
+    const cum = new Float64Array(ns + 1);
+    for (let j = 0; j < ns; j++) cum[j + 1] = cum[j] + (G.t1[j] - G.t0[j]) / 6 * (G.v0[a][j] + 4 * G.vm[a][j] + G.v1[a][j]);
+    G.cum[a] = cum; G.area[a] = cum[ns];
+    const t = [], v = [];
+    for (let j = 0; j < ns; j++) {
+      const v0 = G.v0[a][j], vm = G.vm[a][j], v1 = G.v1[a][j];
+      if (!j || G.t0[j] !== G.t1[j - 1] || v0 !== G.v1[a][j - 1]) { t.push(G.t0[j]); v.push(v0); }
+      // the middle too where the piece bends (more than 0.1 % of its size away from the straight line)
+      if (Math.abs(vm - (v0 + v1) / 2) > 1e-3 * Math.max(Math.abs(v0), Math.abs(vm), Math.abs(v1))) { t.push((G.t0[j] + G.t1[j]) / 2); v.push(vm); }
+      t.push(G.t1[j]); v.push(v1);
+    }
+    G.geo[a] = t.length ? geoFinish(t, v) : geoFinish([0], [0]);
+    cc.max[a] = Math.max(cc.max[a], Math.abs(G.geo[a].min), Math.abs(G.geo[a].max));
+  }
+  return (cc.geo[id] = G);
+}
+/* ∫gc dt (1/m) on axis a from the start of the combination's first piece to relative time r */
+function ccPartial(G, a, r) {
+  const n = G.n; if (!n || r <= G.t0[0]) return 0;
+  if (r >= G.t1[n - 1]) return G.cum[a][n];
+  let lo = 0, hi = n - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (G.t0[m] <= r) lo = m; else hi = m - 1; }
+  if (r >= G.t1[lo]) return G.cum[a][lo + 1];
+  const D = G.t1[lo] - G.t0[lo], s = (r - G.t0[lo]) / D, v0 = G.v0[a][lo], vm = G.vm[a][lo], v1 = G.v1[a][lo];
+  return G.cum[a][lo] + D * s * (v0 + s * ((-3 * v0 + 4 * vm - v1) / 2 + s * (2 * v0 - 4 * vm + 2 * v1) / 3)); // the quadratic through the three values
+}
+/* kc (1/m) for sorted relative times in block i, written to out[a][o + q] (as kInBlock) */
+function kcInBlock(seq, i, rel, out, o, nq = rel.length) {
+  const B = seq.B, id = B.ccx[i], G = id ? ccGeo(seq, id) : null, kS = seq.cc.kStart;
+  let rc = -1, use = null;
+  if (B.rf[i]) { const st = rfSt(seq, B.rf[i]); if (st.use === 'e' || st.use === 'r') { rc = st.center; use = st.use; } }
+  for (let a = 0; a < 3; a++) {
+    const k0 = kS[a][i], pc = rc >= 0 && G ? ccPartial(G, a, rc) : 0;
+    for (let q = 0; q < nq; q++) {
+      const r = rel[q], p = G ? ccPartial(G, a, r) : 0;
+      out[a][o + q] = rc >= 0 && r >= rc ? (use === 'e' ? p - pc : -(k0 + pc) + (p - pc)) : k0 + p;
+    }
+  }
+}
+/* extremes of the running integral of gc over a combination, from 0 (as m0EventExt) */
+function ccExt(seq, id, a) {
+  const G = ccGeo(seq, id); if (G.ext[a]) return G.ext[a];
+  let mn = 0, mx = 0;
+  for (let j = 0; j < G.n; j++) {
+    const v0 = G.v0[a][j], v1 = G.v1[a][j];
+    if ((v0 < 0) !== (v1 < 0) && v0 !== 0 && v1 !== 0) { const p = ccPartial(G, a, G.t0[j] + (G.t1[j] - G.t0[j]) * v0 / (v0 - v1)); if (p < mn) mn = p; if (p > mx) mx = p; }
+    const c = G.cum[a][j + 1]; if (c < mn) mn = c; if (c > mx) mx = c;
+  }
+  return (G.ext[a] = { mn, mx, area: G.area[a] });
+}
+/* gc (Hz/m) at time t, from the gradients there (exact; the drawing geometry is piecewise linear between its points) */
+function ccValue(seq, a, t) {
+  const i = blockAtTime(seq, t); if (!seq.B.ccx[i]) return 0;
+  const o3 = [0, 0, 0], gi = 1 / GAMMA;
+  return ccEval(channelValue(seq, 'gx', t) * gi, channelValue(seq, 'gy', t) * gi, channelValue(seq, 'gz', t) * gi, seq.cc.P, o3)[a] * GAMMA;
+}
+const KP_KC = { name: 'kc', keys: ['qx', 'qy', 'qz'], start: s => s.cc.kStart, ids: s => [s.B.ccx, s.B.ccx, s.B.ccx], tok: s => s.cc,
+  geo: (s, id, a) => ccGeo(s, id).geo[a], ext: (s, id, a) => ccExt(s, id, a), inBlock: (s, i, rel, out, o, nq) => kcInBlock(s, i, rel, out, o, nq),
+  st: s => s.kcSt || (s.kcSt = {}), memo: { tok: null, map: new Map(), nv: 0 } };
+KINT.qx = [KP_KC, 0]; KINT.qy = [KP_KC, 1]; KINT.qz = [KP_KC, 2];
+/* ---------- generalized Maxwell index ----------
+   μ(t) = (γ/B0) |∫₀ᵗ g(t')⊗g(t') h(t') dt'|_F in 1/m² with γ = 42.58 MHz/T (Olsson et al., Magn Reson Med
+   2026;96(3):1178-1191, doi:10.1002/mrm.70422). With G = γg in Hz/m, M = ∫ G Gᵀ h dt has six distinct components (xx, yy,
+   zz, xy, xz, yz) and μ = |M|_F / (γ B0), |M|_F² = Mxx² + Myy² + Mzz² + 2(Mxy² + Mxz² + Myz²). M is reset at each
+   excitation and h flips at each refocusing pulse, both at the RF centre, as for the k-vector (M follows k's convention,
+   −∫GGᵀh after a refocusing pulse, which leaves |M|_F unchanged). The gradients are piecewise linear, so M is piecewise
+   cubic in time and is integrated exactly; μ itself is drawn through points (vertices, RF centres, and up to 8 per
+   stretch where a gradient is on) and evaluated exactly at the cursor. The Frobenius norm does not change under
+   rotation, so the physical and the logical gradients give the same μ. Only B0 enters (r, a and f do not). */
+const MX_IJ = [[0, 0], [1, 1], [2, 2], [0, 1], [0, 2], [1, 2]], MX_W = [1, 1, 1, 2, 2, 2];
+/* per combination (ccCombos): the stretches between the gradients' vertices where any gradient is on, with each axis's
+   value at the start (a) and its change over the stretch (d), and M accumulated over them (cum[c][j]: before stretch j) */
+function mxGeo(seq, cid) {
+  const C = ccCombos(seq), st = seq.mxGeoC || (seq.mxGeoC = []); let G = st[cid]; if (G) return G;
+  const c = C.list[cid], L = c.ids.map(e => e ? geoG(seq, e) : null);
+  const ts = []; for (const g of L) if (g) for (let k = 0; k < g.n; k++) ts.push(g.t[k]);
+  ts.sort((x, y) => x - y); const u = []; for (const x of ts) if (!u.length || x - u[u.length - 1] > 1e-11) u.push(x);
+  const valAt = (g, t) => { // piecewise linear, 0 outside the event (t lies strictly inside a stretch between vertices)
+    if (!g || t < g.t[0] || t > g.t[g.n - 1]) return 0;
+    let lo = 0, hi = g.n - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (g.t[m] <= t) lo = m; else hi = m; }
+    const d = g.t[hi] - g.t[lo]; return d > 0 ? g.v[lo] + (g.v[hi] - g.v[lo]) * (t - g.t[lo]) / d : g.v[hi];
+  };
+  const T0 = [], DD = [], A = [[], [], []], Dv = [[], [], []];
+  for (let k = 0; k + 1 < u.length; k++) {
+    const ta = u[k], D = u[k + 1] - ta; if (D <= 1e-11) continue;
+    let on = false; const g25 = [0, 0, 0], g75 = [0, 0, 0];
+    for (let a = 0; a < 3; a++) { g25[a] = valAt(L[a], ta + 0.25 * D); g75[a] = valAt(L[a], ta + 0.75 * D); if (g25[a] || g75[a]) on = true; }
+    if (!on) continue;
+    T0.push(ta); DD.push(D); // linear inside: the values at the ends from the two inner samples (steps at the ends belong to the neighbours)
+    for (let a = 0; a < 3; a++) { A[a].push(1.5 * g25[a] - 0.5 * g75[a]); Dv[a].push(2 * (g75[a] - g25[a])); }
+  }
+  const n = T0.length, F = x => Float64Array.from(x);
+  G = { n, t0: F(T0), D: F(DD), a: A.map(F), d: Dv.map(F), cum: MX_IJ.map(() => new Float64Array(n + 1)) };
+  for (let j = 0; j < n; j++) for (let c = 0; c < 6; c++) {
+    const [i1, i2] = MX_IJ[c], a1 = G.a[i1][j], a2 = G.a[i2][j], d1 = G.d[i1][j], d2 = G.d[i2][j];
+    G.cum[c][j + 1] = G.cum[c][j] + G.D[j] * (a1 * a2 + (a1 * d2 + a2 * d1) / 2 + d1 * d2 / 3);
+  }
+  return (st[cid] = G);
+}
+/* M (Hz²/m²·s) accumulated over the combination from its start to relative time r, into out[0..5] */
+function mxPartial(G, r, out) {
+  const n = G.n; let lo = -1;
+  if (n && r > G.t0[0]) { lo = 0; let hi = n - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (G.t0[m] <= r) lo = m; else hi = m - 1; } }
+  if (lo < 0) { out.fill(0, 0, 6); return out; }
+  const D = G.D[lo], s = r - G.t0[lo] >= D ? 1 : (r - G.t0[lo]) / D;
+  for (let c = 0; c < 6; c++) {
+    if (s === 1) { out[c] = G.cum[c][lo + 1]; continue; }
+    const [i1, i2] = MX_IJ[c], a1 = G.a[i1][lo], a2 = G.a[i2][lo], d1 = G.d[i1][lo], d2 = G.d[i2][lo];
+    out[c] = G.cum[c][lo] + D * s * (a1 * a2 + s * ((a1 * d2 + a2 * d1) / 2 + s * d1 * d2 / 3));
+  }
+  return out;
+}
+/* M at every block start (independent of B0, made once per file), and the scale 1/(γ B0) for the current B0 */
+function mxState(seq, B0) {
+  if (!seq.mxRaw) {
+    const C = ccCombos(seq), nb = seq.nb, B = seq.B, Ms = MX_IJ.map(() => new Float64Array(nb + 1)), raw = new Float64Array(6), pc = new Float64Array(6);
+    let off = new Float64Array(6);
+    for (let i = 0; i < nb; i++) {
+      for (let c = 0; c < 6; c++) Ms[c][i] = raw[c] + off[c];
+      const cid = C.of[i], G = C.list[cid].none ? null : mxGeo(seq, cid);
+      if (B.rf[i]) {
+        const st = rfSt(seq, B.rf[i]);
+        if (st.use === 'e' || st.use === 'r') {
+          if (G) mxPartial(G, st.center, pc); else pc.fill(0);
+          const nw = new Float64Array(6); for (let c = 0; c < 6; c++) { const rc = raw[c] + pc[c]; nw[c] = st.use === 'e' ? -rc : -2 * rc - off[c]; } off = nw;
+        }
+      }
+      if (G) for (let c = 0; c < 6; c++) raw[c] += G.cum[c][G.n];
+    }
+    for (let c = 0; c < 6; c++) Ms[c][nb] = raw[c] + off[c];
+    seq.mxRaw = Ms;
+  }
+  if (seq.mx && seq.mx.B0 === B0) return seq.mx;
+  if (seq.pyr) delete seq.pyr.mu; seq.muSt = {}; // made with the old B0
+  return (seq.mx = { B0, sc: 1 / (GAMMA * B0) });
+}
+/* μ (1/m²) for sorted relative times in block i, written to out[0][o + q] (as kInBlock); mxState must have run */
+function muInBlock(seq, i, rel, out, o, nq = rel.length) {
+  const C = ccCombos(seq), cid = C.of[i], G = C.list[cid].none ? null : mxGeo(seq, cid), Ms = seq.mxRaw, sc = seq.mx.sc, B = seq.B;
+  let rc = -1, use = null;
+  if (B.rf[i]) { const st = rfSt(seq, B.rf[i]); if (st.use === 'e' || st.use === 'r') { rc = st.center; use = st.use; } }
+  const k0 = new Float64Array(6), pc = new Float64Array(6), p = new Float64Array(6);
+  for (let c = 0; c < 6; c++) k0[c] = Ms[c][i];
+  if (rc >= 0 && G) mxPartial(G, rc, pc);
+  for (let q = 0; q < nq; q++) {
+    const r = rel[q]; if (G) mxPartial(G, r, p);
+    let acc = 0;
+    for (let c = 0; c < 6; c++) { const m = rc >= 0 && r >= rc ? (use === 'e' ? p[c] - pc[c] : -(k0[c] + pc[c]) + (p[c] - pc[c])) : k0[c] + p[c]; acc += MX_W[c] * m * m; }
+    out[0][o + q] = Math.sqrt(acc) * sc;
+  }
+}
+const KP_MU = { name: 'mu', keys: ['mu'], nl: true, start: () => null, ids: s => [s.B.pgx, s.B.pgy, s.B.pgz], tok: s => s.mx,
+  geo: (s, id) => geoG(s, id), ext: null, inBlock: (s, i, rel, out, o, nq) => muInBlock(s, i, rel, out, o, nq),
+  st: s => s.muSt || (s.muSt = {}), memo: { tok: null, map: new Map(), nv: 0 } };
+KINT.mu = [KP_MU, 0];
 function blockAtTime(seq, t) {
   const a = seq.blockStart, n = seq.nb; let lo = 0, hi = n;
   while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] <= t) lo = m + 1; else hi = m; }
   return Math.max(0, Math.min(n - 1, lo - 1));
 }
 function channelValue(seq, key, t) {
-  if (key in M0_KEYS) return m0Value(seq, M0_KEYS[key], t);
+  if (key in KINT) return kintValue(KINT[key][0], seq, KINT[key][1], t);
+  if (CHANNELS[key].cc !== undefined) return ccValue(seq, CHANNELS[key].cc, t);
   const ch = CHANNELS[key], i = blockAtTime(seq, t), id = seq.B[ch.col][i], fn = ch.fn, out = ch.p ? NaN : 0;
   if (!id) return out;
   const g = fn(seq, id), r = t - seq.blockStart[i];
@@ -8344,7 +8643,7 @@ function buildPyramid(seq, key) {
 
 /* combine the summaries of blocks bA..bB (inclusive) using the fewest aligned pyramid buckets */
 function rangeSummary(seq, key, bA, bB, o, tmp) {
-  const pyr = seq.pyr[key], m0a = key in M0_KEYS ? M0_KEYS[key] : -1, z0 = pyr && pyr.length ? pyr[0].size - 1 : -1;
+  const pyr = seq.pyr[key], KI = KINT[key], m0a = KI ? KI[1] : -1, KS = KI ? KI[0].st(seq) : null, z0 = pyr && pyr.length ? pyr[0].size - 1 : -1;
   let has = 0, mn = Infinity, mx = -Infinity, first = 0, last = 0, brk = 0, b = bA;
   while (b <= bB) {
     let used = false;
@@ -8355,10 +8654,10 @@ function rangeSummary(seq, key, bA, bB, o, tmp) {
       b += sz; used = true; break;
     }
     if (used) continue;
-    if (m0a >= 0 && seq.m0Ev) { // k-vector: start value plus the event's integral extremes (blocks without excitation/refocusing)
-      const T = seq.m0Ev, r = seq.B.rf[b];
+    if (m0a >= 0 && KS.ev) { // k-vector, kc: start value plus the event's integral extremes (blocks without excitation/refocusing)
+      const T = KS.ev, r = seq.B.rf[b];
       if (!r || T.plainRf[r]) {
-        const k0 = seq.kStart[m0a][b], id = T.ids[m0a][b], bmn = id ? k0 + T.mn[id] : k0, bmx = id ? k0 + T.mx[id] : k0, bl = id ? k0 + T.area[id] : k0;
+        const k0 = KI[0].start(seq)[m0a][b], id = T.ids[m0a][b], bmn = id ? k0 + T.mn[m0a][id] : k0, bmx = id ? k0 + T.mx[m0a][id] : k0, bl = id ? k0 + T.area[m0a][id] : k0;
         if (!has) first = k0; last = bl; has = 1; if (bmn < mn) mn = bmn; if (bmx > mx) mx = bmx;
         b++; continue;
       }
@@ -8987,7 +9286,9 @@ function transferList(root) {
   }
   return [...bufs];
 }
-if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, geoRfRe, geoRfIm, buildPyramid, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, adcEchoes, revisitEchoes, computeKspace, md5, verifySignature, trigName, trigText, TRIG_TYPES, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active };
+if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, geoRfRe, geoRfIm, buildPyramid, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, adcEchoes, revisitEchoes, computeKspace, md5, verifySignature, trigName, trigText, TRIG_TYPES, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active,
+  KINT, KP_M0, KP_KC, kintBlock, kintSummary, kintVertices, kintValue, kintPyramids, CC_DEF, ccEval, ccCombos, ccState, ccGeo, ccPartial, kcInBlock, ccExt, ccValue,
+  MX_IJ, KP_MU, mxGeo, mxPartial, mxState, muInBlock };
 
 /* ===== Seqret image simulation =====
    Forward model for every imaging ADC sample j of a chosen image (one slice of one volume):
@@ -10984,7 +11285,8 @@ const $ = s => document.querySelector(s);
 const S = {
   seq: null, name: '', t0: 0, t1: 1, sel: -1, selItems: [], selAnchor: -1, imgIdx: 0, hoverT: null, autoY: false, pauseHatch: true,
   gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'high', lineMode: 'exact', sideHidden: false,
-  vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, pns: false, cns: false },
+  vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, gc: false, kc: false, mu: false, pns: false, cns: false },
+  cc: { r: [0.05, 0.06, 0.07], B0: 3, a: 0.5, f: 0 }, // concomitant gradients: position (m), B0 (T), asymmetry, non-Maxwell term (T/m)
   stimNorm: true, combineG: true, rfMode: 'mag', linkMode: 'off',
   sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, crop: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
   kRange: 'shot', kProj: 'xy', kTraj: true, kR: null, kZoom: 1, kPan: [0, 0], kGroup: 'img'
@@ -10998,6 +11300,9 @@ const LANES = [
   { key: 'gz', label: 'Gz', w: 1, col: 'gz', kind: 'sym' },
   { key: 'slew', label: 'Slew', w: 1, col: 'gx', kind: 'sym' },
   { key: 'm0', label: 'k-vector', w: 1, col: 'gx', kind: 'sym' },
+  { key: 'gc', label: 'Gc', w: 1, col: 'gx', kind: 'sym' }, // concomitant gradients at r
+  { key: 'kc', label: 'kc', w: 1, col: 'gx', kind: 'sym' }, // their zeroth moment
+  { key: 'mu', label: 'Maxwell μ', w: 1, col: 'ink', kind: 'pos' }, // generalized Maxwell index
   { key: 'pns', label: 'PNS', w: 0.9, col: 'muted', kind: 'pos', stim: 'pns' },
   { key: 'cns', label: 'CNS', w: 0.9, col: 'muted', kind: 'pos', stim: 'cns' },
   { key: 'labels', label: 'Labels', w: 0, col: 'ink', fixed: true }
@@ -11035,8 +11340,12 @@ const sF = () => S.gUnit === 'mT' ? 1 / GAMMA : 1e-6;
 const sU = () => S.gUnit === 'mT' ? 'T/m/s' : 'kHz/m/ms';
 const rF = () => S.rfUnit === 'uT' ? 1e6 / GAMMA : 1;
 const rU = () => S.rfUnit === 'uT' ? 'µT' : 'Hz';
-function laneFactor(k) { return k === 'rfMag' ? rF() : (k === 'rfPh' || k === 'adc') ? 1 : k === 'slew' ? sF() : k === 'm0' ? mF() : gF(); }
-function laneUnit(k) { return k === 'rfMag' ? rU() : k === 'rfPh' ? 'rad' : k === 'slew' ? sU() : k === 'adc' ? '' : k === 'm0' ? mU() : gU(); }
+function laneFactor(k) { return k === 'rfMag' ? rF() : (k === 'rfPh' || k === 'adc' || k === 'mu') ? 1 : k === 'slew' ? sF() : k === 'm0' || k === 'kc' ? mF() : gF(); }
+function laneUnit(k) { return k === 'rfMag' ? rU() : k === 'rfPh' ? 'rad' : k === 'mu' ? '1/m²' : k === 'slew' ? sU() : k === 'adc' ? '' : k === 'm0' || k === 'kc' ? mU() : gU(); }
+/* concomitant gradients for the current parameters (rebuilt by ccState only when they, or the file, change) */
+function ccEnsure() { if (S.seq) ccState(S.seq, S.cc); }
+/* the generalized Maxwell index for the current B0 (its integrals are made once per file; B0 only scales them) */
+function muEnsure() { if (S.seq) mxState(S.seq, S.cc.B0); }
 const mF = () => 1; // k-vector: ∫G dt with G in Hz/m, in 1/m whatever the gradient unit
 const mU = () => '1/m';
 
@@ -11120,6 +11429,9 @@ function lanesGeom() {
 function laneChannels(l) {
   if (l.key === 'slew') return [['gx', 'sx'], ['gy', 'sy'], ['gz', 'sz']];
   if (l.key === 'm0') return [['gx', 'mx'], ['gy', 'my'], ['gz', 'mz']];
+  if (l.key === 'gc') { ccEnsure(); return [['gx', 'cx'], ['gy', 'cy'], ['gz', 'cz']]; }
+  if (l.key === 'kc') { ccEnsure(); return [['gx', 'qx'], ['gy', 'qy'], ['gz', 'qz']]; }
+  if (l.key === 'mu') { muEnsure(); return [['ink', 'mu']]; }
   if (l.key === 'rfMag' && S.rfMode === 'complex') return [['ph', 'rfIm'], ['rf', 'rfRe']]; // imaginary first: the real part is drawn on top
   if (l.key === 'g') return ['gx', 'gy', 'gz'].filter(k => S.vis[k]).map(k => [k, k]);
   return [[l.col, l.key]];
@@ -11130,7 +11442,9 @@ function laneMax(l) {
   if (l.key === 'rfPh') return Math.PI;
   if (l.key === 'adc') return 1;
   if (l.key === 'slew') return Math.max(...st.maxSlew);
-  if (l.key === 'm0') { m0Pyramids(S.seq); return S.seq.m0Max; }
+  if (l.key === 'm0') { m0Pyramids(S.seq); return KP_M0.st(S.seq).max; }
+  if (l.key === 'gc') { ccEnsure(); return Math.max(...S.seq.cc.max); }
+  if (l.key === 'mu') { muEnsure(); kintPyramids(KP_MU, S.seq); return KP_MU.st(S.seq).max; }
   return Math.max(...st.maxG); // shared scale across gradient axes
 }
 
@@ -11266,17 +11580,17 @@ function traceChan(key, t0, t1, x0, w) {
       if (o.has) agg(ka, o.mn, o.mx, o.first, o.last, 0, 2); if (o.brk) colBrk[ka] = 1;
       b = lo + 1; continue;
     }
-    if (!exactMode && kb - ka <= 3 && ka >= 0 && kb < nc && !(key in M0_KEYS && s.B.rf[b] && rfSt(s, s.B.rf[b]).use === 'e') && blockSummary(s, key, b, o).has && (o.n || 0) > 32) { for (let k = ka; k <= kb; k++) agg(k, o.mn, o.mx, k === ka ? o.first : o.mn, k === kb ? o.last : o.mx, 0, 2); if (o.brk) colBrk[kb] = 1; }
+    if (!exactMode && kb - ka <= 3 && ka >= 0 && kb < nc && !(key in KINT && s.B.rf[b] && rfSt(s, s.B.rf[b]).use === 'e') && blockSummary(s, key, b, o).has && (o.n || 0) > 32) { for (let k = ka; k <= kb; k++) agg(k, o.mn, o.mx, k === ka ? o.first : o.mn, k === kb ? o.last : o.mx, 0, 2); if (o.brk) colBrk[kb] = 1; }
     else if (!manyVerts(b)) blockVertices(s, key, b, add);
     b++;
   }
   /* blocks with many vertices (free waveforms) spanning several columns: the same result as feeding every vertex to
      add(), column by column: the vertex range of each column by binary search, its min/max from 32-vertex chunks */
   function manyVerts(b) {
-    const m0a = key in M0_KEYS ? M0_KEYS[key] : -1, ch = CHANNELS[key];
+    const KI = KINT[key], m0a = KI ? KI[1] : -1, ch = CHANNELS[key];
     if (m0a < 0 && (!ch || ch.p)) return false;
     let T, V, n, tb = bs[b];
-    if (m0a >= 0) { const m = m0Block(s, b); T = m.t; V = m.v[m0a]; n = T.length; if (n < 64 || m.reset >= 0) return false; aggVerts(T, V, n, tb, m, 'c' + m0a); return true; } // a reset: vertex by vertex (it breaks the curve)
+    if (m0a >= 0) { const m = kintBlock(KI[0], s, b); T = m.t; V = m.v[m0a]; n = T.length; if (n < 64 || m.reset >= 0) return false; aggVerts(T, V, n, tb, m, 'c' + m0a); return true; } // a reset: vertex by vertex (it breaks the curve)
     const id = s.B[ch.col][b]; if (!id) return false;
     const g = ch.fn(s, id); n = g.n; if (n < 64) return false;
     const dur = bs[b + 1] - tb, first = g.t[0] <= 1e-9 ? g.v[0] : 0, last = Math.abs(g.t[n - 1] - dur) <= 1e-9 ? g.v[n - 1] : 0;
@@ -11626,14 +11940,17 @@ function render() {
     if (L.key === 'labels') { RY0 = -1e6; RY1 = 1e6; if (!BENCH.skip.labels) drawLabelsLane(L, X, t0, t1, x0, pw); continue; }
     if (L.stim) { drawStimLane(L, t0, t1, x0, pw); continue; }
     if (L.key === 'm0') m0Pyramids(s);
+    if (L.key === 'gc') { ccEnsure(); for (const k of ['cx', 'cy', 'cz']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k); }
+    if (L.key === 'kc') { ccEnsure(); kintPyramids(KP_KC, s); }
+    if (L.key === 'mu') { muEnsure(); kintPyramids(KP_MU, s); }
     if (L.key === 'rfMag' && S.rfMode === 'complex') for (const k of ['rfRe', 'rfIm']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k);
     laneBody(L);
     } finally { if (dLane) dLane[L.label] = performance.now() - dT; }
   }
   function laneBody(L) {
     const chans = laneChannels(L), f = laneFactor(L.key);
-    let m = L.key === 'm0' ? m0ViewMax(t0, t1) : laneMax(L);
-    if (S.autoY && L.key !== 'rfPh' && L.key !== 'adc' && L.key !== 'm0') { let mv = 0; for (const [, c] of chans) mv = Math.max(mv, chanRange(c, t0, t1)); if (mv > 0) m = mv; }
+    let m = L.key === 'm0' ? kViewMax(KP_M0, t0, t1) : L.key === 'kc' ? kViewMax(KP_KC, t0, t1) : L.key === 'mu' ? kViewMax(KP_MU, t0, t1) : laneMax(L);
+    if (S.autoY && L.key !== 'rfPh' && L.key !== 'adc' && L.key !== 'm0' && L.key !== 'kc' && L.key !== 'mu') { let mv = 0; for (const [, c] of chans) mv = Math.max(mv, chanRange(c, t0, t1)); if (mv > 0) m = mv; }
     if (!(m > 0)) m = 1;
     const pad = 4;
     /* a figure: the scale goes up to the next multiple of half a power of ten above the largest value (58.3 mT/m:
@@ -11658,10 +11975,10 @@ function render() {
     pctx.strokeStyle = C.line; pctx.lineWidth = 1; pctx.setLineDash(!EXP && (L.kind === 'sym' || L.kind === 'phase') ? [3, 3] : []);
     pctx.beginPath(); pctx.moveTo(x0, Math.round(base) + 0.5); pctx.lineTo(x0 + pw, Math.round(base) + 0.5); pctx.stroke(); pctx.setLineDash([]);
     // gutter
-    const multi = L.key === 'slew' || L.key === 'g' || L.key === 'm0', color = multi ? C.ink : C[L.col];
+    const multi = L.key === 'slew' || L.key === 'g' || L.key === 'm0' || L.key === 'gc' || L.key === 'kc', color = multi ? C.ink : C[L.col];
     pctx.fillStyle = color; pctx.fillRect(8, L.y + 2, 3, L.h - 4);
     pctx.fillStyle = C.ink; pctx.textAlign = 'left'; pctx.font = `600 12px ${C.font}`;
-    const twoLine = L.key !== 'adc' && L.h > 58;
+    const twoLine = L.key !== 'adc' && (L.h > 58 || (EXP && L.h > 30)); // a figure's lanes are lower: the unit still fits below the name
     pctx.fillText(L.label, 16, L.y + L.h / 2 - (twoLine ? 7 : 0));
     pctx.font = `400 10.5px ${C.font}`; pctx.fillStyle = C.muted;
     if (L.key !== 'adc') {
@@ -11671,9 +11988,10 @@ function render() {
         pctx.font = `600 11px ${C.font}`; pctx.fillStyle = C.rf; pctx.fillText('re', 16, L.y + L.h / 2 + 24); pctx.fillStyle = C.ph; pctx.fillText('im', 34, L.y + L.h / 2 + 24);
         pctx.font = `400 10.5px ${C.font}`; pctx.fillStyle = C.muted;
       }
-      if (multi && L.h > 80) {
-        pctx.font = `600 11px ${C.font}`; let lx = 16;
-        for (const [col] of (L.key === 'g' ? chans : [['gx'], ['gy'], ['gz']])) { pctx.fillStyle = C[col]; const tx = col[1]; pctx.fillText(tx, lx, L.y + L.h / 2 + 24); lx += 12; }
+      if (multi && (L.h > 80 || (EXP && twoLine && EXP.names))) { // the x y z legend below the unit, or in a figure's low lane after it
+        const inl = !(L.h > 80), ly = L.y + L.h / 2 + (inl ? 8 : 24); let lx = inl ? 16 + pctx.measureText(unit).width + 8 : 16;
+        pctx.font = `600 11px ${C.font}`;
+        for (const [col] of (L.key === 'g' ? chans : [['gx'], ['gy'], ['gz']])) { pctx.fillStyle = C[col]; const tx = col[1]; pctx.fillText(tx, lx, ly); lx += 12; }
         pctx.font = `400 10.5px ${C.font}`; pctx.fillStyle = C.muted;
       }
       pctx.textAlign = 'right';
@@ -11691,7 +12009,7 @@ function render() {
     }
     pctx.save(); pctx.beginPath(); pctx.rect(x0, L.y - 1, pw, L.h + 2); pctx.clip(); RY0 = L.y - 8; RY1 = L.y + L.h + 8;
     if (L.key === 'adc') drawADC(L, X, t0, t1, pw, x0);
-    else if (L.key === 'm0') {
+    else if (L.key === 'm0' || L.key === 'kc' || L.key === 'mu') {
       /* 1.22.0: the traces at full strength everywhere, drawn like any other lane; the stretches outside the active
          ones (excitation to last readout) are marked by a pale veil over the lane's background, drawn before the
          traces (one rectangle per gap). Fading the traces themselves needed either clip paths of thousands of
@@ -11743,13 +12061,13 @@ function render() {
    is faded (covered with the plot colour); a stretch without a readout is faded throughout */
 /* scale of the M0 lane: largest |m0| in the visible active stretches (moments differ by orders of magnitude between
    imaging, diffusion encoding and spoiling, and what happens after the last readout should not set the scale) */
-function m0ViewMax(t0, t1) {
+function kViewMax(P, t0, t1) { // P: KP_M0 (k-vector), KP_KC (kc) or KP_MU (Maxwell index)
   const s = S.seq, A = m0Active(s), n = A.a.length, o = {}, tmp = {}; let m = 0, cnt = 0;
   for (let j = Math.max(0, ub(A.b, t0) - 1); j < n && A.a[j] < t1 && cnt < 400; j++, cnt++) {
     const a = Math.max(t0, A.a[j]), b = Math.min(t1, A.b[j]); if (b <= a) continue;
-    for (const k of ['mx', 'my', 'mz']) { rangeSummary(s, k, blockAtTime(s, a), blockAtTime(s, b), o, tmp); if (o.has) m = Math.max(m, Math.abs(o.mn), Math.abs(o.mx)); }
+    for (const k of P.keys) { rangeSummary(s, k, blockAtTime(s, a), blockAtTime(s, b), o, tmp); if (o.has) m = Math.max(m, Math.abs(o.mn), Math.abs(o.mx)); }
   }
-  if (!(m > 0)) for (const k of ['mx', 'my', 'mz']) m = Math.max(m, chanRange(k, t0, t1)); // nothing active in view
+  if (!(m > 0)) for (const k of P.keys) m = Math.max(m, chanRange(k, t0, t1)); // nothing active in view
   return m > 0 ? m * 1.05 : 1;
 }
 /* longest block per group of 64 (seconds), for skipping narrow stretches in the shading and boundary loops */
@@ -12243,7 +12561,11 @@ function updateReadout() {
       : `<span class="v"><i style="--c:var(--c-rf)"></i>RF <b>${fmt(channelValue(s, 'rfMag', t) * rF(), 3)}</b> ${rU()}</span>`) +
     ['gx', 'gy', 'gz'].map(k => `<span class="v"><i style="--c:var(--c-${k})"></i>${'G' + k[1]} <b>${g(k)}</b></span>`).join('') +
     `<span class="muted">${gU()}</span>` + (adcOn ? `<span class="v"><i style="--c:var(--c-adc)"></i><b>ADC on</b></span>` : '') +
-    (S.vis.m0 ? `<span class="v"><i style="--c:var(--ink)"></i>k <b>${['mx', 'my', 'mz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') + stimReadout(t);
+    (S.vis.m0 ? `<span class="v"><i style="--c:var(--ink)"></i>k <b>${['mx', 'my', 'mz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') +
+    (S.vis.gc || S.vis.kc ? (ccEnsure(), '') : '') +
+    (S.vis.gc ? `<span class="v"><i style="--c:var(--ink)"></i>Gc <b>${['cx', 'cy', 'cz'].map(k => fmt(channelValue(s, k, t) * gF(), 3)).join(', ')}</b> <span class="muted">${gU()}</span></span>` : '') +
+    (S.vis.kc ? `<span class="v"><i style="--c:var(--ink)"></i>kc <b>${['qx', 'qy', 'qz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') +
+    (S.vis.mu ? (muEnsure(), `<span class="v" title="Generalized Maxwell index (γ/B0)|∫g⊗g h dt|, from the last excitation"><i style="--c:var(--ink)"></i>μ <b>${fmt(channelValue(s, 'mu', t), 3)}</b> <span class="muted">1/m²</span></span>`) : '') + stimReadout(t);
 }
 
 /* ---------- view control ---------- */
@@ -12447,22 +12769,26 @@ document.addEventListener('keydown', e => {
 });
 
 /* ---------- toolbar ---------- */
-// chips grouped by kind of channel in the Display panel (RF, gradients, readout, stimulation), with short labels
-const CHIP_GROUP = { rfMag: 'rf', rfPh: 'rf', gx: 'g', gy: 'g', gz: 'g', slew: 'g', m0: 'g', adc: 'acq', labels: 'acq', pns: 'stim', cns: 'stim' };
-const CHIP_LABEL = { rfMag: '|B1|', rfPh: 'Phase' };
+// chips grouped by kind of channel in the Display panel (RF; gradients, then slew and k-vector; concomitant; readout; stimulation), with short labels
+const CHIP_GROUP = { rfMag: 'rf', rfPh: 'rf', gx: 'g', gy: 'g', gz: 'g', slew: 'g2', m0: 'g2', gc: 'cc', kc: 'cc', mu: 'cc', adc: 'acq', labels: 'acq', pns: 'stim', cns: 'stim' };
+const CHIP_LABEL = { rfMag: '|B1|', rfPh: 'Phase', mu: 'μ' };
 function buildChips() {
   for (const el of document.querySelectorAll('#dispPop .chips[data-group]')) el.innerHTML = '';
   for (const L of LANES) {
     const el = document.querySelector(`#dispPop .chips[data-group="${CHIP_GROUP[L.key] || 'acq'}"]`);
     const b = document.createElement('button'); b.className = 'chip'; b.type = 'button';
-    b.style.setProperty('--c', L.key === 'slew' || L.key === 'labels' || L.key === 'm0' ? 'var(--ink)' : L.stim ? 'var(--muted)' : `var(--c-${L.col})`);
+    b.style.setProperty('--c', L.key === 'slew' || L.key === 'labels' || L.key === 'm0' || L.key === 'gc' || L.key === 'kc' || L.key === 'mu' ? 'var(--ink)' : L.stim ? 'var(--muted)' : `var(--c-${L.col})`);
     if (L.key === 'm0') b.title = 'k-vector (the zeroth gradient moment): reset at each excitation, sign flipped at each refocusing pulse, faded after the last readout';
+    if (L.key === 'gc') { b.title = 'Concomitant gradients: the extra gradient seen by spins at the position set under Concomitant › Settings…'; b.setAttribute('aria-label', 'Concomitant gradients'); }
+    if (L.key === 'kc') { b.title = 'Zeroth moment of the concomitant gradients (k-space shift at the position set under Concomitant › Settings…): reset at each excitation, sign flipped at each refocusing pulse'; b.setAttribute('aria-label', 'Concomitant k-space shift'); }
+    if (L.key === 'mu') b.title = 'Generalized Maxwell index μ = (γ/B0)|∫g⊗g h dt| (1/m², Frobenius norm, γ = 42.58 MHz/T, B0 from Concomitant › Settings…): reset at each excitation, h flips at each refocusing pulse';
     if (L.stim) b.title = L.stim === 'pns' ? 'Peripheral nerve stimulation (SAFE model)' : 'Cardiac nerve stimulation (SAFE model)';
-    b.setAttribute('aria-pressed', S.vis[L.key]); b.innerHTML = `<span class="sw"></span>${CHIP_LABEL[L.key] || L.label}`; if (CHIP_LABEL[L.key]) b.setAttribute('aria-label', L.label);
+    b.setAttribute('aria-pressed', S.vis[L.key]); b.innerHTML = `<span class="sw"></span>${CHIP_LABEL[L.key] || L.label}`; if (CHIP_LABEL[L.key]) b.setAttribute('aria-label', L.key === 'mu' ? 'Generalized Maxwell index' : L.label);
     b.onclick = () => {
       S.vis[L.key] = !S.vis[L.key]; if (!LANES.some(l => S.vis[l.key])) S.vis[L.key] = true; if (L.key === 'labels') S.labelsPref = S.vis.labels; b.setAttribute('aria-pressed', S.vis[L.key]);
       if (L.stim && S.vis[L.key] && !stimHasModel(L.stim)) openSafeDialog();
       request();
+      if ((L.key === 'gc' || L.key === 'kc') && S.seq) { renderSeqInfo(); renderBlock(); } // their rows in the side panel
     };
     el.appendChild(b);
   }
@@ -12616,14 +12942,15 @@ function figExport(g) {
   const sv = { W, H, pdpr, dpr, GUT, AXH, vis: S.vis, KW, IW, kTraj: S.kTraj, kFast, kBusy: kData_busy, tab: S.tab };
   try {
     if (what === 'diag') {
-      S.vis = { ...figLanes }; AXH = o.axis ? 40 : 6;
+      S.vis = { ...figLanes }; AXH = o.axis ? 40 : 6; W = g.cssW; H = g.cssH; // (lane heights for the gutter)
       { // the gutter: the widest lane name or unit, then the tick values
         pctx.font = `600 12px ${C.font}`; let nw = 0; for (const L of lanesGeom()) nw = Math.max(nw, pctx.measureText(L.label).width);
-        pctx.font = `400 10.5px ${C.font}`; for (const L of lanesGeom()) nw = Math.max(nw, pctx.measureText(laneUnit(L.key)).width);
+        const MULTI = new Set(['slew', 'g', 'm0', 'gc', 'kc']); // lanes with an x y z legend, which may follow the unit
+        pctx.font = `400 10.5px ${C.font}`; for (const L of lanesGeom()) nw = Math.max(nw, pctx.measureText(laneUnit(L.key)).width + (MULTI.has(L.key) && o.names && L.h > 30 && L.h <= 80 ? 8 + 36 : 0));
         const tw = pctx.measureText('−000.0').width;
         GUT = Math.ceil(o.names ? 16 + nw + 10 + (o.yNums ? tw + 8 : 0) : o.yNums ? tw + 12 : 6);
       }
-      W = g.cssW; H = g.cssH; pdpr = g.r; sizeCanvas(plot, pctx, W, H, g.r);
+      pdpr = g.r; sizeCanvas(plot, pctx, W, H, g.r);
       /* lane names and value ranges are left out by what they are: names, units, legends and strip titles are
          left-aligned text starting within the screen's gutter (x < 84, also where the figure's gutter is narrower),
          with the colour bars at x = 8; ranges are right-aligned text ending at the plot (x < GUT); the time axis
@@ -12724,7 +13051,7 @@ function renderSeqInfo() {
     volsHTML() + shotsHTML() +
     `<h3>Gradient peaks <span class="tag">${gU()}, ${sU()}</span></h3>` +
     kv(['x', 'y', 'z'].map((a, i) => [`G${a} amplitude / slew`, `${fmt(st.maxG[i] * gF(), 4)} / ${fmt(st.maxSlew[i] * sF(), 4)}`])) +
-    stimSummaryHTML() +
+    ccSummaryHTML() + stimSummaryHTML() +
     `<h3>Rasters</h3>` +
     kv([['Gradient', us(s.raster.grad)], ['RF', us(s.raster.rf)], ['ADC', fmt(s.raster.adc * 1e9, 4) + ' ns'], ['Block', us(s.raster.block)]]) +
     `<h3>Settings</h3><p class="note">Lanes, units, shot and volume rules and k-space options are remembered in this browser.</p><button class="btn" id="resetSettings">Restore default settings</button>` +
@@ -12781,6 +13108,7 @@ function openAbout() {
     `<h3>Acknowledgements</h3><ul>
       <li>The Pulseq file format and its conventions (event definitions, labels, k-space calculation): Layton KJ, Kroboth S, Jia F, et al. Pulseq: a rapid and hardware-independent pulse sequence prototyping framework. <i>Magn Reson Med</i> 2017;77(4):1544–1552. ${PULSEQ_LINKS}</li>
       <li>PyPulseq was used to validate the viewer: the reference files of its test suite check the reading of files, the gradient waveforms and k-space, and its waveforms were compared with the stimulation input. Ravi KS, Geethanath S, Vaughan JT. PyPulseq: a Python package for MRI pulse sequence design. <i>J Open Source Softw</i> 2019;4(42):1725. <a href="https://doi.org/10.21105/joss.01725" target="_blank" rel="noopener">doi:10.21105/joss.01725</a> · <a href="https://github.com/imr-framework/pypulseq" target="_blank" rel="noopener">github.com/imr-framework/pypulseq</a></li>
+      <li>Concomitant gradients (lanes Gc and kc) are computed as in Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. <i>Magn Reson Med</i> 2026;96(3):1178–1191. <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. The field model builds on Bernstein MA, Zhou XJ, Polzin JA, et al. Concomitant gradient terms in phase contrast MR: analysis and correction. <i>Magn Reson Med</i> 1998;39(2):300–308. <a href="https://doi.org/10.1002/mrm.1910390218" target="_blank" rel="noopener">doi:10.1002/mrm.1910390218</a></li>
       <li>Nerve stimulation (PNS, CNS) follows the SAFE model as implemented in safe_pns_prediction by F. Szczepankiewicz and T. Witzel (<a href="https://github.com/filip-szczepankiewicz/safe_pns_prediction" target="_blank" rel="noopener">github.com/filip-szczepankiewicz/safe_pns_prediction</a>), against which it was checked. Model: Hebrank FX, Gebhardt M. SAFE-Model: a new method for predicting peripheral nerve stimulations in MRI. <i>Proc Intl Soc Mag Reson Med</i> 2000;8:2007.</li>
     </ul>` +
     `<h3>Recent changes</h3>` + A.changelog.map(c => `<p style="margin:8px 0 2px"><b>${esc(c.version)}</b> <span class="muted">${esc(c.date)}</span></p><ul>${c.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`).join('') +
@@ -12935,7 +13263,7 @@ function renderBlock() {
   else if (S.selKind === 'shot' && skH >= 0) head = `<div class="selmain"><b>Shot ${skH + 1}</b> <span class="muted">of ${s.shots.length.toLocaleString()}</span>${nSel}</div><div class="selsub">${vkH >= 0 ? `volume ${vkH + 1} · ` : ''}starts with block ${b.id}: ${esc(describeBlock(S.sel))}</div>`;
   else head = `<div class="selmain"><b>Block ${b.id}</b> <span class="desc">${esc(describeBlock(S.sel))}</span></div><div class="selsub">${where.length ? 'in ' + where.join(' · ') : `of ${s.nb.toLocaleString()} blocks`}</div>`;
   let h = '';
-  h += `<h3>Block ${b.id} <span class="tag">${esc(describeBlock(S.sel))}</span></h3>` + kv([['Start', fmtT(t0)], ['Duration', fmtT(b.dur)], ['k at the end', `${[0, 1, 2].map(a => fmt(s.kStart[a][S.sel + 1] * mF(), 4)).join(', ')} <span class="muted">${mU()}</span>`], ...stimRows(t0, t0 + b.dur)]) +
+  h += `<h3>Block ${b.id} <span class="tag">${esc(describeBlock(S.sel))}</span></h3>` + kv([['Start', fmtT(t0)], ['Duration', fmtT(b.dur)], ['k at the end', `${[0, 1, 2].map(a => fmt(s.kStart[a][S.sel + 1] * mF(), 4)).join(', ')} <span class="muted">${mU()}</span>`], ...ccRows(S.sel), ...stimRows(t0, t0 + b.dur)]) +
     `<div class="blknav" style="margin-top:8px"><button class="btn" id="bZoom">Zoom to block</button></div>`;
   let shotCard = '', volCard = '';
   const vk = volsOn() ? volOfBlock(S.sel) : -1;
@@ -14145,7 +14473,7 @@ window.addEventListener('drop', e => {
 });
 
 /* ---------- settings kept between sessions (browser local storage) ---------- */
-const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'pauseHatch', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kTraj'];
+const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'pauseHatch', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kTraj', 'cc'];
 const DEFAULTS = JSON.parse(JSON.stringify({ vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) }));
 function saveSettings() {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ v: 1, app: APP.version, vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) })); } catch (_) { }
@@ -14166,6 +14494,7 @@ function applySettings(o) {
   if (typeof o.volPref === 'string' && /^(auto|off|label:.+)$/.test(o.volPref)) S.volPref = S.volMode = o.volPref;
   if (ok('kRange', ['view', 'shot', 'vol'])) S.kRange = o.kRange; // "all" was removed in 1.0.2
   if (ok('kProj', ['xy', 'xz', 'yz', '3d'])) { S.kProj = o.kProj; S.kR = o.kProj === '3d' ? rot3d() : PROJ[o.kProj]; }
+  if (o.cc && typeof o.cc === 'object') { const c = ccValid(o.cc); if (c) S.cc = c; }
   if (o.sim && typeof o.sim === 'object') {
     const d = S.sim, v = o.sim;
     if (['head', 'abdomen'].includes(v.phantom)) d.phantom = v.phantom;
@@ -14484,6 +14813,67 @@ updateStimStat();
   $('#imOpts').addEventListener('change', later); $('#imOpts').addEventListener('click', later);
   imSummary();
 })();
+
+/* ---------- concomitant gradients: settings dialog, panel rows ---------- */
+function ccValid(c) { // { r: [m, m, m], B0 (T), a, f (T/m) } or null
+  const ok = v => typeof v === 'number' && isFinite(v);
+  if (!c || !Array.isArray(c.r) || c.r.length !== 3 || !c.r.every(ok) || !ok(c.B0) || !(c.B0 > 0) || !ok(c.a) || !ok(c.f)) return null;
+  return { r: c.r.slice(), B0: c.B0, a: c.a, f: c.f };
+}
+const ccCm = v => +(v * 100).toPrecision(10);
+function ccSync() { // dialog from S.cc
+  const c = S.cc; $('#ccX').value = ccCm(c.r[0]); $('#ccY').value = ccCm(c.r[1]); $('#ccZ').value = ccCm(c.r[2]);
+  $('#ccB0').value = c.B0; $('#ccA').value = c.a; $('#ccF').value = c.f;
+  for (const id of ['ccX', 'ccY', 'ccZ', 'ccB0', 'ccA', 'ccF']) $('#' + id).classList.remove('bad');
+  ccStatus();
+}
+function ccStatus() {
+  const el = $('#ccNote'), c = S.cc, R = Math.hypot(...c.r) * 100;
+  let t = `|r| = ${fmt(R, 3)} cm.`;
+  if (S.seq) { ccEnsure(); const m = S.seq.cc.max; t += ` Peak Gc in ${S.name}: x ${fmt(m[0] * gF(), 3)}, y ${fmt(m[1] * gF(), 3)}, z ${fmt(m[2] * gF(), 3)} ${gU()}.`; }
+  if (c.f !== 0) t += ' With f ≠ 0, Gc is not zero where the gradients are off (the static f term), so kc also grows during pauses.';
+  el.textContent = t;
+}
+function ccApply() {
+  if (S.seq) ccEnsure();
+  request(); if (S.seq) { renderSeqInfo(); renderBlock(); }
+  scheduleSave(); ccStatus();
+}
+function ccRead() { // dialog to S.cc (only when every field is valid)
+  const num = id => { const el = $('#' + id), v = el.value.trim() === '' ? NaN : Number(el.value); return { el, v }; };
+  const F = { x: num('ccX'), y: num('ccY'), z: num('ccZ'), B0: num('ccB0'), a: num('ccA'), f: num('ccF') };
+  let ok = true; for (const k in F) { const bad = !isFinite(F[k].v) || (k === 'B0' && !(F[k].v > 0)); F[k].el.classList.toggle('bad', bad); if (bad) ok = false; }
+  if (!ok) { $('#ccNote').textContent = 'Enter a number in every field (B0 above 0).'; return; }
+  S.cc = { r: [F.x.v / 100, F.y.v / 100, F.z.v / 100], B0: F.B0.v, a: F.a.v, f: F.f.v }; ccApply();
+}
+for (const id of ['ccX', 'ccY', 'ccZ', 'ccB0', 'ccA', 'ccF']) $('#' + id).addEventListener('change', ccRead);
+$('#ccDefault').onclick = () => { S.cc = { r: CC_DEF.r.slice(), B0: CC_DEF.B0, a: CC_DEF.a, f: CC_DEF.f }; ccSync(); ccApply(); };
+function openCcDialog() {
+  for (const id of ['morePop', 'dispPop']) { const p = $('#' + id); if (!p.hidden) { p.hidden = true; const b = document.querySelector(`[aria-controls="${id}"]`); if (b) b.setAttribute('aria-expanded', 'false'); } }
+  ccSync(); const d = $('#ccDlg'); if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
+}
+$('#ccSpecBtn').onclick = openCcDialog; $('#ccMenuBtn').onclick = openCcDialog;
+$('#ccClose').onclick = () => { const d = $('#ccDlg'); if (d.close) d.close(); else d.removeAttribute('open'); };
+/* Selection tab, block card: peak Gc in the block and kc at its end (when a concomitant lane is on) */
+function ccRows(i) {
+  if (!S.seq || !(S.vis.gc || S.vis.kc)) return [];
+  ccEnsure(); const s = S.seq, id = s.B.ccx[i], pk = [0, 1, 2].map(a => { if (!id) return 0; const g = ccGeo(s, id).geo[a]; return Math.max(Math.abs(g.min), Math.abs(g.max)); });
+  return [['Gc peak', `${pk.map(v => fmt(v * gF(), 3)).join(', ')} <span class="muted">${gU()}</span>`],
+    ['kc at the end', `${[0, 1, 2].map(a => fmt(s.cc.kStart[a][i + 1] * mF(), 4)).join(', ')} <span class="muted">${mU()}</span>`]];
+}
+/* Sequence tab: the parameters, peak Gc and the largest |kc| in blocks with a readout */
+function ccSummaryHTML() {
+  if (!S.seq || !(S.vis.gc || S.vis.kc)) return '';
+  ccEnsure(); kintPyramids(KP_KC, S.seq);
+  const s = S.seq, P = s.cc.P, km = [0, 0, 0], o = {};
+  for (let j = 0; j < s.adcBlocks.length; j++) { const b = s.adcBlocks[j]; for (let a = 0; a < 3; a++) { blockSummary(s, KP_KC.keys[a], b, o); km[a] = Math.max(km[a], Math.abs(o.mn), Math.abs(o.mx)); } }
+  return `<h3>Concomitant gradients <span class="tag">at r = (${P.r.map(ccCm).join(', ')}) cm</span></h3>` +
+    kv([['B0, a, f', `${+P.B0.toPrecision(6)} T, ${+P.a.toPrecision(6)}, ${+P.f.toPrecision(6)} T/m`],
+      ['Peak Gc x / y / z', `${s.cc.max.map(v => fmt(v * gF(), 3)).join(' / ')} <span class="muted">${gU()}</span>`],
+      s.adcBlocks.length ? ['Largest |kc| in readout blocks', `${km.map(v => fmt(v * mF(), 3)).join(' / ')} <span class="muted">${mU()}</span>`] : null]) +
+    `<button class="btn" data-cc-open>Concomitant gradients…</button>`;
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-cc-open]')) openCcDialog(); });
 
 readColors(); resize();
 

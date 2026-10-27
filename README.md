@@ -6,16 +6,17 @@ Open a sequence and interactively explore the RF and gradient waveforms, ADC eve
 
 ## Features
 
-* Responsive sequence diagram with RF, gradients, ADC and labels
+* Responsive sequence diagram with RF, gradients, slew rate, k-vector, ADC and labels
 * Navigate and inspect individual blocks, shots and volumes
 * 2D and 3D k-space trajectory visualization
 * Built-in 3D image simulation using the actual sequence timing and k-space trajectory
 * Simulation of T1/T2/T2\*, fat, diffusion, noise, susceptibility and eddy-current effects
 * Peripheral and cardiac nerve-stimulation estimates using the SAFE model
+* Concomitant gradients, their k-space shift and the generalized Maxwell index as functions of time
 * Linked browser tabs for comparing sequences
-* PNG export of sequence diagrams, k-space trajectories and simulated images
+* PNG export of diagrams
 * Light and dark themes
-* Pulseq formats **1.2–1.5**
+* Pulseq formats versions 1.2–1.5
 * Works offline and keeps sequence data local
 * Built-in frame-rate test, and a lower diagram quality for slower computers
 
@@ -26,6 +27,14 @@ Download and open `seqret.html` in a modern web browser, then drag and drop a `.
 Go to **Display › Shots and volumes** to define how shots and volumes are identified. Click on volume or shot to focus on it. Use the arrow keys to step across volumes, shots or individual blocks.
 
 Use the tabs on the right to view detailed information, view k-space or the simulated image.
+
+Go to **Display › Concomitant** to show the concomitant gradients:
+
+* **Gc**: the concomitant gradient seen by spins at a chosen position r. It is computed from the full field of the gradient coils, not from its second-order expansion. The field model includes the asymmetry *a* of the z coil and a non-Maxwell term *f*.
+* **kc**: the zeroth moment of Gc, which is the k-space shift of the spins at r.
+* **μ**: the generalized Maxwell index, μ(t) = (γ/B0)·|∫ **g**(t)<sup>⊗2</sup> h(t) dt|, the Frobenius norm of the running integral of the gradient's outer product. It is given in 1/m² with γ = 42.58 MHz/T, and depends only on the gradients and B0.
+
+kc and μ are reset at each excitation and change sign at each refocusing pulse, as the k-vector does. **Settings…** sets r (default (5, 6, 7) cm), B0 (3 T), *a* (0.5) and *f* (0 T/m), and the values are kept in the browser. The sequence's x, y and z axes are taken as the scanner's, with B0 along z.
 
 ## Performance
 
@@ -53,6 +62,16 @@ Peripheral (PNS) and cardiac (CNS) nerve stimulation are predicted with the SAFE
 > Hebrank FX, Gebhardt M. SAFE-Model - A New Method for Predicting Peripheral Nerve Stimulations in MRI, [Proc Intl Soc Mag Reson Med. 2000;8:2007](https://cds.ismrm.org/ismrm-2000/PDF7/2007.PDF).
 
 > Szczepankiewicz F, Witzel T. SAFE-model in MATLAB [github.com/filip-szczepankiewicz/safe_pns_prediction](https://github.com/filip-szczepankiewicz/safe_pns_prediction)
+
+### Concomitant gradients and the Maxwell index
+
+Gc and kc use the field model of Bernstein et al., extended by the asymmetry *a* and the term *f*. Gc, kc and μ are computed as in Olsson et al. The Maxwell index was introduced by Szczepankiewicz et al.
+
+> Bernstein MA, Zhou XJ, Polzin JA, et al. Concomitant gradient terms in phase contrast MR: analysis and correction. Magn Reson Med. 1998;39:300–308. [doi:10.1002/mrm.1910390218](https://doi.org/10.1002/mrm.1910390218)
+
+> Szczepankiewicz F, Westin CF, Nilsson M. Maxwell-compensated design of asymmetric gradient waveforms for tensor-valued diffusion encoding. Magn Reson Med. 2019;82:1424–1437. [PMC6626569](https://pmc.ncbi.nlm.nih.gov/articles/PMC6626569/)
+
+> Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med. 2026;96:1178–1191. [doi:10.1002/mrm.70422](https://doi.org/10.1002/mrm.70422)
 
 ## Authors
 
