@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.38.0 (2026-10-27) - Pulseq sequence viewer
+  Seqret 1.41.0 (2026-10-31) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.38.0">
-<meta name="description" content="Seqret 1.38.0: Pulseq sequence viewer (Pulseq .seq files)">
+<meta name="version" content="1.41.0">
+<meta name="description" content="Seqret 1.41.0: Pulseq sequence viewer (Pulseq .seq files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -136,6 +136,8 @@ header{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--plot);border-radius:999px;padding:3px 10px 3px 8px;cursor:pointer;font-size:13px;user-select:none}
 .chip .sw{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.chip .sw.tri{border-radius:0;clip-path:polygon(0 8%,100% 8%,50% 92%)}.chip .sw.dot{border-radius:50%}
+.chip .sw.ring{border-radius:50%;background:transparent;box-shadow:inset 0 0 0 1.6px var(--c)}
 .chip[aria-pressed="false"]{background:transparent;color:var(--faint)}
 .chip[aria-pressed="false"] .sw{background:transparent;box-shadow:inset 0 0 0 1.5px var(--c)}
 .tgroup{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--muted);min-width:0;max-width:100%}
@@ -192,8 +194,18 @@ aside{display:flex;flex-direction:column;min-height:0;padding:12px 16px 12px 14p
 h3{font-size:13px;font-weight:600;margin:16px 0 6px;color:var(--ink)}
 h3:first-child{margin-top:4px}
 h3 .tag{font-weight:500;color:var(--muted);margin-left:6px}
-dl.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0;font-size:13px}
+dl.kv{display:grid;grid-template-columns:auto 1fr;gap:0;margin:0;font-size:13px}
 dl.kv dt{color:var(--muted)}
+/* the gaps are padding, so a hovered row is one band from name to value (pairing a name with its value far right) */
+dl.kv>dt{padding:1.5px 14px 1.5px 0;border-radius:4px 0 0 4px}
+dl.kv>dd{padding:1.5px 0;margin:0;border-radius:0 4px 4px 0}
+@media (hover:hover){dl.kv>dt:hover,dl.kv>dt:hover+dd,dl.kv>dd:hover,dl.kv>dt:has(+dd:hover){--rowhi:color-mix(in srgb,var(--ink) 8%,transparent);background:var(--rowhi)}
+dl.kv>dt:hover,dl.kv>dt:has(+dd:hover){box-shadow:-4px 0 0 var(--rowhi)}dl.kv>dt:hover+dd,dl.kv>dd:hover{box-shadow:4px 0 0 var(--rowhi)}}
+table.btm{border-collapse:collapse;margin-left:auto;font-variant-numeric:tabular-nums;font-size:12px}
+table.btm th{color:var(--muted);font-weight:400;padding:0 6px 0 0;text-align:left}
+table.btm td{padding:0 0 0 10px;text-align:right}
+table.btm thead th{text-align:right;padding:0 0 1px 10px}
+table.btm thead th:first-child{text-align:left;padding-left:0;font-size:11px}
 dl.kv dd{margin:0;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
 .selhead{position:sticky;top:0;z-index:2;background:var(--bg);padding:6px 0 8px;margin-bottom:4px;border-bottom:1px solid var(--line)}
 .selmain{font-size:15px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
@@ -395,7 +407,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.38.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.41.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -448,6 +460,8 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
               <div class="cbody"><div class="chips" data-group="acq" role="group" aria-label="Readout channels"></div></div>
               <span class="clab">Stimulation</span>
               <div class="cbody"><div class="chips" data-group="stim" role="group" aria-label="Nerve stimulation channels"></div><div class="cctl"><label title="Show the L2 norm of the three axes in grey"><input type="checkbox" id="stimNorm" checked> L2 norm</label><button class="btn small" id="stimSpecBtn">Specifications…</button></div><p class="stimstat" id="stimStat"></p></div>
+              <span class="clab">Echoes</span>
+              <div class="cbody"><div class="chips" id="echoChips" role="group" aria-label="Echo markers on the RF lane and in k-space"></div><div class="cctl"><label title="Show the echo markers in the diagram only while the view covers at most 4 shots (they are always shown in the k-space tab)"><input type="checkbox" id="echoZoom" checked> Only when zoomed in</label></div></div>
             </div></section>
           <section><h6>View</h6>
             <div class="prow"><label title="Scale each channel to the visible time window"><input type="checkbox" id="autoY"> Fit Y to view</label><label title="A faint hatch in the RF and gradient lanes over pauses: blocks without RF, gradients, ADC or trigger"><input type="checkbox" id="pauseHatch" checked> Mark pauses</label><label title="Ultra: two columns per screen pixel, drawn anti-aliased, for the smoothest waveforms on computers that draw fast (about twice the work of high). High: the waveforms are drawn with one column per screen pixel at every zoom level, so dense stretches keep their shape when zoomed out. Standard: coarser columns when zoomed out, cheaper to draw. Fast: standard at 1× pixel density on high-density screens, a quarter of the pixels at 2×, with slightly softer lines and text. Lower it if the diagram is slow (see ⋯ › Run frame-rate test). PNG export is always at full density.">Quality <select id="diagRes" aria-label="Diagram quality"><option value="ultra">ultra</option><option value="high" selected>high</option><option value="standard">standard</option><option value="fast">fast</option></select></label></div>
@@ -7868,7 +7882,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.38.0", "date": "2026-10-27", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.38.0", "date": "2026-10-27", "notes": ["Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.", "Lane kc: the zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r. It is reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.", "Lane Maxwell μ (chip μ): the generalized Maxwell index μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T. It is reset at each excitation, and h flips sign at each refocusing pulse. The six distinct components of the integral are computed exactly (the gradients are piecewise linear); the lane is drawn through up to 24 points per gradient stretch. μ depends only on the gradients and B0, and is the same for the physical and the logical gradients.", "Settings… (in the Concomitant row, or ⋯ › Concomitant gradients…): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. f is constant in time, so with f ≠ 0 Gc is not zero where the gradients are off and kc keeps changing in pauses; the dialog says so.", "With the lanes on, the cursor readout gives Gc, kc and μ, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.", "Display panel regrouped: Gx, Gy, Gz and One axis on one row, Slew and k-vector below them, then the gradient unit; Gc, kc, μ and Settings… in the new Concomitant row.", "Save figure… and Save diagram as PNG include the new lanes (Lanes in the figure dialog). In a figure, lanes too low for the unit on its own line before (k-vector, Gc, kc and μ at the default size) now keep it under the name, with the x y z legend after it; the gutter widens to fit.", "References in the dialog and under About › Acknowledgements: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; and for the field model Bernstein MA, Zhou XJ, Polzin JA, et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.", "Checked against separate calculations from PyPulseq's gradient waveforms (sampled every 0.25 µs, integrated with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated: kc agrees to 4·10⁻⁷ of its largest value over three settings including f ≠ 0, the drawn Gc lane to 0.1 %; μ agrees to 3·10⁻⁷, the drawn μ lane to 2.3·10⁻⁴. The k-vector now shares its code with kc and μ and is unchanged, bit for bit (750,430 values compared with 1.37.0)."]}, {"version": "1.37.0", "date": "2026-10-02", "notes": ["Save figure, diagram: traces are drawn as one line of even width everywhere (steep ramps and readout trains were thinner than the rest), with the line width chosen in pt.", "Y axes with round values: each lane's scale goes up to the next round value above its peak (58.3 mT/m: 60; 19.3 µT: 20), with an axis line and ticks at round steps (e.g. 0, ±30, ±60), as many as fit; the time axis has a title, Time (ms). The coloured bars beside the lanes are left out.", "New options: gradients on one axis or a lane each (independent of the screen), fill under traces on or off, font (Arial, Helvetica, Times or the system font). Block shading stays its own switch."]}, {"version": "1.36.0", "date": "2026-10-02", "notes": ["Save figure… (Display menu, and next to Save as PNG in the k-space and Image tabs): a PNG of the sequence diagram, k-space or simulated image for publications. Choose the printed size (mm or inches, with column-width presets), the resolution (dpi) and the text size in points at that size; lines and marks scale with the text. The PNG carries its resolution, so layout programs place it at the chosen size.", "Contents: for the diagram the lanes (independent of the screen), the volume and shot strips, time axis, lane names and units, value ranges, block numbers, block shading, selection and pause hatching; for k-space the path, axes, |k| range, legend and group boxes; for the image the text, directions, scout, cropping to the image and sharp pixels. Colours from any theme (e.g. Paper while working in Dark), with the theme's, a white or a transparent background, and optionally the Seqret version, file and date below. The figure shows the current view (time range, k-space view, image)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.41.0", "date": "2026-10-31", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers, switched under Display › Echoes: spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○). In the diagram they sit at the top of the RF lane, spin echoes in one row and gradient echoes in the row below, so a spin echo and a gradient echo at the same time line up. Hovering a marker names it, gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it (and the reverse); for an echo on another line, |k| there. By default they are drawn only while the view covers at most 4 shots (Only when zoomed in); without it, new shots are computed within 12 ms per frame, so zooming out stays responsive.", "k-space tab: the same markers on the trajectory, where each echo lies in k-space: a spin echo off the centre shows a mismatch between the spin echo and the k-space centre. Gradient echoes follow the kind of readout shown (imaging, reference, navigator); at most 400 shots are marked.", "Spin echoes: where the dephasing time τ returns to zero; τ starts at the excitation and changes sign at each refocusing pulse, at the pulses' centres (2·t₁₈₀ − t₉₀ for a Hahn echo, each echo of a train). Stimulated and secondary echoes are not marked. Gradient echoes: only during readouts (not noise); along a straight readout, where the k component along the readout crosses zero, solved exactly (it is quadratic between gradient vertices); k = 0 when the rest of k is zero too (within 10⁻⁴ of the largest |k| at the readouts' ends). A curved readout (spiral) has only k = 0 echoes, where k comes to zero in its block, e.g. where a spiral-out's gradient starts.", "Checked against separate calculations from PyPulseq (own k integration of its gradient waveforms on a grid of at most 0.5 µs, readouts from its ADC times, zero crossings by interpolation): the demo, an oblique SE-EPI, a gradient echo and a turbo spin echo give the same 22 spin echoes, 52 k = 0 and 540 other gradient echoes, with times within 0.04 ns. 10,240 shots take about 0.12 s."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab (shot card): the b-value, the 3×3 b-tensor in the scanner's x, y and z, and its eigenvalues, in ms/µm². B = (2π)² ∫ k kᵀ dt from the excitation to the echo, the readout sample closest to k = 0 in the shot's first echo, with k reset at the excitation and mirrored at each refocusing pulse as in the k-vector lane. All gradients count (diffusion, slice selection, crushers, readout prephasers), so cross-terms with the imaging gradients are included. A shot with only reference readouts uses those; a multi-echo shot says how many echoes it has. Hover the row names for the definition.", "The integral is exact: k is quadratic between gradient vertices and RF centres, so k kᵀ is integrated with 3-point Gauss–Legendre on each piece. The image simulation's b-value is now the trace of this tensor (before, 25 points per block, within 5·10⁻⁵ for diffusion-weighted shots and 2·10⁻³ for b ≈ 0).", "Checked against separate calculations from PyPulseq's gradient waveforms (own k integration with PyPulseq's excitation and refocusing times) on five sequences: the demo, a spin echo with one diffusion pair along (1, 2, 2)/3, an oblique slice-selective SE-EPI with two orthogonal diffusion pairs, a gradient echo with a bipolar gradient and a turbo spin echo. The tensors agree to 1.4·10⁻⁷ of b, the eigenvalues to 1.5·10⁻⁷, and the echo is the same readout sample as PyPulseq's nearest to k = 0 in every shot (22 of 22). The single pair matches the Stejskal–Tanner b for trapezoids, b n nᵀ, to 10⁻¹⁵."]}, {"version": "1.38.0", "date": "2026-10-27", "notes": ["Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.", "Lane kc: the zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r. It is reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.", "Lane Maxwell μ (chip μ): the generalized Maxwell index μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T. It is reset at each excitation, and h flips sign at each refocusing pulse. The six distinct components of the integral are computed exactly (the gradients are piecewise linear); the lane is drawn through up to 24 points per gradient stretch. μ depends only on the gradients and B0, and is the same for the physical and the logical gradients.", "Settings… (in the Concomitant row, or ⋯ › Concomitant gradients…): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. f is constant in time, so with f ≠ 0 Gc is not zero where the gradients are off and kc keeps changing in pauses; the dialog says so.", "With the lanes on, the cursor readout gives Gc, kc and μ, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.", "Display panel regrouped: Gx, Gy, Gz and One axis on one row, Slew and k-vector below them, then the gradient unit; Gc, kc, μ and Settings… in the new Concomitant row.", "Save figure… and Save diagram as PNG include the new lanes (Lanes in the figure dialog). In a figure, lanes too low for the unit on its own line before (k-vector, Gc, kc and μ at the default size) now keep it under the name, with the x y z legend after it; the gutter widens to fit.", "References in the dialog and under About › Acknowledgements: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; and for the field model Bernstein MA, Zhou XJ, Polzin JA, et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.", "Checked against separate calculations from PyPulseq's gradient waveforms (sampled every 0.25 µs, integrated with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated: kc agrees to 4·10⁻⁷ of its largest value over three settings including f ≠ 0, the drawn Gc lane to 0.1 %; μ agrees to 3·10⁻⁷, the drawn μ lane to 2.3·10⁻⁴. The k-vector now shares its code with kc and μ and is unchanged, bit for bit (750,430 values compared with 1.37.0)."]}, {"version": "1.37.0", "date": "2026-10-02", "notes": ["Save figure, diagram: traces are drawn as one line of even width everywhere (steep ramps and readout trains were thinner than the rest), with the line width chosen in pt.", "Y axes with round values: each lane's scale goes up to the next round value above its peak (58.3 mT/m: 60; 19.3 µT: 20), with an axis line and ticks at round steps (e.g. 0, ±30, ±60), as many as fit; the time axis has a title, Time (ms). The coloured bars beside the lanes are left out.", "New options: gradients on one axis or a lane each (independent of the screen), fill under traces on or off, font (Arial, Helvetica, Times or the system font). Block shading stays its own switch."]}, {"version": "1.36.0", "date": "2026-10-02", "notes": ["Save figure… (Display menu, and next to Save as PNG in the k-space and Image tabs): a PNG of the sequence diagram, k-space or simulated image for publications. Choose the printed size (mm or inches, with column-width presets), the resolution (dpi) and the text size in points at that size; lines and marks scale with the text. The PNG carries its resolution, so layout programs place it at the chosen size.", "Contents: for the diagram the lanes (independent of the screen), the volume and shot strips, time axis, lane names and units, value ranges, block numbers, block shading, selection and pause hatching; for k-space the path, axes, |k| range, legend and group boxes; for the image the text, directions, scout, cropping to the image and sharp pixels. Colours from any theme (e.g. Paper while working in Dark), with the theme's, a white or a transparent background, and optionally the Seqret version, file and date below. The figure shows the current view (time range, k-space view, image)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -9735,22 +9749,170 @@ function tauAt(info, t) {
   for (const r of info.refs) { if (r > t) break; tau = -(tau + (r - last)); last = r; }
   return tau + (t - last);
 }
-/* b-value (s/mm²) from excitation to tEcho: (2π)² ∫ |k|² dt on the trajectory (all three axes) */
+/* b-value (s/mm²) from excitation to tEcho: the trace of the b-tensor, (2π)² ∫ |k|² dt on the trajectory */
 function bValue(seq, info, tEcho) {
-  const bs = seq.blockStart, b0 = info.exc, b1 = blockAtTime(seq, tEcho);
-  let acc = 0; const out = [new Float64Array(1), new Float64Array(1), new Float64Array(1)], rel = new Float64Array(1);
-  let prevT = null, prevK2 = 0;
-  for (let b = b0; b <= b1; b++) {
-    const dur = bs[b + 1] - bs[b], n = 24;
-    for (let q = 0; q <= n; q++) {
-      const t = bs[b] + dur * q / n; if (t < info.tE || t > tEcho) continue;
-      rel[0] = t - bs[b]; kInBlock(seq, b, rel, out, 0, 1);
-      const k2 = out[0][0] ** 2 + out[1][0] ** 2 + out[2][0] ** 2;
-      if (prevT !== null) acc += 0.5 * (k2 + prevK2) * (t - prevT);
-      prevT = t; prevK2 = k2;
+  const M = bTensor(seq, info.exc, info.tE, tEcho);
+  return (M[0] + M[4] + M[8]) * 1e-6;
+}
+/* Echoes of a shot (from its first excitation):
+   se: spin echoes, where the dephasing time τ returns to zero (τ starts at the excitation's centre and changes sign at
+       each refocusing pulse's centre; tauAt): 2·t₁₈₀ − t₉₀ for a Hahn echo, every echo of a CPMG train;
+   gf: gradient echoes with k = 0, where the readout component of k crosses zero and the rest of k is zero too
+       (within 1e-4 of the largest |k| at the ends of the shot's readouts);
+   gl: the other gradient echoes, where the readout component crosses zero away from the centre (other lines);
+   kp: |k| there (the part across the readout); jf, jl: the ADC event of each. Only during readouts (ADC events other than noise); along a straight
+   readout the component along it is quadratic between gradient vertices, so the crossings are solved exactly; a curved
+   readout (spiral) has no readout direction: its gradient echo is where k comes to 0 in the readout's block (at a
+   sample, or where a spiral-out's gradient starts or a spiral-in's ends, even outside the sampling), if it does. */
+function shotEchoes(seq, shots, k) {
+  const cache = seq._ech && seq._ech.shots === shots ? seq._ech.m : (seq._ech = { shots, m: new Map() }).m;
+  if (cache.has(k)) return cache.get(k);
+  const sh = shots[k], B = seq.B, bs = seq.blockStart, res = { tE: null, se: [], gf: [], gl: [], kp: [], jf: [], jl: [] };
+  let exc = -1; const refs = [];
+  for (let b = sh.b0; b <= sh.b1; b++) if (B.rf[b]) { const st = rfSt(seq, B.rf[b]); if (st.use === 'e' && exc < 0) exc = b; else if (st.use === 'r' && exc >= 0) refs.push(bs[b] + st.center); }
+  if (exc < 0) { cache.set(k, res); return res; }
+  const tE = res.tE = bs[exc] + rfSt(seq, B.rf[exc]).center, tEnd = sh.t1;
+  // spin echoes: τ just after refocusing pulse i is −(τ before it); the echo follows at r_i + |τ| if that is before the next pulse
+  let tau = 0, last = tE;
+  for (let i = 0; i < refs.length; i++) {
+    tau = -(tau + (refs[i] - last)); last = refs[i];
+    const te = last - tau, next = i + 1 < refs.length ? refs[i + 1] : tEnd;
+    if (tau < 0 && te <= next + 1e-12) res.se.push(te);
+  }
+  // gradient echoes along each readout
+  const AT = seq.adcType, cand = [], out = [new Float64Array(3), new Float64Array(3), new Float64Array(3)], rel = new Float64Array(3);
+  const kAt = (b, r) => { rel[0] = r; kInBlock(seq, b, rel, out, 0, 1); return [out[0][0], out[1][0], out[2][0]]; };
+  let kmax = 0;
+  for (let j = sh.j0; j < sh.j1; j++) {
+    if (AT[j] === 3) continue; // noise
+    const b = seq.adcBlocks[j], d = seq.adc.get(B.adc[b]); if (!d || !d.num) continue;
+    const a0 = d.delay, a1 = d.delay + d.num * d.dwell; if (bs[b] + a1 <= tE) continue;
+    const ka = kAt(b, a0), kb = kAt(b, a1); kmax = Math.max(kmax, Math.hypot(...ka), Math.hypot(...kb));
+    // pieces between gradient vertices (and an RF centre) inside the readout
+    const br = [a0, a1];
+    for (const id of [B.pgx[b], B.pgy[b], B.pgz[b]]) if (id) { const g = geoG(seq, id); for (let q = 0; q < g.n; q++) if (g.t[q] > a0 && g.t[q] < a1) br.push(g.t[q]); }
+    if (B.rf[b]) { const st = rfSt(seq, B.rf[b]); if (st.center > a0 && st.center < a1) br.push(st.center); }
+    br.sort((x, y) => x - y);
+    const D = [kb[0] - ka[0], kb[1] - ka[1], kb[2] - ka[2]], L = Math.hypot(...D);
+    // straight? the k path stays within 1 % of the chord's length from the chord
+    let straight = L > 0;
+    const P = []; // [p, q, k(p'), k(m), k(q')] for each piece
+    for (let i = 1; i < br.length; i++) {
+      const p = br[i - 1], q = br[i]; if (q - p <= 1e-12) continue;
+      const dl = Math.min(1e-9, (q - p) / 4), m = 0.5 * (p + q);
+      const kp = kAt(b, p + dl), km = kAt(b, m), kq = kAt(b, q - dl);
+      P.push([p + dl, m, q - dl, kp, km, kq]);
+      if (straight) for (const v of [kp, km, kq]) {
+        const w = [v[0] - ka[0], v[1] - ka[1], v[2] - ka[2]], s = (w[0] * D[0] + w[1] * D[1] + w[2] * D[2]) / L;
+        if (Math.hypot(w[0] - s * D[0] / L, w[1] - s * D[1] / L, w[2] - s * D[2] / L) > 0.01 * L) { straight = false; break; }
+      }
+    }
+    if (straight) {
+      const u = D.map(x => x / L), f = v => v[0] * u[0] + v[1] * u[1] + v[2] * u[2];
+      for (let i = 0; i < P.length; i++) {
+        const [x0, x1, x2, k0, k1, k2] = P[i], y0 = f(k0), y1 = f(k1), y2 = f(k2);
+        // quadratic through the three points, in s = t − x1
+        const h0 = x0 - x1, h2 = x2 - x1, c = y1;
+        const A = ((y2 - c) / h2 - (y0 - c) / h0) / (h2 - h0), Bq = (y2 - c) / h2 - A * h2;
+        const roots = [];
+        if (Math.abs(A) * (h2 - h0) ** 2 < 1e-12 * (Math.abs(Bq) * (h2 - h0) + Math.abs(c) + 1e-30)) { if (Bq !== 0) roots.push(-c / Bq); }
+        else { const disc = Bq * Bq - 4 * A * c; if (disc >= 0) { const sq = Math.sqrt(disc), qq = -0.5 * (Bq + Math.sign(Bq || 1) * sq); roots.push(qq / A); if (qq !== 0) roots.push(c / qq); } }
+        const lo = br[0] === x0 ? x0 - 1e-9 : x0 - 1e-9, hi = x2 + 1e-9;
+        for (const s of roots) {
+          const t = x1 + s; if (!(t >= lo && t < hi) || bs[b] + t <= tE) continue;
+          const kk = kAt(b, Math.min(Math.max(t, x0), x2));
+          cand.push([bs[b] + t, Math.hypot(...kk), 0, j]);
+        }
+      }
+    } else { // curved (or no gradient): where k comes closest to 0 in the readout's block (samples, gradient vertices and
+      // the block's ends; a spiral-out reaches k = 0 where its gradient starts, which may be before the first sample)
+      const dur = bs[b + 1] - bs[b], tt = [0, dur, a0, a1];
+      for (let q = 0; q < d.num; q++) tt.push(d.delay + (q + 0.5) * d.dwell);
+      for (const id of [B.pgx[b], B.pgy[b], B.pgz[b]]) if (id) { const g = geoG(seq, id); for (let q = 0; q < g.n; q++) tt.push(Math.min(dur, Math.max(0, g.t[q]))); }
+      const rr = Float64Array.from(tt.filter(r => bs[b] + r > tE)).sort(), nq = rr.length, tmp = [new Float64Array(nq), new Float64Array(nq), new Float64Array(nq)];
+      kInBlock(seq, b, rr, tmp, 0, nq);
+      let best = Infinity, tb = null;
+      for (let q = 0; q < nq; q++) { const r = Math.hypot(tmp[0][q], tmp[1][q], tmp[2][q]); kmax = Math.max(kmax, r); if (r < best) { best = r; tb = bs[b] + rr[q]; } }
+      if (tb !== null && tb > tE && L > 0) cand.push([tb, best, 'curve', j]);
     }
   }
-  return 4 * Math.PI * Math.PI * acc * 1e-6;
+  const tol = 1e-4 * kmax;
+  cand.sort((x, y) => x[0] - y[0]);
+  let prev = -Infinity;
+  for (const [t, kp, cv, j] of cand) {
+    if (t - prev < 1e-9) continue; prev = t; // a root shared by two pieces
+    if (kp <= tol) { res.gf.push(t); res.jf.push(j); } else if (!cv) { res.gl.push(t); res.kp.push(kp); res.jl.push(j); }
+  }
+  cache.set(k, res); return res;
+}
+/* b-tensor (s/m², physical x, y, z) from the excitation to tEcho: B = (2π)² ∫ k kᵀ dt with k the trajectory of
+   kInBlock (reset at the excitation, mirrored at each refocusing pulse), all gradients included. Between gradient
+   vertices and RF centres k is quadratic, so k kᵀ is quartic and 3-point Gauss–Legendre on each piece is exact. */
+const GL3 = [[-Math.sqrt(0.6), 5 / 9], [0, 8 / 9], [Math.sqrt(0.6), 5 / 9]];
+function bTensor(seq, exc, tE, tEcho) {
+  const B = seq.B, bs = seq.blockStart, M = new Float64Array(9);
+  if (!(tEcho > tE)) return M;
+  const b1 = blockAtTime(seq, tEcho), out = [new Float64Array(0), new Float64Array(0), new Float64Array(0)];
+  for (let b = exc; b <= b1; b++) {
+    const lo = Math.max(bs[b], tE) - bs[b], hi = Math.min(bs[b + 1], tEcho) - bs[b];
+    if (!(hi > lo)) continue;
+    const br = [lo, hi];
+    for (const id of [B.pgx[b], B.pgy[b], B.pgz[b]]) if (id) { const g = geoG(seq, id); for (let j = 0; j < g.n; j++) if (g.t[j] > lo && g.t[j] < hi) br.push(g.t[j]); }
+    if (B.rf[b]) { const st = rfSt(seq, B.rf[b]); if ((st.use === 'e' || st.use === 'r') && st.center > lo && st.center < hi) br.push(st.center); }
+    br.sort((x, y) => x - y);
+    const ab = [];
+    for (let i = 1; i < br.length; i++) if (br[i] - br[i - 1] > 1e-12) ab.push(br[i - 1], br[i]);
+    const n = 3 * ab.length / 2, rel = new Float64Array(n), w = new Float64Array(n);
+    for (let i = 0, q = 0; i < ab.length; i += 2) {
+      const m = 0.5 * (ab[i] + ab[i + 1]), h = 0.5 * (ab[i + 1] - ab[i]);
+      for (const [x, wt] of GL3) { rel[q] = m + h * x; w[q++] = h * wt; }
+    }
+    if (out[0].length < n) for (let a = 0; a < 3; a++) out[a] = new Float64Array(n);
+    kInBlock(seq, b, rel, out, 0, n);
+    for (let q = 0; q < n; q++) {
+      const x = out[0][q], y = out[1][q], z = out[2][q], wq = w[q];
+      M[0] += wq * x * x; M[1] += wq * x * y; M[2] += wq * x * z; M[4] += wq * y * y; M[5] += wq * y * z; M[8] += wq * z * z;
+    }
+  }
+  const c = 4 * Math.PI * Math.PI;
+  M[0] *= c; M[1] *= c; M[2] *= c; M[4] *= c; M[5] *= c; M[8] *= c; M[3] = M[1]; M[6] = M[2]; M[7] = M[5];
+  return M;
+}
+/* echo of a shot for the b-tensor: the readout sample closest to k = 0 in the shot's first echo (adcEchoes: echoes
+   that form separate images, so a turbo spin echo train is one echo and its centre is the effective echo time).
+   Imaging readouts first; a shot with only reference readouts uses those. Returns null without an excitation. */
+function shotBTensor(seq, shots, k) {
+  const cache = seq._bt && seq._bt.shots === shots ? seq._bt.m : (seq._bt = { shots, m: new Map() }).m;
+  if (cache.has(k)) return cache.get(k);
+  const sh = shots[k], B = seq.B, bs = seq.blockStart;
+  let exc = -1; for (let b = sh.b0; b <= sh.b1 && exc < 0; b++) if (B.rf[b] && rfSt(seq, B.rf[b]).use === 'e') exc = b;
+  let res = null;
+  if (exc >= 0) {
+    const tE = bs[exc] + rfSt(seq, B.rf[exc]).center, AT = seq.adcType, EC = adcEchoes(seq, shots);
+    let js = [], nEcho = 0, kind = 'imaging';
+    for (let j = sh.j0; j < sh.j1; j++) if ((AT[j] === 0 || AT[j] === 2) && EC[j] >= 0) js.push(j);
+    if (js.length) {
+      const e0 = Math.min(...js.map(j => EC[j])); nEcho = new Set(js.map(j => EC[j])).size; js = js.filter(j => EC[j] === e0);
+    } else { kind = 'reference'; for (let j = sh.j0; j < sh.j1; j++) if (AT[j] === 1) js.push(j); }
+    js = js.filter(j => bs[seq.adcBlocks[j]] + 1e-12 >= bs[exc]);
+    let best = Infinity, tEcho = null, kAt = null;
+    const tmp = [new Float64Array(0), new Float64Array(0), new Float64Array(0)];
+    for (const j of js) {
+      const b = seq.adcBlocks[j], d = seq.adc.get(B.adc[b]); if (!d || !d.num) continue;
+      const rel = new Float64Array(d.num); for (let q = 0; q < d.num; q++) rel[q] = d.delay + (q + 0.5) * d.dwell;
+      if (tmp[0].length < d.num) for (let a = 0; a < 3; a++) tmp[a] = new Float64Array(d.num);
+      kInBlock(seq, b, rel, tmp, 0, d.num);
+      for (let q = 0; q < d.num; q++) {
+        const r = tmp[0][q] ** 2 + tmp[1][q] ** 2 + tmp[2][q] ** 2;
+        if (r < best) { best = r; tEcho = bs[b] + rel[q]; kAt = [tmp[0][q], tmp[1][q], tmp[2][q]]; }
+      }
+    }
+    if (tEcho !== null && tEcho > tE) {
+      const M = bTensor(seq, exc, tE, tEcho), A = [[M[0], M[1], M[2]], [M[3], M[4], M[5]], [M[6], M[7], M[8]]];
+      res = { M, eig: eig3(A).map(e => e.val), b: M[0] + M[4] + M[8], tE, tEcho, kAt, nEcho, kind, exc };
+    }
+  }
+  cache.set(k, res); return res;
 }
 
 /* ---------- eddy currents (indicative) ----------
@@ -10748,7 +10910,7 @@ function lsq3(X, Y, Z) { // fit z ≈ c0 + c1·x + c2·y
 }
 function hashU(i) { let a = (i * 2654435761 + 0x6D2B79F5) | 0, t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return (((t ^ (t >>> 14)) >>> 0) + 0.5) / 4294967297; }
 
-if (typeof module !== 'undefined' && module.exports) module.exports = { lineStats, imagePlaneQuick, mlite, SIM_TASKS, setSimPool: p => { SIM_POOL = p; }, eddyTrack, eddyShift, sampleChannel, EDDY, sectionPhantom, build3D, tissueAt3, sectionEllipse, eig3, runSimulation, simulateImage, TISSUES, bValue, shotInfo, tauAt, lsq3, rfSlice, rfFreqHz, invCycle, MzInv, Mz };
+if (typeof module !== 'undefined' && module.exports) module.exports = { lineStats, imagePlaneQuick, mlite, SIM_TASKS, setSimPool: p => { SIM_POOL = p; }, eddyTrack, eddyShift, sampleChannel, EDDY, sectionPhantom, build3D, tissueAt3, sectionEllipse, eig3, runSimulation, simulateImage, TISSUES, bValue, bTensor, shotBTensor, shotEchoes, shotInfo, tauAt, lsq3, rfSlice, rfFreqHz, invCycle, MzInv, Mz };
 
 /* ===== nerve stimulation: the SAFE model (Hebrank & Gebhardt, ISMRM 2000, abstract 2007) as implemented in
    safe_pns_prediction by F. Szczepankiewicz and T. Witzel (github.com/filip-szczepankiewicz/safe_pns_prediction).
@@ -11288,6 +11450,7 @@ const S = {
   vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, gc: false, kc: false, mu: false, pns: false, cns: false },
   cc: { r: [0.05, 0.06, 0.07], B0: 3, a: 0.5, f: 0 }, // concomitant gradients: position (m), B0 (T), asymmetry, non-Maxwell term (T/m)
   stimNorm: true, combineG: true, rfMode: 'mag', linkMode: 'off',
+  echo: { se: true, gf: true, gl: true, zoom: true }, // echo markers (Display › Echoes)
   sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, crop: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
   kRange: 'shot', kProj: 'xy', kTraj: true, kR: null, kZoom: 1, kPan: [0, 0], kGroup: 'img'
 };
@@ -11945,6 +12108,7 @@ function render() {
     if (L.key === 'mu') { muEnsure(); kintPyramids(KP_MU, s); }
     if (L.key === 'rfMag' && S.rfMode === 'complex') for (const k of ['rfRe', 'rfIm']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k);
     laneBody(L);
+    if (!EXP && L === lanes.find(l => l.key === 'rfMag' || l.key === 'rfPh')) drawEchoMarks(L, X, t0, t1, x0, pw);
     } finally { if (dLane) dLane[L.label] = performance.now() - dT; }
   }
   function laneBody(L) {
@@ -12466,6 +12630,123 @@ function drawOverview() {
 
 /* ---------- overlay: crosshair + values ---------- */
 let boxSel = null;
+/* a faint band across the labels-lane row under the mouse, from its name in the gutter to the right edge, so the
+   name and the values far to the right are easy to pair (mouse only; not while panning) */
+/* ---------- echo markers (shotEchoes in core.js) ----------
+   On the RF lane: spin echoes (▼, ink) in a top row; gradient echoes with k = 0 (●) and the other gradient echoes along
+   the readouts (○), in the ADC colour, in a row below. Switched under Display › Echoes; by default only while the view
+   covers at most ECHO_ZOOM_SHOTS shots. Computed per shot on demand (cached); when many shots come into view at once,
+   up to 12 ms of new shots per frame, the rest at the next frames. */
+const ECHO_ZOOM_SHOTS = 4;
+let echoVis = [], echoPend = false;
+function echoShots() { const s = S.seq; return s.shots.length ? s.shots : (s._echShots || (s._echShots = computeShots(s, 'exc'))); }
+function echoCached(shots, k) { const c = S.seq._ech; return !!(c && c.shots === shots && c.m.has(k)); }
+function shotRange(shots, t0, t1) { // first and last shot overlapping [t0, t1]
+  let a = 0, b = shots.length; while (a < b) { const m = (a + b) >> 1; if (shots[m].t1 <= t0) a = m + 1; else b = m; }
+  let c = a, d = shots.length; while (c < d) { const m = (c + d) >> 1; if (shots[m].t0 < t1) c = m + 1; else d = m; }
+  return [a, c - 1];
+}
+function echoesOn() { const E = S.echo; return E.se || E.gf || E.gl; }
+function drawEchoMarks(L, X, t0, t1, x0, pw) {
+  echoVis = [];
+  const E = S.echo; if (!echoesOn() || !S.seq) return;
+  const shots = echoShots(); if (!shots.length) return;
+  const [k0, k1] = shotRange(shots, t0, t1); if (k1 < k0) return;
+  if (E.zoom && k1 - k0 + 1 > ECHO_ZOOM_SHOTS) return;
+  const T0 = performance.now(), P = { se: new Path2D(), gf: new Path2D(), gl: new Path2D() }, lastX = { se: -1e9, gf: -1e9, gl: -1e9 };
+  const ySE = L.y + 7, yGE = L.y + 18; let pending = false;
+  for (let k = k0; k <= k1; k++) {
+    if (!echoCached(shots, k) && performance.now() - T0 > 12) { pending = true; break; }
+    const r = shotEchoes(S.seq, shots, k);
+    for (const [kind, arr, y] of [['se', r.se, ySE], ['gf', r.gf, yGE], ['gl', r.gl, yGE]]) {
+      if (!E[kind]) continue;
+      const p = P[kind];
+      for (let i = 0; i < arr.length; i++) {
+        const t = arr[i]; if (t < t0 || t > t1) continue;
+        const x = X(t); if (Math.abs(x - lastX[kind]) < 1.5) continue; lastX[kind] = x;
+        if (kind === 'se') { p.moveTo(x - 4.5, y - 4); p.lineTo(x + 4.5, y - 4); p.lineTo(x, y + 3.5); p.closePath(); }
+        else { const rr = kind === 'gf' ? 3.6 : 2.6; p.moveTo(x + rr, y); p.arc(x, y, rr, 0, 2 * Math.PI); }
+        echoVis.push({ x, y, kind, t, tE: r.tE, kp: kind === 'gl' ? r.kp[i] : 0, k });
+      }
+    }
+  }
+  pctx.save(); pctx.beginPath(); pctx.rect(x0, L.y - 1, pw, L.h + 2); pctx.clip();
+  pctx.fillStyle = C.ink; pctx.fill(P.se);
+  pctx.fillStyle = C.adc; pctx.fill(P.gf);
+  pctx.strokeStyle = C.adc; pctx.lineWidth = 1.3; pctx.stroke(P.gl);
+  pctx.restore();
+  if (pending && !echoPend) { echoPend = true; setTimeout(() => { echoPend = false; request(); }, 0); }
+}
+/* the marker under the mouse (within 5 px), for its description in the overlay */
+function echoHover(x) {
+  if (S.hoverY == null || !echoVis.length) return null;
+  let best = null, bd = 5;
+  for (const m of echoVis) { const d = Math.abs(m.x - x); if (d <= bd && Math.abs(S.hoverY - m.y) <= 7) { bd = d; best = m; } }
+  return best;
+}
+function echoText(m) {
+  const r = shotEchoes(S.seq, echoShots(), m.k), after = `${fmtT(m.t - m.tE)} after the excitation`;
+  const rel = (other, word) => { // the nearest echo of the other kind in the same shot
+    let n = null; for (const t of other) if (n === null || Math.abs(t - m.t) < Math.abs(n - m.t)) n = t;
+    if (n === null) return ''; const d = n - m.t;
+    return Math.abs(d) < 1e-7 ? ` · ${word} at the same time` : ` · ${word} ${fmtT(Math.abs(d))} ${d > 0 ? 'later' : 'earlier'}`;
+  };
+  if (m.kind === 'se') return `Spin echo · ${after}` + rel(r.gf, 'gradient echo (k = 0)');
+  if (m.kind === 'gf') return `Gradient echo, k = 0 · ${after}` + rel(r.se, 'spin echo');
+  return `Gradient echo along the readout · |k| = ${fmt(m.kp * mF(), 4)} ${mU()} · ${after}`;
+}
+function drawEchoTip(x) {
+  const m = echoHover(x); if (!m) return;
+  octx.font = `600 11px ${C.font}`; octx.textBaseline = 'middle';
+  const txt = echoText(m), tw = octx.measureText(txt).width, right = m.x + 9 + tw < W - 8, tx = right ? m.x + 9 : m.x - 9 - tw, ty = m.y;
+  octx.fillStyle = C.plot; octx.globalAlpha = 0.92; octx.fillRect(tx - 3, ty - 7, tw + 6, 14); octx.globalAlpha = 1;
+  octx.fillStyle = C.ink; octx.textAlign = 'left'; octx.fillText(txt, tx, ty);
+}
+/* k-space: where each echo lies on the trajectory (shots of the shown range; gradient echoes of the shown kind of
+   readout), drawn over the samples with an outline in the plot colour */
+function drawEchoesK(ctx, P, pb0, pb1, grp) {
+  const E = S.echo; if (!echoesOn() || !S.seq) return '';
+  const s = S.seq, bs = s.blockStart, shots = echoShots(); if (!shots.length) return '';
+  let [k0, k1] = shotRange(shots, bs[pb0], bs[pb1 + 1]); if (k1 < k0) return '';
+  const capped = k1 - k0 + 1 > 400; if (capped) k1 = k0 + 399;
+  const rel = new Float64Array(1), out = [new Float64Array(1), new Float64Array(1), new Float64Array(1)];
+  const kAt = t => { const b = blockAtTime(s, t); rel[0] = t - bs[b]; kInBlock(s, b, rel, out, 0, 1); return P(out[0][0], out[1][0], out[2][0]); };
+  const Pse = new Path2D(), Pgf = new Path2D(), Pgl = new Path2D();
+  for (let k = k0; k <= k1; k++) {
+    const r = shotEchoes(s, shots, k);
+    if (E.se) for (const t of r.se) { const [x, y] = kAt(t); Pse.moveTo(x - 5, y - 6); Pse.lineTo(x + 5, y - 6); Pse.lineTo(x, y + 2); Pse.closePath(); }
+    if (E.gf) r.gf.forEach((t, i) => { if (grp && !grp.fj(r.jf[i])) return; const [x, y] = kAt(t); Pgf.moveTo(x + 4.2, y); Pgf.arc(x, y, 4.2, 0, 2 * Math.PI); });
+    if (E.gl) r.gl.forEach((t, i) => { if (grp && !grp.fj(r.jl[i])) return; const [x, y] = kAt(t); Pgl.moveTo(x + 3, y); Pgl.arc(x, y, 3, 0, 2 * Math.PI); });
+  }
+  ctx.save(); ctx.lineJoin = 'round';
+  ctx.strokeStyle = C.plot; ctx.lineWidth = 3.2; ctx.stroke(Pgl); ctx.strokeStyle = C.adc; ctx.lineWidth = 1.4; ctx.stroke(Pgl);
+  ctx.strokeStyle = C.plot; ctx.lineWidth = 2.5; ctx.stroke(Pgf); ctx.fillStyle = C.adc; ctx.fill(Pgf);
+  ctx.strokeStyle = C.plot; ctx.lineWidth = 2.5; ctx.stroke(Pse); ctx.fillStyle = C.ink; ctx.fill(Pse);
+  ctx.restore();
+  return capped ? 'echo markers for the first 400 shots' : '';
+}
+function buildEchoChips() {
+  const el = $('#echoChips'); if (!el) return; el.innerHTML = '';
+  const defs = [['se', 'Spin', 'ink', 'tri', 'Spin echoes (▼): where the dephasing from off-resonance returns to zero — from the excitation, reversed at each refocusing pulse (pulse centres)'],
+    ['gf', 'Gradient, k = 0', 'c-adc', 'dot', 'Gradient echoes at k = 0 (●): during a readout, where the whole k-vector is zero (the centre line of an image, a navigator, a spiral\'s start)'],
+    ['gl', 'Gradient, lines', 'c-adc', 'ring', 'Other gradient echoes (○): where the k component along a readout crosses zero, on lines away from the centre (k ≠ 0 across the readout)']];
+  for (const [key, lab, col, shape, tip] of defs) {
+    const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.title = tip;
+    b.style.setProperty('--c', `var(--${col})`); b.setAttribute('aria-pressed', S.echo[key]);
+    b.innerHTML = `<span class="sw ${shape}"></span>${lab}`;
+    b.onclick = () => { S.echo[key] = !S.echo[key]; b.setAttribute('aria-pressed', S.echo[key]); scheduleSave(); request(); requestOverlay(); kKey = null; drawK(); };
+    el.appendChild(b);
+  }
+  $('#echoZoom').checked = S.echo.zoom;
+}
+function labelRowBand() {
+  if (S.hoverY == null || (drag && drag.moved)) return;
+  const L = lanesGeom().find(l => l.key === 'labels'); if (!L) return;
+  const rows = labelRows(); if (!rows.length) return;
+  const rh = (L.h - 6) / rows.length, r = Math.floor((S.hoverY - L.y - 3) / rh);
+  if (r < 0 || r >= rows.length) return;
+  octx.fillStyle = C.ink; octx.globalAlpha = 0.08; octx.fillRect(12, L.y + 3 + r * rh, W - 8 - 12, rh); octx.globalAlpha = 1;
+}
 function drawOverlay() {
   octx.clearRect(0, 0, W, H);
   if (!S.seq) return;
@@ -12480,6 +12761,7 @@ function drawOverlay() {
     octx.fillStyle = C.plot; octx.textAlign = 'center'; octx.textBaseline = 'middle'; octx.fillText(lab, lx, H - AXH + 12);
     return;
   }
+  labelRowBand();
   if (S.hoverT == null) return;
   const t = S.hoverT, x = x0 + (t - S.t0) / (S.t1 - S.t0) * pw;
   if (x < x0 || x > x0 + pw) return;
@@ -12541,6 +12823,7 @@ function drawOverlay() {
   const tl = fmtT(t), tw = octx.measureText(tl).width;
   octx.fillStyle = C.ink; octx.fillRect(x - tw / 2 - 5, H - AXH + 3, tw + 10, 17);
   octx.fillStyle = C.plot; octx.textAlign = 'center'; octx.fillText(tl, x, H - AXH + 12);
+  drawEchoTip(x); // last: over the lanes' values at the cursor
 }
 const HINT = '<span class="hint">Drag to zoom into a range · right-drag or scroll sideways to pan · scroll to zoom · <kbd>Backspace</kbd> goes back · click a block to inspect it · ← → step through the selected block, shot or volume</span>';
 function updateReadout() {
@@ -12685,6 +12968,7 @@ ovl.addEventListener('pointermove', e => {
     if (drag.box) { if (drag.moved) { boxSel = { a: Math.max(GUT, drag.x), b: Math.min(W - 8, Math.max(GUT, e.offsetX)) }; requestOverlay(); } }
     else if (drag.moved) { ovl.classList.add('grabbing'); const dt = dx / (W - GUT - 8) * (drag.t1 - drag.t0); setView(drag.t0 - dt, drag.t1 - dt); }
   }
+  S.hoverY = e.pointerType === 'mouse' ? e.offsetY : null;
   if (e.pointerType === 'mouse' || !drag) { S.hoverT = xToT(e.offsetX); requestOverlay(); linkSendHover(); }
 });
 function endPtr(e) {
@@ -12705,7 +12989,7 @@ function endPtr(e) {
   drag = null;
 }
 ovl.addEventListener('pointerup', endPtr); ovl.addEventListener('pointercancel', endPtr);
-ovl.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !drag) { S.hoverT = null; requestOverlay(); linkSendHover(); } });
+ovl.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { S.hoverY = null; requestOverlay(); } if (e.pointerType === 'mouse' && !drag) { S.hoverT = null; requestOverlay(); linkSendHover(); } });
 ovl.addEventListener('dblclick', e => {
   if (!S.seq || e.offsetX <= GUT || e.ctrlKey || e.metaKey || e.shiftKey) return;
   const t = xToT(e.offsetX), y = e.offsetY;
@@ -12792,8 +13076,10 @@ function buildChips() {
     };
     el.appendChild(b);
   }
+  buildEchoChips();
 }
 buildChips();
+$('#echoZoom').onchange = e => { S.echo.zoom = e.target.checked; scheduleSave(); request(); };
 $('#gUnit').onchange = e => { S.gUnit = e.target.value; request(); renderSeqInfo(); renderBlock(); };
 $('#rfUnit').onchange = e => { S.rfUnit = e.target.value; request(); renderSeqInfo(); renderBlock(); };
 $('#rfMode').onchange = e => { S.rfMode = e.target.value; request(); };
@@ -13027,6 +13313,19 @@ document.querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.datase
 /* ---------- side panels ---------- */
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const kv = rows => `<dl class="kv">${rows.filter(Boolean).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`;
+/* b-tensor of a shot (shotBTensor in core.js): excitation to the echo, all gradients, scanner x, y, z, in ms/µm² */
+function bTensorRows(sk) {
+  const s = S.seq; let r = null;
+  try { r = shotBTensor(s, s.shots, sk); } catch (e) { console.warn('b-tensor', e); }
+  const tip = 'B = (2π)² ∫ k kᵀ dt from the excitation to the echo (the readout sample nearest k = 0 in the first echo), with k mirrored at each refocusing pulse. All gradients count (diffusion, imaging, crushers). Scanner axes x, y, z.';
+  const lab = t => `<span title="${esc(tip)}">${t}</span>`;
+  if (!r) return [[lab('b-tensor'), '<span class="muted">no excitation or no readout after it</span>']];
+  const f = v => { const x = v * 1e-9; return (Math.abs(x) < 5e-5 ? 0 : x).toFixed(4); }, U = '<span class="muted">ms/µm²</span>', M = r.M;
+  const mat = `<table class="btm"><thead><tr><th>ms/µm²</th><th>x</th><th>y</th><th>z</th></tr></thead><tbody>` +
+    ['x', 'y', 'z'].map((a, i) => `<tr><th>${a}</th>${[0, 1, 2].map(j => `<td>${f(M[3 * i + j])}</td>`).join('')}</tr>`).join('') + `</tbody></table>`;
+  const echo = `${fmtT(r.tEcho - r.tE)} after the excitation${r.nEcho > 1 ? ` <span class="muted">(first of ${r.nEcho} echoes)</span>` : ''}${r.kind === 'reference' ? ' <span class="muted">(reference readout)</span>' : ''}`;
+  return [[lab('b-value'), `${f(r.b)} ${U}`], [lab('b-tensor'), mat], [lab('Eigenvalues'), `${r.eig.map(f).join(', ')} ${U}`], [lab('Echo'), echo]];
+}
 function renderSeqInfo() {
   const s = S.seq, el = $('#p-seq');
   if (!s) { el.innerHTML = '<p class="note">No sequence loaded.</p>'; return; }
@@ -13279,7 +13578,7 @@ function renderBlock() {
     const sh = s.shots[sk];
     shotCard = `<div class="evt" style="--c:var(--sel)"><h4>Shot ${sk + 1} <span>of ${s.shots.length.toLocaleString()}</span></h4>` + kv([
       ['Blocks', `${s.B.id[sh.b0]} – ${s.B.id[sh.b1]}`], ['Starts at', fmtT(sh.t0)], ['Duration', fmtT(sh.t1 - sh.t0)],
-      ['ADC', sh.nADC ? `${sh.nADC} events, ${sh.nSamples.toLocaleString()} samples` : 'none (dummy or preparation)'], ...stimRows(sh.t0, sh.t1)]) +
+      ['ADC', sh.nADC ? `${sh.nADC} events, ${sh.nSamples.toLocaleString()} samples` : 'none (dummy or preparation)'], ...bTensorRows(sk), ...stimRows(sh.t0, sh.t1)]) +
       `<div class="blknav" style="margin-top:8px"><button class="btn" id="sZoom">Zoom to shot</button></div></div>`;
   }
   if (S.selKind === 'vol') h = volCard + shotCard + h; else if (S.selKind === 'shot') h = shotCard + volCard + h; else h += shotCard + volCard;
@@ -13486,7 +13785,7 @@ function drawK() {
     if (allMode) kData.sub = kSubgroups(smp);
   }
   const K = { kA: kData.smp.k, kT: kData.path.k, type: kData.smp.type }, a0 = 0, a1 = kData.smp.n, p0 = 0, p1 = kData.path.n;
-  const key = [kFast, dk, R.map(r => r.join(',')).join(';'), S.kZoom, S.kPan.join(','), S.kTraj, KW, dpr, C.plot, C.muted].join('|');
+  const key = [kFast, dk, R.map(r => r.join(',')).join(';'), S.kZoom, S.kPan.join(','), S.kTraj, KW, dpr, C.plot, C.muted, S.echo.se, S.echo.gf, S.echo.gl].join('|');
   if (key === kKey) return;
   kKey = key; kHoverHide(); // the samples move: the hovered one is found again at the next pointer move
   const ctx = kctx; ctx.clearRect(0, 0, KW, KW);
@@ -13583,6 +13882,7 @@ function drawK() {
       if (SG.list.length > 12 && (!EXP || EXP.kLegend)) { ctx.fillStyle = C.muted; ctx.fillText(`… ${SG.list.length - 12} more groups`, 9, 14 + 12 * 15); }
     }
   }
+  const echoNote = EXP ? '' : drawEchoesK(ctx, P, pb0, pb1, grp);
   // gizmo
   const gx0 = 34, gy0 = KW - 34; ctx.font = `600 11px ${C.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   if (!EXP || EXP.kAxes) for (const [lab, col, d] of axes) {
@@ -13599,7 +13899,7 @@ function drawK() {
   let kLines = ''; if (n && s.shots.length) { const k = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt((S.t0 + S.t1) / 2), im = k >= 0 ? shotImage(k) : null;
     const ec = grp && /^img\d+$/.test(grp.id) ? +grp.id.slice(3) - 1 : 0; // an echo's group: that echo's image
     if (im) { const l = imageLines(im.vol, im.ref, ec); if (l) kLines = `Image of shot ${im.ref + 1}${S.vols.length ? ` (volume ${volOfBlock(s.shots[im.ref].b0) + 1})` : ''}${gs0.some(g => g.id === 'img2') ? `, echo ${ec + 1}` : ''}: ${linesText(l).replace(/^Phase encoding: /, '')}`; } }
-  $('#kInfo').innerHTML = esc(kTxt) + (kLines ? '<br>' + esc(kLines) : '');
+  $('#kInfo').innerHTML = esc(kTxt) + (kLines ? '<br>' + esc(kLines) : '') + (echoNote ? '<br>' + esc(echoNote) : '');
   kLast = performance.now();
 }
 /* hovered sample: the nearest drawn sample within 8 px (or the dot radius) of the pointer gets a ring and a short
@@ -14473,7 +14773,7 @@ window.addEventListener('drop', e => {
 });
 
 /* ---------- settings kept between sessions (browser local storage) ---------- */
-const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'pauseHatch', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kTraj', 'cc'];
+const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'pauseHatch', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kTraj', 'cc', 'echo'];
 const DEFAULTS = JSON.parse(JSON.stringify({ vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) }));
 function saveSettings() {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ v: 1, app: APP.version, vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) })); } catch (_) { }
@@ -14495,6 +14795,7 @@ function applySettings(o) {
   if (ok('kRange', ['view', 'shot', 'vol'])) S.kRange = o.kRange; // "all" was removed in 1.0.2
   if (ok('kProj', ['xy', 'xz', 'yz', '3d'])) { S.kProj = o.kProj; S.kR = o.kProj === '3d' ? rot3d() : PROJ[o.kProj]; }
   if (o.cc && typeof o.cc === 'object') { const c = ccValid(o.cc); if (c) S.cc = c; }
+  if (o.echo && typeof o.echo === 'object') for (const k of ['se', 'gf', 'gl', 'zoom']) if (typeof o.echo[k] === 'boolean') S.echo[k] = o.echo[k];
   if (o.sim && typeof o.sim === 'object') {
     const d = S.sim, v = o.sim;
     if (['head', 'abdomen'].includes(v.phantom)) d.phantom = v.phantom;
