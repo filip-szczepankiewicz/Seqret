@@ -2,6 +2,24 @@
 
 All versions, newest first. The About dialog of the page shows the latest 3.
 
+## 1.41.0 (2026-10-31)
+
+- Echo markers, switched under Display › Echoes: spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○). In the diagram they sit at the top of the RF lane, spin echoes in one row and gradient echoes in the row below, so a spin echo and a gradient echo at the same time line up. Hovering a marker names it, gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it (and the reverse); for an echo on another line, |k| there. By default they are drawn only while the view covers at most 4 shots (Only when zoomed in); without it, new shots are computed within 12 ms per frame, so zooming out stays responsive.
+- k-space tab: the same markers on the trajectory, where each echo lies in k-space: a spin echo off the centre shows a mismatch between the spin echo and the k-space centre. Gradient echoes follow the kind of readout shown (imaging, reference, navigator); at most 400 shots are marked.
+- Spin echoes: where the dephasing time τ returns to zero; τ starts at the excitation and changes sign at each refocusing pulse, at the pulses' centres (2·t₁₈₀ − t₉₀ for a Hahn echo, each echo of a train). Stimulated and secondary echoes are not marked. Gradient echoes: only during readouts (not noise); along a straight readout, where the k component along the readout crosses zero, solved exactly (it is quadratic between gradient vertices); k = 0 when the rest of k is zero too (within 10⁻⁴ of the largest |k| at the readouts' ends). A curved readout (spiral) has only k = 0 echoes, where k comes to zero in its block, e.g. where a spiral-out's gradient starts.
+- Checked against separate calculations from PyPulseq (own k integration of its gradient waveforms on a grid of at most 0.5 µs, readouts from its ADC times, zero crossings by interpolation): the demo, an oblique SE-EPI, a gradient echo and a turbo spin echo give the same 22 spin echoes, 52 k = 0 and 540 other gradient echoes, with times within 0.04 ns. 10,240 shots take about 0.12 s.
+
+## 1.40.0 (2026-10-31)
+
+- Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.
+- In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band.
+
+## 1.39.0 (2026-10-31)
+
+- b-tensor per shot in the Selection tab (shot card): the b-value, the 3×3 b-tensor in the scanner's x, y and z, and its eigenvalues, in ms/µm². B = (2π)² ∫ k kᵀ dt from the excitation to the echo, the readout sample closest to k = 0 in the shot's first echo, with k reset at the excitation and mirrored at each refocusing pulse as in the k-vector lane. All gradients count (diffusion, slice selection, crushers, readout prephasers), so cross-terms with the imaging gradients are included. A shot with only reference readouts uses those; a multi-echo shot says how many echoes it has. Hover the row names for the definition.
+- The integral is exact: k is quadratic between gradient vertices and RF centres, so k kᵀ is integrated with 3-point Gauss–Legendre on each piece. The image simulation's b-value is now the trace of this tensor (before, 25 points per block, within 5·10⁻⁵ for diffusion-weighted shots and 2·10⁻³ for b ≈ 0).
+- Checked against separate calculations from PyPulseq's gradient waveforms (own k integration with PyPulseq's excitation and refocusing times) on five sequences: the demo, a spin echo with one diffusion pair along (1, 2, 2)/3, an oblique slice-selective SE-EPI with two orthogonal diffusion pairs, a gradient echo with a bipolar gradient and a turbo spin echo. The tensors agree to 1.4·10⁻⁷ of b, the eigenvalues to 1.5·10⁻⁷, and the echo is the same readout sample as PyPulseq's nearest to k = 0 in every shot (22 of 22). The single pair matches the Stejskal–Tanner b for trapezoids, b n nᵀ, to 10⁻¹⁵.
+
 ## 1.38.0 (2026-10-27)
 
 - Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.
@@ -24,6 +42,87 @@ All versions, newest first. The About dialog of the page shows the latest 3.
 
 - Save figure… (Display menu, and next to Save as PNG in the k-space and Image tabs): a PNG of the sequence diagram, k-space or simulated image for publications. Choose the printed size (mm or inches, with column-width presets), the resolution (dpi) and the text size in points at that size; lines and marks scale with the text. The PNG carries its resolution, so layout programs place it at the chosen size.
 - Contents: for the diagram the lanes (independent of the screen), the volume and shot strips, time axis, lane names and units, value ranges, block numbers, block shading, selection and pause hatching; for k-space the path, axes, |k| range, legend and group boxes; for the image the text, directions, scout, cropping to the image and sharp pixels. Colours from any theme (e.g. Paper while working in Dark), with the theme's, a white or a transparent background, and optionally the Seqret version, file and date below. The figure shows the current view (time range, k-space view, image).
+
+## 1.35.1 (2026-10-02)
+
+- Selection colour (selected volume, shot or block) toned down in the newer themes: warm grey in RedZ, muted ochre in Paper, soft yellow in Universal, sage green in Forest.
+- Forest is a little brighter (background, panels, plot and grid lines).
+
+## 1.35.0
+
+- *No notes were kept for this version.*
+
+## 1.34.0 (2026-10-02)
+
+- Multi-echo sequences (several images per excitation, e.g. multi-spin echo): the k-space arrows show each echo's readouts separately (Imaging readouts, echo 1, echo 2, …), each with its own trajectory, and the last view, all readouts by type, gives each echo's image its own colour. Echoes are found from the ECO label, or else from the k-space lines: readouts at the same position in each shot that cover the same lines are echoes of separate images, also when a refocusing pulse mirrors echo 2 onto the opposite line. Turbo spin echo and EPI trains stay one image.
+- All readouts by type: where samples of two images lie on each other (echoes or slices covering the same k-space), their colours mix half and half, so the overlap shows; a lone image keeps its full colour. Dots are sized by the largest image rather than all samples together, so overlapping images do not shrink them.
+- The image tab uses the same echo detection (a multi-spin echo without ECO label was one image before), and the phase-encoding line statistics are per echo, in both tabs.
+
+## 1.33.6 (2026-10-02)
+
+- k-space: the Colour option (acquisition order or ADC type) is gone. The arrows above the plot are always shown and step through the kinds of readout (imaging, reference, navigator, noise), each coloured by acquisition order; the last view shows all readouts together, coloured by type (and imaging by image). With one kind of readout, the arrows switch between it and that last view.
+
+## 1.33.5 (2026-10-02)
+
+- Slew rate: the trace no longer runs diagonally from the end of a ramp to the next event, as it still did in 1.33.4 at some zoom levels, e.g. right before and after the 180° pulses of the demo. Where a ramp ends at its block's end, the rounding of the two blocks' edge times could put the zero after the ramp before the ramp's last value in a pixel column, in exact peaks mode. Slew is now zero whenever the gradient is constant or off.
+
+## 1.30.2 – 1.33.4
+
+- *No notes were kept for the versions between 1.30.1 and 1.33.5.*
+
+## 1.30.1 (2026-10-01)
+
+- Fixed: with the Image tab open, Ctrl+clicking a second volume did not outline its slices in the 3D view until another image was chosen with the arrows. The image shown stays the same, so the cached result was reused with the selection it was computed for. The 3D view now always uses the current selection and is redrawn when it changes.
+
+## 1.30.0 (2026-10-01)
+
+- Volumes and shots: a click on a bar above the diagram selects it without zooming; a double-click zooms to it.
+- Stepping through volumes or shots (arrows, steppers) keeps the zoom and keeps the left edge of the selected item where it was on screen, instead of centring the next one.
+- Several volumes or shots can be selected: Ctrl+click (Cmd+click on a Mac) adds or removes one, Shift+click selects the range from the last clicked one, Ctrl+Shift+click adds that range. Arrow keys step from the focused one and select it alone.
+- Image tab: when the selection holds several images (several slices of a volume, or several volumes or shots), arrows step through them ('Image 2 / 6 · volume 3 · shot 14'); the echo arrows stay as before. The 3D view outlines the slices of the other selected images with dashed lines, numbered as in the arrows, so fields of view in other positions or orientations (e.g. rotated stacks) are seen together. The outlines are drawn on top of the phantom (tissue in front does not hide them). Their planes equal those of the simulated images to within 4e-13 (checked on 11 rotated stacks, oblique slabs and the demo).
+
+## 1.29.1 (2026-09-30)
+
+- Fixed: the OFF label (data not for online reconstruction; Pulseq specification and MATLAB toolbox) was shown as a counter. It is now a flag, drawn and read out like NAV or REF.
+- Fixed: for a sequence without excitation pulses the Image tab stayed blank; it now says that there are no shots to simulate.
+
+## 1.29.0 (2026-09-30)
+
+- Pauses: the hatch lines are twice as far apart (16 px) and drawn only in the RF and gradient lanes. Display › View › Mark pauses turns them on or off; the choice is remembered.
+
+## 1.28.0 (2026-09-30)
+
+- Pauses: blocks without RF, gradients, ADC or trigger (delays, and blocks that only set labels) get a faint diagonal hatch over the lanes, so it is clear that nothing happens there. Consecutive pause blocks share one hatch; it fades in when a pause is 4–10 px wide on screen and moves with the diagram when panning.
+- The cost is small: the pauses are found once per file (18 ms for 744,000 blocks), and drawing them takes under 0.03 ms per frame even in the whole-file view of that file. The frame-rate test has a new case without the texture, for comparison on real hardware.
+
+## 1.27.0 (2026-09-29)
+
+- Triggers: trigger events (Pulseq TRIGGERS extension) are shown as a TRIG row at the bottom of the labels lane, from their start to their end. Output pulses (osc0, osc1, ext1) are dark; waits for an external trigger (physio1, physio2) are orange. Zoomed in, each bar is labelled with its channel; hovering shows e.g. 'osc0 output'; the Selection tab describes them ('output pulse on osc0, delay 100 µs, 1000 µs long'). The labels lane now also appears for files with triggers but no labels.
+- Checked on a generated sequence with both kinds (tools/make_triggers.py): the times, durations and channels of all 34 triggers agree with PyPulseq's reading of the file (largest difference 2e-16 s).
+
+## 1.26.1 (2026-09-29)
+
+- Fixed: the PNS and CNS lanes labelled their axis '104' at the height of the limit, which read as a limit of 104 %. The lane's top is 4 % above the larger of the limit and the peak (headroom), and its label hid the '100' of the limit line. The limit line is now labelled '100', and the top of the axis is labelled only when it is clear of it (a peak well above the limit).
+
+## 1.26.0 (2026-09-29)
+
+- k-space: hold the right mouse button and drag to pan, for example to look closely at the edge of k-space after zooming in. The left button still rotates, and the scroll wheel zooms about the centre of the plot, so what is in the middle stays there. Choosing a projection (kx–ky, kx–kz, ky–kz, 3D) resets the pan and zoom. The pan is limited to the extent of the data, so the plot cannot be lost off screen.
+
+## 1.25.0 (2026-09-29)
+
+- k-space: zoomed in, the samples are drawn as dots up to 6 px across (before: 1–2 px at every zoom), so it is easy to see where k-space is sampled. The size follows the space per sample in view; the full view looks as before (pixel for pixel on the demo).
+- k-space: hovering a sample rings it and shows its number in the ADC event, the ADC event and shot, the block, the time (and time after the excitation), k in m⁻¹, the ADC type and the label values. The cursor in the diagram moves to that time, so the sample can be found in the sequence.
+
+## 1.24.4 (2026-09-29)
+
+- Fixed: Image › k-space drew the reconstruction grid cell by cell as a square, so a readout with oversampling (smaller Δk along the readout) looked as if it reached twice as far in k-space. It is now drawn in physical k, with the same scale on both axes: an oversampled readout covers the same k range as the phase encoding, with samples twice as dense. Checked on the demo (2× oversampling): the drawn data is now as wide as it is high (width/height 1.01, before 1.88), and on the rotated stacks, including the ones shown transposed.
+
+## 1.24.3 (2026-09-29)
+
+- Fixed: the simulated image of a slab-selective 3D scan was taken in the plane of the readout and the slab normal (e.g. 64×8 pixels for a 64×64×8 scan) whenever the partitions spread k-space about as far as the phase encoding, which was the case for 8 to 64 partitions. The slab normal (the gradient during the excitation) is now never an image axis, so the image lies in the readout × phase-encoding plane, also for oblique slabs. Checked on slabs rotated 20° about x and y, 35° about z and 90° about x: the image axes are perpendicular to the slab normal to within 1e-6. Images of 2D sequences (demo, rotated stacks, EPI, spiral) are unchanged, bit for bit.
+- Frame-rate test: the two cases that drew the rectangles as one path are gone. They showed in 1.16 that single rectangles are faster on real graphics cards. The peaks comparison stays until exact peaks are confirmed on real hardware.
+- Unused code removed (the 2D phantoms replaced by the 3D ones, and some unused functions and variables). The page is 4 kB smaller and behaves the same.
+- Development package: a script compares waveforms, RF shapes and k-space with PyPulseq on its 31 test sequences (all agree to within 1e-6 relative, most to 1e-7), and the browser tests check settings, their migration, the diagram qualities and peaks, the side panel, stepping and linked tabs.
 
 ## 1.24.2 (2026-09-29)
 
