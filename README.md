@@ -16,13 +16,15 @@ Open a sequence and interactively explore the RF and gradient waveforms, ADC eve
 * 3D k-space trajectory visualization
 * Peripheral and cardiac nerve-stimulation estimates using the SAFE model
 * Concomitant gradients, their k-space shift and the generalized Maxwell index
+* b-value, b-tensor and its eigenvalues per shot, from the actual gradient waveforms
+* Spin- and gradient-echo markers in the sequence diagram and the k-space trajectory
 * Linked browser tabs for comparing sequences
-* PNG export of sequence diagrams
+* Publication figures: PNG of the diagram, k-space or image at a chosen size, resolution, font and theme
 * Multiple light and dark themes
 * Pulseq formats 1.2–1.5
 * Works offline and keeps sequence data local
 * Built-in frame-rate test, and a lower diagram quality for slower computers
-* Design instructions to enable LLM-support further development
+* Development package with sources, tests and design instructions that enable LLM-supported further development (see [Development](#development))
 
 ## Usage
 
@@ -30,7 +32,9 @@ Download and open `seqret.html` in a modern web browser, then drag and drop a `.
 
 Go to **Display › Shots and volumes** to define how shots and volumes are identified. Click on volume or shot to focus on it. Use the arrow keys to step across volumes, shots or individual blocks.
 
-Use the tabs on the right to view detailed information, view k-space or the simulated image.
+Use the tabs on the right to view detailed information, view k-space or the simulated image. The shot card in the **Selection** tab gives the shot's b-value, b-tensor and eigenvalues (ms/µm²), computed from all gradients from the excitation to the echo. **Display › Save figure…** saves a PNG for publications.
+
+Go to **Display › Echoes** to mark spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○), in the diagram and on the k-space trajectory. Hovering a marker gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it. By default the markers are drawn only while at most 4 shots are in view.
 
 Go to **Display › Concomitant** to show the concomitant gradients:
 
@@ -50,6 +54,10 @@ If panning or zooming feels sluggish:
 2. Open `chrome://gpu` (`edge://gpu` in Edge) and look for **Skia Graphite** under *Graphics Feature Status*. If it says *Disabled*, enable `chrome://flags/#skia-graphite` (`edge://flags/#skia-graphite`) and restart the browser. This is an experimental browser setting that a browser update may reset.
 3. On a laptop, Chrome's Energy Saver mode limits pages to 30 fps while on battery (*Settings › Performance*).
 4. If none of this helps, lower **Display › View › Quality**. *Standard* draws coarser waveforms when zoomed out; *fast* also draws the diagram at a quarter of the pixels on high-resolution screens (at 2×), with slightly softer lines and text. Saved PNGs stay sharp. The frame-rate test shows the rate each quality gives.
+
+## Development
+
+Seqret is developed with LLM coding assistants. To continue its development, use the development package of the current version, `materials/devResources/seqret-dev-1.41.0.zip`. It holds the sources from which `seqret.html` is built (the build reproduces it byte for byte), the build script, tests and tools, and the instructions for both people and LLMs: `AGENTS.md` (working rules for LLM coding assistants; `CLAUDE.md` points to it) and `DEVELOPMENT.md` (architecture, performance rules, validation and release procedure). Give the unpacked folder to the assistant and ask it to read `AGENTS.md` first. Older packages in the same folder are kept for reference.
 
 ## Related tools and software
 
