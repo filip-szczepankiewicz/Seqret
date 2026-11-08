@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.42.2 (2026-11-08) - Pulseq sequence viewer
+  Seqret 1.43.0 (2026-11-08) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.42.2">
-<meta name="description" content="Seqret 1.42.2: Pulseq sequence viewer (Pulseq .seq and .bin files)">
+<meta name="version" content="1.43.0">
+<meta name="description" content="Seqret 1.43.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -301,6 +301,7 @@ dialog#ccDlg{border:1px solid var(--line);border-radius:12px;background:var(--su
 .ccgrid>span,.ccgrid>label{color:var(--muted)}
 .ccgrid input{width:84px;border:1px solid var(--line);background:var(--plot);color:var(--ink);border-radius:6px;padding:3px 6px;font:inherit;font-variant-numeric:tabular-nums;text-align:right}
 .ccgrid input.bad{border-color:var(--c-rf)}
+.ccgrid select{border:1px solid var(--line);background:var(--plot);color:var(--ink);border-radius:6px;padding:3px 6px;font:inherit}
 dialog#safeDlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(720px,94vw);max-height:90vh}
 #safeBody{padding:0 20px 20px;overflow:auto;max-height:calc(90vh - 80px);font-size:13.5px}
 #safeBody code{font-size:12.5px}
@@ -407,7 +408,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.42.2</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.43.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -455,7 +456,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
               <span class="clab">Gradients</span>
               <div class="cbody"><div class="crow"><div class="chips" data-group="g" role="group" aria-label="Gradient channels"></div><label title="Draw Gx, Gy and Gz on one shared axis, told apart by colour"><input type="checkbox" id="combG" checked> One axis</label></div><div class="chips" data-group="g2" role="group" aria-label="Slew rate and k-vector"></div><div class="cctl"><select id="gUnit" aria-label="Gradient unit"><option value="mT">mT/m</option><option value="Hz">kHz/m</option></select></div></div>
               <span class="clab">Concomitant</span>
-              <div class="cbody"><div class="chips" data-group="cc" role="group" aria-label="Concomitant gradient channels"></div><div class="cctl"><button class="btn small" id="ccSpecBtn" title="Position and field model of the concomitant gradients (lanes Gc and kc)">Settings…</button></div></div>
+              <div class="cbody"><div class="chips" data-group="cc" role="group" aria-label="Concomitant gradient channels"></div><div class="cctl"><button class="btn small" id="ccSpecBtn" title="Position and field model of the concomitant gradients (lanes Gc, kc and k + kc)">Settings…</button></div></div>
               <span class="clab">Readout</span>
               <div class="cbody"><div class="chips" data-group="acq" role="group" aria-label="Readout channels"></div></div>
               <span class="clab">Stimulation</span>
@@ -588,9 +589,10 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
     <button class="btn icon" id="ccClose" aria-label="Close">✕</button>
   </div>
   <div id="ccBody">
-    <p class="note">Besides the field along B<sub>0</sub>, the gradient coils make transverse fields. With them the field is B<sub>z</sub> = B<sub>0</sub> + g·r, B<sub>x</sub> = g<sub>x</sub>z − a g<sub>z</sub>x + f y, B<sub>y</sub> = g<sub>y</sub>z + (a − 1) g<sub>z</sub>y + f x, and spins at r precess at γ|B|: the gradient they see is ∇|B| = g + G<sub>c</sub>. Lane <b>Gc</b> shows G<sub>c</sub> at r (computed exactly, not as its second-order expansion; for a = 0.5, f = 0 the Maxwell terms of Bernstein et al., <i>Magn Reson Med</i> 1998;39:300–308). The calculation follows Olsson et al., <i>Magn Reson Med</i> 2026;96(3):1178–1191, <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. Lane <b>kc</b> its zeroth moment k<sub>c</sub> = ∫G<sub>c</sub> dt, the k-space shift of the spins at r, reset at each excitation and sign-flipped at each refocusing pulse like the k-vector. Lane <b>Maxwell μ</b> is the generalized Maxwell index μ = (γ/B<sub>0</sub>)|∫<b>g</b>(t)<sup>⊗2</sup>h(t) dt|<sub>F</sub> in 1/m² (γ = 42.58 MHz/T), from the nominal gradients and B<sub>0</sub> only, reset at each excitation with h flipping sign at each refocusing pulse. From the physical (rotated) gradients; the sequence's x, y and z are taken as the scanner's, with B<sub>0</sub> along z. Turn the lanes on under Display › Concomitant.</p>
+    <p class="note">Besides the field along B<sub>0</sub>, the gradient coils make transverse fields. With them the field is B<sub>z</sub> = B<sub>0</sub> + g·r, B<sub>x</sub> = g<sub>x</sub>z − a g<sub>z</sub>x + f y, B<sub>y</sub> = g<sub>y</sub>z + (a − 1) g<sub>z</sub>y + f x, and spins at r precess at γ|B|: the gradient they see is ∇|B| = g + G<sub>c</sub>. Lane <b>Gc</b> shows G<sub>c</sub> at r (computed exactly, not as its second-order expansion; for a = 0.5, f = 0 the Maxwell terms of Bernstein et al., <i>Magn Reson Med</i> 1998;39:300–308). The calculation follows Olsson et al., <i>Magn Reson Med</i> 2026;96(3):1178–1191, <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. Lane <b>kc</b> its zeroth moment k<sub>c</sub> = ∫G<sub>c</sub> dt, the k-space shift of the spins at r, reset at each excitation and sign-flipped at each refocusing pulse like the k-vector. Lane <b>k + kc</b> is the total dephasing vector of the spins at r, the k-vector plus k<sub>c</sub>, under the same rules. Lane <b>Maxwell μ</b> is the generalized Maxwell index μ = (γ/B<sub>0</sub>)|∫<b>g</b>(t)<sup>⊗2</sup>h(t) dt|<sub>F</sub> in 1/m² (γ = 42.58 MHz/T), from the nominal gradients and B<sub>0</sub> only, reset at each excitation with h flipping sign at each refocusing pulse. From the physical (rotated) gradients; the sequence's x, y and z are taken as the scanner's, with B<sub>0</sub> along z. Turn the lanes on under Display › Concomitant.</p>
     <div class="ccgrid">
-      <span>Position r</span><div class="frow"><label>x <input type="number" step="any" id="ccX" aria-label="Position x (cm)"></label><label>y <input type="number" step="any" id="ccY" aria-label="Position y (cm)"></label><label>z <input type="number" step="any" id="ccZ" aria-label="Position z (cm)"></label> cm</div>
+      <label for="ccPos">Position</label><div class="frow"><select id="ccPos"><option value="fixed">fixed: r below</option><option value="slice">slice centre of each shot</option></select></div>
+      <span id="ccRLab">Position r</span><div class="frow"><label>x <input type="number" step="any" id="ccX" aria-label="Position x (cm)"></label><label>y <input type="number" step="any" id="ccY" aria-label="Position y (cm)"></label><label>z <input type="number" step="any" id="ccZ" aria-label="Position z (cm)"></label> cm</div>
       <label for="ccB0">Field strength B<sub>0</sub></label><div class="frow"><input type="number" step="any" min="0" id="ccB0"> T</div>
       <label for="ccA">Asymmetry a</label><div class="frow"><input type="number" step="any" id="ccA"><span class="muted">of the z coil; 0.5 for a symmetric one</span></div>
       <label for="ccF">Non-Maxwell term f</label><div class="frow"><input type="number" step="any" id="ccF"> T/m <span class="muted">constant in time; 0 for none</span></div>
@@ -7882,7 +7884,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.42.2", "date": "2026-11-08", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.42.2", "date": "2026-11-08", "notes": ["ROTATIONS extension: a gradient that continues from a rotated block into the next (EPI blips split across readout blocks) now keeps its value at the block end. Before, the rotated waveform got an extra vertex 1 ps after the block end with the value 0, and vertex times of different events were compared exactly, so an event ending at 0.0006599999999999999 s was 0 at another's end at 0.00066 s. The diagram drew a spike to 0 at every such joint, and for about a third of block durations the Sequence tab's peak slew was that jump over 1 ps (up to 2.7·10⁹ T/m/s instead of 133 T/m/s in the test). Vertex times are now snapped to 0.1 ns and the rotated waveform is kept inside its block. k-space, the image simulation, stimulation and the concomitant lanes were not affected (k within 10⁻¹⁶).", "Sequence tab, Gradient peaks: each amplitude and slew value is a link to the first block that reaches it (selects the block and zooms to it).", "Selection tab: the shot and volume cards list the peak gradient amplitude and slew per physical axis over the whole shot or volume, each a link to the first block that reaches it. Before, a selected shot showed only the event cards of its first block (in the demo, the excitation: RF and Gz), which read as if the shot had no x or y gradients; that block's heading now says it is the first block of the shot or volume.", "Checked: new regression test (tests/rot_edge: a rotated 660 µs block, a label-only block and a continuation block, and 971 block durations from 300 µs to 10 ms); the demo, the demo rotated 45° about y, and the 11-stack and 3D-slab tests give the same peak gradients and slews, and k within 1.1·10⁻¹⁶ of its maximum."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image now uses only the shots whose excitation has the same frequency and the same slice orientation. Before, the frequency alone decided, so stacks rotated with the ROTATIONS extension, which reuse the frequencies of the unrotated stack, were combined into one image when they fell in the same volume. In a test with four stacks at 0°, 45°, 90° and 135° about y, six of eight images combined two orientations; in the 11 rotated stacks test, all 11 stacks were one image. The same rule now holds for the image list of a selection, the image colours of the k-space tab's all-readouts view, the other slices of the stack in the 3D view, and the TR used for T1 saturation (the time to the previous excitation of the same slice; before, it could be an excitation of another orientation: 0.1 s instead of fully relaxed for the 11 rotated stacks).", "The FOV definition is read in the sequence's own (logical) axes. The image's readout and phase directions are turned back through the rotation of the readout block, or, when the readout is rotated by hand in a shot whose excitation carries the ROTATIONS extension (as MATLAB sequences that rotate only some blocks with the extension write), through the excitation's rotation if that brings the readout onto a logical axis (within ~5°). Before, the definition was compared with the rotated directions, so an oblique readout, between x (220 mm) and z (a 20 mm slab), had no prescribed FOV: the image showed the whole oversampled readout (447–632 mm) uncropped and Crop to FOV did nothing. Gradients rotated by hand throughout (no extension anywhere) are read as before. The phase-encoding line statistics read the definition the same way.", "Checked: the demo and the 3D slab test give bit-identical images, line statistics and slice lists; the four-rotation test now gives 220 × 220 mm images at 2.05× readout oversampling for every rotation; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Pulseq binary files (.bin, written by MATLAB Pulseq's seq.writeBinary, format 1.5.2) open like .seq files: Open, drop or Reload. Their md5 signature is checked. Shape samples in a binary file are single precision. A custom label (mr.addCustomLabel) has no name in a binary file; it is shown as LABEL<number>, with a note.", "Arbitrary gradients sampled at the raster centres are drawn as MATLAB Pulseq draws them (mr.restoreAdditionalShapeSamples): where the samples imply a corner on a raster edge, as for a trapezoid or a free waveform given as samples, or a trapezoid added to an arbitrary gradient (mr.addGradients), the corner is restored instead of being cut by a straight line between the samples. The line was off by slew·Δt/4 at each corner (0.25 mT/m at 100 T/m/s), which also changed the slew lane there, the area slightly, and the peak where a corner is the peak (a triangle); the restored waveform has exactly the area of the samples. Curved shapes such as spirals are unchanged. Everything computed from the gradients follows: k-space, b-tensor, echoes, concomitant lanes, stimulation.", "Labels: in a block that both sets and increments a label, every LABELSET is applied before any LABELINC, as the Pulseq specification and the scanner do, whatever their order in the file. Before, they were applied in the order of the extension list, which MATLAB Pulseq writes in reverse, so addBlock(adc, SET LIN 5, INC LIN 1) gave LIN 5 instead of 6. (MATLAB's own evalLabels and plot have the same problem.)", "Files in format 1.4 and older, which do not store where an arbitrary gradient starts and ends: these values are now found as MATLAB Pulseq's read does: the start from the end of the gradient on the same axis in the previous block, the end by restoring the raster edges. Before, both were extrapolated from the first and last two samples. For a gradient that continues from one block into the next, the two differ by up to 0.3 % of the peak at the joint (in the test, MATLAB's estimate is 0.14 % from the true value, the old one 0.48 %).", "Checked against MATLAB Pulseq 1.5.2 (run in Octave) with new reference tests (tests/matlab, tests/compare_matlab.mjs): gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ of its maximum on sequences with corners, rotations, RF shims, soft delays, custom labels and ADC phase modulation (before: 1.2·10⁻² and 2.6·10⁻⁴); a v1.4.1 file within 2.2·10⁻⁷ (before 2.4·10⁻³); a .bin file and its .seq file give the same blocks and timing, gradients within 2.2·10⁻⁷ and k within 1.2·10⁻⁷."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers, switched under Display › Echoes: spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○). In the diagram they sit at the top of the RF lane, spin echoes in one row and gradient echoes in the row below, so a spin echo and a gradient echo at the same time line up. Hovering a marker names it, gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it (and the reverse); for an echo on another line, |k| there. By default they are drawn only while the view covers at most 4 shots (Only when zoomed in); without it, new shots are computed within 12 ms per frame, so zooming out stays responsive.", "k-space tab: the same markers on the trajectory, where each echo lies in k-space: a spin echo off the centre shows a mismatch between the spin echo and the k-space centre. Gradient echoes follow the kind of readout shown (imaging, reference, navigator); at most 400 shots are marked.", "Spin echoes: where the dephasing time τ returns to zero; τ starts at the excitation and changes sign at each refocusing pulse, at the pulses' centres (2·t₁₈₀ − t₉₀ for a Hahn echo, each echo of a train). Stimulated and secondary echoes are not marked. Gradient echoes: only during readouts (not noise); along a straight readout, where the k component along the readout crosses zero, solved exactly (it is quadratic between gradient vertices); k = 0 when the rest of k is zero too (within 10⁻⁴ of the largest |k| at the readouts' ends). A curved readout (spiral) has only k = 0 echoes, where k comes to zero in its block, e.g. where a spiral-out's gradient starts.", "Checked against separate calculations from PyPulseq (own k integration of its gradient waveforms on a grid of at most 0.5 µs, readouts from its ADC times, zero crossings by interpolation): the demo, an oblique SE-EPI, a gradient echo and a turbo spin echo give the same 22 spin echoes, 52 k = 0 and 540 other gradient echoes, with times within 0.04 ns. 10,240 shots take about 0.12 s."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab (shot card): the b-value, the 3×3 b-tensor in the scanner's x, y and z, and its eigenvalues, in ms/µm². B = (2π)² ∫ k kᵀ dt from the excitation to the echo, the readout sample closest to k = 0 in the shot's first echo, with k reset at the excitation and mirrored at each refocusing pulse as in the k-vector lane. All gradients count (diffusion, slice selection, crushers, readout prephasers), so cross-terms with the imaging gradients are included. A shot with only reference readouts uses those; a multi-echo shot says how many echoes it has. Hover the row names for the definition.", "The integral is exact: k is quadratic between gradient vertices and RF centres, so k kᵀ is integrated with 3-point Gauss–Legendre on each piece. The image simulation's b-value is now the trace of this tensor (before, 25 points per block, within 5·10⁻⁵ for diffusion-weighted shots and 2·10⁻³ for b ≈ 0).", "Checked against separate calculations from PyPulseq's gradient waveforms (own k integration with PyPulseq's excitation and refocusing times) on five sequences: the demo, a spin echo with one diffusion pair along (1, 2, 2)/3, an oblique slice-selective SE-EPI with two orthogonal diffusion pairs, a gradient echo with a bipolar gradient and a turbo spin echo. The tensors agree to 1.4·10⁻⁷ of b, the eigenvalues to 1.5·10⁻⁷, and the echo is the same readout sample as PyPulseq's nearest to k = 0 in every shot (22 of 22). The single pair matches the Stejskal–Tanner b for trapezoids, b n nᵀ, to 10⁻¹⁵."]}, {"version": "1.38.0", "date": "2026-10-27", "notes": ["Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.", "Lane kc: the zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r. It is reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.", "Lane Maxwell μ (chip μ): the generalized Maxwell index μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T. It is reset at each excitation, and h flips sign at each refocusing pulse. The six distinct components of the integral are computed exactly (the gradients are piecewise linear); the lane is drawn through up to 24 points per gradient stretch. μ depends only on the gradients and B0, and is the same for the physical and the logical gradients.", "Settings… (in the Concomitant row, or ⋯ › Concomitant gradients…): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. f is constant in time, so with f ≠ 0 Gc is not zero where the gradients are off and kc keeps changing in pauses; the dialog says so.", "With the lanes on, the cursor readout gives Gc, kc and μ, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.", "Display panel regrouped: Gx, Gy, Gz and One axis on one row, Slew and k-vector below them, then the gradient unit; Gc, kc, μ and Settings… in the new Concomitant row.", "Save figure… and Save diagram as PNG include the new lanes (Lanes in the figure dialog). In a figure, lanes too low for the unit on its own line before (k-vector, Gc, kc and μ at the default size) now keep it under the name, with the x y z legend after it; the gutter widens to fit.", "References in the dialog and under About › Acknowledgements: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; and for the field model Bernstein MA, Zhou XJ, Polzin JA, et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.", "Checked against separate calculations from PyPulseq's gradient waveforms (sampled every 0.25 µs, integrated with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated: kc agrees to 4·10⁻⁷ of its largest value over three settings including f ≠ 0, the drawn Gc lane to 0.1 %; μ agrees to 3·10⁻⁷, the drawn μ lane to 2.3·10⁻⁴. The k-vector now shares its code with kc and μ and is unchanged, bit for bit (750,430 values compared with 1.37.0)."]}, {"version": "1.37.0", "date": "2026-10-02", "notes": ["Save figure, diagram: traces are drawn as one line of even width everywhere (steep ramps and readout trains were thinner than the rest), with the line width chosen in pt.", "Y axes with round values: each lane's scale goes up to the next round value above its peak (58.3 mT/m: 60; 19.3 µT: 20), with an axis line and ticks at round steps (e.g. 0, ±30, ±60), as many as fit; the time axis has a title, Time (ms). The coloured bars beside the lanes are left out.", "New options: gradients on one axis or a lane each (independent of the screen), fill under traces on or off, font (Arial, Helvetica, Times or the system font). Block shading stays its own switch."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.43.0", "date": "2026-11-08", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot: Concomitant › Settings… › Position, fixed (r, as before) or slice centre of each shot. Each excitation sets the position from the slice it selects, f/|G| along the slice gradient at the pulse centre (the point of the slice plane closest to the isocentre; no in-plane offset), and it holds until the next excitation. Where there is no slice-selective excitation (before the first excitation, after a non-selective one) the fixed r is used. The Gc and kc lanes, the cursor readout (with the position used there), the Selection tab (Position r of the block) and the Sequence tab (number of slice centres) follow. The setting is kept in this browser.", "Cost: blocks are computed per combination of gradient events and position, so the work grows with the number of distinct slice centres, at most to one computation per block. Measured (Node): 10 ms for the demo (3 positions), 35 ms for 55 rotated slices (45 positions), 50 ms for a 30-slice EPI of 78,620 blocks, and 0.4–0.5 s for a 20-slice spiral with 48 distinct interleaves (0.05 s with a fixed r). With the fixed position everything is as in 1.42.2, bit for bit (187,026 values compared).", "New lane k + kc (Display › Concomitant): the total dephasing vector of the spins at the position, the k-vector plus kc, in 1/m with x, y and z, reset at each excitation and sign-flipped at each refocusing pulse, veiled like the k-vector after the last readout. In the cursor readout, the Selection tab (k + kc at the end of a block) and Save figure. kc is usually 10⁻³ or less of k, so at the lane's scale k + kc looks like the k-vector; the kc lane shows the difference.", "Checked against an independent calculation (own slice centres from the frequency and the gradient, ∇|B| − g taken directly, midpoint integration on a 0.25 µs grid, reset and sign flips at the RF centres) on the demo, a 55-slice rotated-stack SE-EPI, a 30-slice EPI and a 20-slice spiral, with two parameter sets including f ≠ 0: kc within 2.9·10⁻⁸ to 1.6·10⁻⁷ of its largest value; k + kc equals the k-vector plus kc exactly. The demo case is a new test in tests/test_core.mjs; browser tests pass."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["ROTATIONS extension: a gradient that continues from a rotated block into the next (EPI blips split across readout blocks) now keeps its value at the block end. Before, the rotated waveform got an extra vertex 1 ps after the block end with the value 0, and vertex times of different events were compared exactly, so an event ending at 0.0006599999999999999 s was 0 at another's end at 0.00066 s. The diagram drew a spike to 0 at every such joint, and for about a third of block durations the Sequence tab's peak slew was that jump over 1 ps (up to 2.7·10⁹ T/m/s instead of 133 T/m/s in the test). Vertex times are now snapped to 0.1 ns and the rotated waveform is kept inside its block. k-space, the image simulation, stimulation and the concomitant lanes were not affected (k within 10⁻¹⁶).", "Sequence tab, Gradient peaks: each amplitude and slew value is a link to the first block that reaches it (selects the block and zooms to it).", "Selection tab: the shot and volume cards list the peak gradient amplitude and slew per physical axis over the whole shot or volume, each a link to the first block that reaches it. Before, a selected shot showed only the event cards of its first block (in the demo, the excitation: RF and Gz), which read as if the shot had no x or y gradients; that block's heading now says it is the first block of the shot or volume.", "Checked: new regression test (tests/rot_edge: a rotated 660 µs block, a label-only block and a continuation block, and 971 block durations from 300 µs to 10 ms); the demo, the demo rotated 45° about y, and the 11-stack and 3D-slab tests give the same peak gradients and slews, and k within 1.1·10⁻¹⁶ of its maximum."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image now uses only the shots whose excitation has the same frequency and the same slice orientation. Before, the frequency alone decided, so stacks rotated with the ROTATIONS extension, which reuse the frequencies of the unrotated stack, were combined into one image when they fell in the same volume. In a test with four stacks at 0°, 45°, 90° and 135° about y, six of eight images combined two orientations; in the 11 rotated stacks test, all 11 stacks were one image. The same rule now holds for the image list of a selection, the image colours of the k-space tab's all-readouts view, the other slices of the stack in the 3D view, and the TR used for T1 saturation (the time to the previous excitation of the same slice; before, it could be an excitation of another orientation: 0.1 s instead of fully relaxed for the 11 rotated stacks).", "The FOV definition is read in the sequence's own (logical) axes. The image's readout and phase directions are turned back through the rotation of the readout block, or, when the readout is rotated by hand in a shot whose excitation carries the ROTATIONS extension (as MATLAB sequences that rotate only some blocks with the extension write), through the excitation's rotation if that brings the readout onto a logical axis (within ~5°). Before, the definition was compared with the rotated directions, so an oblique readout, between x (220 mm) and z (a 20 mm slab), had no prescribed FOV: the image showed the whole oversampled readout (447–632 mm) uncropped and Crop to FOV did nothing. Gradients rotated by hand throughout (no extension anywhere) are read as before. The phase-encoding line statistics read the definition the same way.", "Checked: the demo and the 3D slab test give bit-identical images, line statistics and slice lists; the four-rotation test now gives 220 × 220 mm images at 2.05× readout oversampling for every rotation; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Pulseq binary files (.bin, written by MATLAB Pulseq's seq.writeBinary, format 1.5.2) open like .seq files: Open, drop or Reload. Their md5 signature is checked. Shape samples in a binary file are single precision. A custom label (mr.addCustomLabel) has no name in a binary file; it is shown as LABEL<number>, with a note.", "Arbitrary gradients sampled at the raster centres are drawn as MATLAB Pulseq draws them (mr.restoreAdditionalShapeSamples): where the samples imply a corner on a raster edge, as for a trapezoid or a free waveform given as samples, or a trapezoid added to an arbitrary gradient (mr.addGradients), the corner is restored instead of being cut by a straight line between the samples. The line was off by slew·Δt/4 at each corner (0.25 mT/m at 100 T/m/s), which also changed the slew lane there, the area slightly, and the peak where a corner is the peak (a triangle); the restored waveform has exactly the area of the samples. Curved shapes such as spirals are unchanged. Everything computed from the gradients follows: k-space, b-tensor, echoes, concomitant lanes, stimulation.", "Labels: in a block that both sets and increments a label, every LABELSET is applied before any LABELINC, as the Pulseq specification and the scanner do, whatever their order in the file. Before, they were applied in the order of the extension list, which MATLAB Pulseq writes in reverse, so addBlock(adc, SET LIN 5, INC LIN 1) gave LIN 5 instead of 6. (MATLAB's own evalLabels and plot have the same problem.)", "Files in format 1.4 and older, which do not store where an arbitrary gradient starts and ends: these values are now found as MATLAB Pulseq's read does: the start from the end of the gradient on the same axis in the previous block, the end by restoring the raster edges. Before, both were extrapolated from the first and last two samples. For a gradient that continues from one block into the next, the two differ by up to 0.3 % of the peak at the joint (in the test, MATLAB's estimate is 0.14 % from the true value, the old one 0.48 %).", "Checked against MATLAB Pulseq 1.5.2 (run in Octave) with new reference tests (tests/matlab, tests/compare_matlab.mjs): gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ of its maximum on sequences with corners, rotations, RF shims, soft delays, custom labels and ADC phase modulation (before: 1.2·10⁻² and 2.6·10⁻⁴); a v1.4.1 file within 2.2·10⁻⁷ (before 2.4·10⁻³); a .bin file and its .seq file give the same blocks and timing, gradients within 2.2·10⁻⁷ and k within 1.2·10⁻⁷."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers, switched under Display › Echoes: spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○). In the diagram they sit at the top of the RF lane, spin echoes in one row and gradient echoes in the row below, so a spin echo and a gradient echo at the same time line up. Hovering a marker names it, gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it (and the reverse); for an echo on another line, |k| there. By default they are drawn only while the view covers at most 4 shots (Only when zoomed in); without it, new shots are computed within 12 ms per frame, so zooming out stays responsive.", "k-space tab: the same markers on the trajectory, where each echo lies in k-space: a spin echo off the centre shows a mismatch between the spin echo and the k-space centre. Gradient echoes follow the kind of readout shown (imaging, reference, navigator); at most 400 shots are marked.", "Spin echoes: where the dephasing time τ returns to zero; τ starts at the excitation and changes sign at each refocusing pulse, at the pulses' centres (2·t₁₈₀ − t₉₀ for a Hahn echo, each echo of a train). Stimulated and secondary echoes are not marked. Gradient echoes: only during readouts (not noise); along a straight readout, where the k component along the readout crosses zero, solved exactly (it is quadratic between gradient vertices); k = 0 when the rest of k is zero too (within 10⁻⁴ of the largest |k| at the readouts' ends). A curved readout (spiral) has only k = 0 echoes, where k comes to zero in its block, e.g. where a spiral-out's gradient starts.", "Checked against separate calculations from PyPulseq (own k integration of its gradient waveforms on a grid of at most 0.5 µs, readouts from its ADC times, zero crossings by interpolation): the demo, an oblique SE-EPI, a gradient echo and a turbo spin echo give the same 22 spin echoes, 52 k = 0 and 540 other gradient echoes, with times within 0.04 ns. 10,240 shots take about 0.12 s."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab (shot card): the b-value, the 3×3 b-tensor in the scanner's x, y and z, and its eigenvalues, in ms/µm². B = (2π)² ∫ k kᵀ dt from the excitation to the echo, the readout sample closest to k = 0 in the shot's first echo, with k reset at the excitation and mirrored at each refocusing pulse as in the k-vector lane. All gradients count (diffusion, slice selection, crushers, readout prephasers), so cross-terms with the imaging gradients are included. A shot with only reference readouts uses those; a multi-echo shot says how many echoes it has. Hover the row names for the definition.", "The integral is exact: k is quadratic between gradient vertices and RF centres, so k kᵀ is integrated with 3-point Gauss–Legendre on each piece. The image simulation's b-value is now the trace of this tensor (before, 25 points per block, within 5·10⁻⁵ for diffusion-weighted shots and 2·10⁻³ for b ≈ 0).", "Checked against separate calculations from PyPulseq's gradient waveforms (own k integration with PyPulseq's excitation and refocusing times) on five sequences: the demo, a spin echo with one diffusion pair along (1, 2, 2)/3, an oblique slice-selective SE-EPI with two orthogonal diffusion pairs, a gradient echo with a bipolar gradient and a turbo spin echo. The tensors agree to 1.4·10⁻⁷ of b, the eigenvalues to 1.5·10⁻⁷, and the echo is the same readout sample as PyPulseq's nearest to k = 0 in every shot (22 of 22). The single pair matches the Stejskal–Tanner b for trapezoids, b n nᵀ, to 10⁻¹⁵."]}, {"version": "1.38.0", "date": "2026-10-27", "notes": ["Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.", "Lane kc: the zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r. It is reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.", "Lane Maxwell μ (chip μ): the generalized Maxwell index μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T. It is reset at each excitation, and h flips sign at each refocusing pulse. The six distinct components of the integral are computed exactly (the gradients are piecewise linear); the lane is drawn through up to 24 points per gradient stretch. μ depends only on the gradients and B0, and is the same for the physical and the logical gradients.", "Settings… (in the Concomitant row, or ⋯ › Concomitant gradients…): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. f is constant in time, so with f ≠ 0 Gc is not zero where the gradients are off and kc keeps changing in pauses; the dialog says so.", "With the lanes on, the cursor readout gives Gc, kc and μ, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.", "Display panel regrouped: Gx, Gy, Gz and One axis on one row, Slew and k-vector below them, then the gradient unit; Gc, kc, μ and Settings… in the new Concomitant row.", "Save figure… and Save diagram as PNG include the new lanes (Lanes in the figure dialog). In a figure, lanes too low for the unit on its own line before (k-vector, Gc, kc and μ at the default size) now keep it under the name, with the x y z legend after it; the gutter widens to fit.", "References in the dialog and under About › Acknowledgements: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; and for the field model Bernstein MA, Zhou XJ, Polzin JA, et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.", "Checked against separate calculations from PyPulseq's gradient waveforms (sampled every 0.25 µs, integrated with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated: kc agrees to 4·10⁻⁷ of its largest value over three settings including f ≠ 0, the drawn Gc lane to 0.1 %; μ agrees to 3·10⁻⁷, the drawn μ lane to 2.3·10⁻⁴. The k-vector now shares its code with kc and μ and is unchanged, bit for bit (750,430 values compared with 1.37.0)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -8523,8 +8525,14 @@ function m0Active(seq) {
    order (g·r/B0)²). Gradients are 0 outside their events; with f ≠ 0, gc is not zero there (the static f term), so
    then every block is covered from its start to its end.
    kc = ∫gc dt (1/m), the k-space shift of the spins at r, follows the k-vector's rules: reset at each excitation, sign
-   flipped at each refocusing pulse, both at the RF centre. */
-const CC_DEF = { r: [0.05, 0.06, 0.07], B0: 3, a: 0.5, f: 0 };
+   flipped at each refocusing pulse, both at the RF centre.
+   Position (P.pos): 'fixed' uses r everywhere; 'slice' uses, from each excitation block up to the next excitation, the
+   centre of the slice that the excitation selects (rfSlice: s0 = f/|G| along n = G/|G|, with f including any ppm offset
+   at B0; the point of the slice plane closest to the isocentre, with no in-plane offset), and r where there is no
+   slice-selective excitation (before the first excitation, after a non-selective one). Blocks are then computed per
+   combination and position, so the cost grows with the number of distinct slice positions, at most to one computation
+   per block. */
+const CC_DEF = { r: [0.05, 0.06, 0.07], B0: 3, a: 0.5, f: 0, pos: 'fixed' };
 function ccEval(gx, gy, gz, P, out) { // g in T/m → gc in T/m
   const x = P.r[0], y = P.r[1], z = P.r[2], a = P.a, f = P.f;
   const Bd = P.B0 + gx * x + gy * y + gz * z, p = -a * gz * x + f * y + gx * z, q = f * x + (a - 1) * gz * y + gy * z;
@@ -8544,17 +8552,51 @@ function ccCombos(seq) {
   }
   return (seq.ccCombo = { of, list });
 }
-/* everything that depends on the parameters P = { r (m), B0 (T), a, f (T/m) }: the block column B.ccx (combination id,
-   0 where gc is 0 throughout), the geometries (on demand) and kc at every block start. Rebuilt when P changes. */
+/* the position used for each block in 'slice' mode: { pos: [r of each position; 0 is P.r], of: Uint32Array (position index
+   per block), exc: excitation block that set it (−1: none) }. Depends on the file and B0 (ppm offsets) only. */
+function ccSlicePos(seq, P) {
+  const B = seq.B, nb = seq.nb, pos = [P.r.slice()], map = new Map(), of = new Uint32Array(nb), exc = new Int32Array(nb).fill(-1);
+  let cur = 0, e = -1;
+  for (let i = 0; i < nb; i++) {
+    if (B.rf[i] && rfSt(seq, B.rf[i]).use === 'e') {
+      e = i; cur = 0;
+      // as rfSlice (selective when |G| > 1 kHz/m at the RF centre; s0 = f/|G| along G/|G|), without its bandwidth and profile
+      const r = seq.rf.get(B.rf[i]), tc = seq.blockStart[i] + rfSt(seq, B.rf[i]).center;
+      const G = [channelValue(seq, 'gx', tc), channelValue(seq, 'gy', tc), channelValue(seq, 'gz', tc)], Gm = Math.hypot(G[0], G[1], G[2]);
+      const q = r && Gm > 1e3 ? G.map(x => x * rfFreqHz(r, P.B0) / (Gm * Gm)) : null;
+      if (q && q.every(Number.isFinite)) {
+        const key = q.map(x => Math.round(x * 1e9)).join(','); // to 1 nm
+        let k = map.get(key); if (k === undefined) { k = pos.length; pos.push(q); map.set(key, k); }
+        cur = k;
+      }
+    }
+    of[i] = cur; exc[i] = e;
+  }
+  return { pos, of, exc };
+}
+/* everything that depends on the parameters P = { r (m), B0 (T), a, f (T/m), pos ('fixed' or 'slice') }: the block
+   column B.ccx (id of a combination and position, 0 where gc is 0 throughout), the geometries (on demand) and kc at
+   every block start. Rebuilt when P changes. In 'fixed' mode the ids are the combination ids of ccCombos. */
 function ccState(seq, P) {
-  const key = JSON.stringify([P.r, P.B0, P.a, P.f]);
+  const mode = P.pos === 'slice' ? 'slice' : 'fixed', key = JSON.stringify([P.r, P.B0, P.a, P.f, mode]);
   if (seq.cc && seq.cc.key === key) return seq.cc;
-  const C = ccCombos(seq), nb = seq.nb, B = seq.B, col = new Uint32Array(nb);
-  for (let i = 0; i < nb; i++) { const c = C.of[i]; col[i] = P.f === 0 && C.list[c].none ? 0 : c; }
+  const C = ccCombos(seq), nb = seq.nb, B = seq.B, col = new Uint32Array(nb), ent = [null];
+  const SP = mode === 'slice' ? ccSlicePos(seq, P) : null;
+  if (!SP) { for (let c = 1; c < C.list.length; c++) ent.push({ c, p: 0 }); for (let i = 0; i < nb; i++) { const c = C.of[i]; col[i] = P.f === 0 && C.list[c].none ? 0 : c; } }
+  else {
+    const map = new Map();
+    for (let i = 0; i < nb; i++) {
+      const c = C.of[i]; if (P.f === 0 && C.list[c].none) continue;
+      const p = SP.of[i], k = c * 65536 + p; // (unique: ids and positions are far below 2^26 and 2^16 here; else a string key)
+      const kk = p < 65536 ? k : c + ',' + p;
+      let id = map.get(kk); if (id === undefined) { id = ent.length; ent.push({ c, p }); map.set(kk, id); }
+      col[i] = id;
+    }
+  }
   B.ccx = col;
-  for (const k of ['cx', 'cy', 'cz', 'qx', 'qy', 'qz']) { if (seq.pyr) delete seq.pyr[k]; if (seq.evt) delete seq.evt[k]; } // made with the old parameters
-  seq.kcSt = {};
-  const cc = seq.cc = { key, P: { r: P.r.slice(), B0: P.B0, a: P.a, f: P.f }, geo: [], kStart: null, max: [0, 0, 0] };
+  for (const k of ['cx', 'cy', 'cz', 'qx', 'qy', 'qz', 'tx', 'ty', 'tz']) { if (seq.pyr) delete seq.pyr[k]; if (seq.evt) delete seq.evt[k]; } // made with the old parameters
+  seq.kcSt = {}; seq.ktSt = {};
+  const cc = seq.cc = { key, P: { r: P.r.slice(), B0: P.B0, a: P.a, f: P.f, pos: mode }, geo: [], ent, sp: SP, posR: SP ? SP.pos : [P.r.slice()], kStart: null, ktStart: null, max: [0, 0, 0] };
   const kS = [new Float64Array(nb + 1), new Float64Array(nb + 1), new Float64Array(nb + 1)], raw = [0, 0, 0]; let off = [0, 0, 0];
   for (let i = 0; i < nb; i++) { // as the k-vector's start values in analyze()
     for (let a = 0; a < 3; a++) kS[a][i] = raw[a] + off[a];
@@ -8570,13 +8612,16 @@ function ccState(seq, P) {
   }
   for (let a = 0; a < 3; a++) kS[a][nb] = raw[a] + off[a];
   cc.kStart = kS;
+  cc.ktStart = [0, 1, 2].map(a => { const o = new Float64Array(nb + 1), m = seq.kStart[a]; for (let i = 0; i <= nb; i++) o[i] = m[i] + kS[a][i]; return o; });
   return cc;
 }
+/* the position (m) used for block i, and whether it is a slice centre (false: the fixed r) */
+function ccPosOf(seq, i) { const cc = seq.cc; if (!cc.sp) return { r: cc.P.r, slice: false, exc: -1 }; const p = cc.sp.of[i]; return { r: cc.sp.pos[p], slice: p > 0, exc: cc.sp.exc[i] }; }
 /* geometry of combination id under the current parameters: Simpson pieces (t0, t1, values at both ends and the middle,
    per axis, Hz/m), cumulative integrals, and per axis a drawing geometry (geoFinish) */
 function ccGeo(seq, id) {
   const cc = seq.cc; let G = cc.geo[id]; if (G) return G;
-  const c = seq.ccCombo.list[id], P = cc.P, L = c.ids.map(e => e ? geoG(seq, e) : null);
+  const E = cc.ent[id], c = seq.ccCombo.list[E.c], P = { r: cc.posR[E.p], B0: cc.P.B0, a: cc.P.a, f: cc.P.f }, L = c.ids.map(e => e ? geoG(seq, e) : null);
   const ts = []; for (const g of L) if (g) for (let k = 0; k < g.n; k++) ts.push(g.t[k]);
   if (P.f !== 0 || !ts.length) ts.push(0, c.dur);
   ts.sort((x, y) => x - y); const u = []; for (const x of ts) if (!u.length || x - u[u.length - 1] > 1e-11) u.push(x);
@@ -8656,13 +8701,62 @@ function ccExt(seq, id, a) {
 /* gc (Hz/m) at time t, from the gradients there (exact; the drawing geometry is piecewise linear between its points) */
 function ccValue(seq, a, t) {
   const i = blockAtTime(seq, t); if (!seq.B.ccx[i]) return 0;
-  const o3 = [0, 0, 0], gi = 1 / GAMMA;
-  return ccEval(channelValue(seq, 'gx', t) * gi, channelValue(seq, 'gy', t) * gi, channelValue(seq, 'gz', t) * gi, seq.cc.P, o3)[a] * GAMMA;
+  const o3 = [0, 0, 0], gi = 1 / GAMMA, cc = seq.cc, P = cc.sp ? { r: cc.posR[cc.ent[seq.B.ccx[i]].p], B0: cc.P.B0, a: cc.P.a, f: cc.P.f } : cc.P;
+  return ccEval(channelValue(seq, 'gx', t) * gi, channelValue(seq, 'gy', t) * gi, channelValue(seq, 'gz', t) * gi, P, o3)[a] * GAMMA;
 }
 const KP_KC = { name: 'kc', keys: ['qx', 'qy', 'qz'], start: s => s.cc.kStart, ids: s => [s.B.ccx, s.B.ccx, s.B.ccx], tok: s => s.cc,
   geo: (s, id, a) => ccGeo(s, id).geo[a], ext: (s, id, a) => ccExt(s, id, a), inBlock: (s, i, rel, out, o, nq) => kcInBlock(s, i, rel, out, o, nq),
   st: s => s.kcSt || (s.kcSt = {}), memo: { tok: null, map: new Map(), nv: 0 } };
 KINT.qx = [KP_KC, 0]; KINT.qy = [KP_KC, 1]; KINT.qz = [KP_KC, 2];
+/* the total dephasing vector k + kc (1/m): the k-vector plus the concomitant k-space shift at the same position, under the
+   same rules (both are reset at each excitation and sign-flipped at each refocusing pulse, so their sum is too). Per
+   combination and position (B.ccx; where it is 0 there are no gradients and, with f = 0, no gc, so k + kc is constant):
+   the drawing geometry is g + gc on the union of their vertices (gc piecewise linear through its points; used for the
+   vertex times, zero crossings and the integral's extremes), the values themselves are exact sums of kInBlock and
+   kcInBlock. */
+function ktGeo(seq, id) {
+  const G = ccGeo(seq, id); if (G.kt) return G.kt;
+  const c = seq.ccCombo.list[seq.cc.ent[id].c], out = [];
+  for (let a = 0; a < 3; a++) {
+    const g = c.ids[a] ? geoG(seq, c.ids[a]) : null, h = G.geo[a], ts = [];
+    if (g) for (let k = 0; k < g.n; k++) ts.push(g.t[k]);
+    for (let k = 0; k < h.n; k++) ts.push(h.t[k]);
+    ts.sort((x, y) => x - y); const t = [], v = [];
+    const lin = (q, x) => { if (!q || q.n < 1 || x < q.t[0] || x > q.t[q.n - 1]) return 0; let lo = 0, hi = q.n - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (q.t[m] <= x) lo = m; else hi = m; } const d = q.t[hi] - q.t[lo]; return d > 0 ? q.v[lo] + (q.v[hi] - q.v[lo]) * (x - q.t[lo]) / d : q.v[hi]; };
+    for (const x of ts) if (!t.length || x - t[t.length - 1] > 1e-12) { t.push(x); v.push(lin(g, x) + lin(h, x)); }
+    out[a] = t.length ? geoFinish(t, v) : geoFinish([0], [0]);
+  }
+  return (G.kt = out);
+}
+function ktInBlock(seq, i, rel, out, o, nq = rel.length) {
+  const tmp = [new Float64Array(nq), new Float64Array(nq), new Float64Array(nq)];
+  kInBlock(seq, i, rel, out, o, nq); kcInBlock(seq, i, rel, tmp, 0, nq);
+  for (let a = 0; a < 3; a++) for (let q = 0; q < nq; q++) out[a][o + q] += tmp[a][q];
+}
+/* extremes of ∫(g + gc) dt over a combination from its start, evaluated at the vertices and zero crossings of g + gc */
+function ktExt(seq, id, a) {
+  const G = ccGeo(seq, id); G.ktExt = G.ktExt || []; if (G.ktExt[a]) return G.ktExt[a];
+  const c = seq.ccCombo.list[seq.cc.ent[id].c], gid = c.ids[a], g = gid ? geoG(seq, gid) : null, h = ktGeo(seq, id)[a];
+  const pts = [];
+  for (let k = 0; k < h.n; k++) { pts.push(h.t[k]); if (k) { const va = h.v[k - 1], vb = h.v[k]; if ((va < 0) !== (vb < 0) && va !== 0 && vb !== 0) pts.push(h.t[k - 1] + (h.t[k] - h.t[k - 1]) * va / (va - vb)); } }
+  // ∫g from 0 to each point (sorted), walking g's vertices once; plus ∫gc (ccPartial)
+  let mn = 0, mx = 0, k = 1, acc = 0;
+  for (const r of pts) {
+    let m = 0;
+    if (g) {
+      while (k < g.n && g.t[k] <= r) { acc += (g.v[k - 1] + g.v[k]) / 2 * (g.t[k] - g.t[k - 1]); k++; }
+      m = acc; if (k < g.n && r > g.t[k - 1]) { const ta = g.t[k - 1], D = g.t[k] - ta; if (D > 0) { const vb = g.v[k - 1] + (g.v[k] - g.v[k - 1]) * (r - ta) / D; m += (g.v[k - 1] + vb) / 2 * (r - ta); } }
+    }
+    const v = m + ccPartial(G, a, r); if (v < mn) mn = v; if (v > mx) mx = v;
+  }
+  const area = (g ? m0EventExt(seq, gid).area : 0) + G.area[a];
+  if (area < mn) mn = area; if (area > mx) mx = area;
+  return (G.ktExt[a] = { mn, mx, area });
+}
+const KP_KT = { name: 'kt', keys: ['tx', 'ty', 'tz'], start: s => s.cc.ktStart, ids: s => [s.B.ccx, s.B.ccx, s.B.ccx], tok: s => s.cc,
+  geo: (s, id, a) => ktGeo(s, id)[a], ext: (s, id, a) => ktExt(s, id, a), inBlock: (s, i, rel, out, o, nq) => ktInBlock(s, i, rel, out, o, nq),
+  st: s => s.ktSt || (s.ktSt = {}), memo: { tok: null, map: new Map(), nv: 0 } };
+KINT.tx = [KP_KT, 0]; KINT.ty = [KP_KT, 1]; KINT.tz = [KP_KT, 2];
 /* ---------- generalized Maxwell index ----------
    μ(t) = (γ/B0) |∫₀ᵗ g(t')⊗g(t') h(t') dt'|_F in 1/m² with γ = 42.58 MHz/T (Olsson et al., Magn Reson Med
    2026;96(3):1178-1191, doi:10.1002/mrm.70422). With G = γg in Hz/m, M = ∫ G Gᵀ h dt has six distinct components (xx, yy,
@@ -9508,7 +9602,7 @@ function transferList(root) {
   return [...bufs];
 }
 if (typeof module !== 'undefined' && module.exports) module.exports = { packShots, unpackShots, signatureHash, signatureStatus, quatToMat, rotationOfBlock, applyRotations, rangeSummary, adcRangeType, transferList, GAMMA, parseSeq, analyze, loadSeq, gradTimes, rfStats, rfSt, geoG, geoSlew, geoRfm, geoRfp, geoRfRe, geoRfIm, buildPyramid, CHANNELS, blockSummary, blockVertices, channelValue, blockAtTime, blockObj, extChain, labelNames, computeShots, computeVolumes, kSamples, kPath, kInBlock, adcEchoes, revisitEchoes, computeKspace, md5, verifySignature, trigName, trigText, TRIG_TYPES, LABEL_FLAGS, M0_KEYS, m0Block, m0EventExt, m0Summary, m0Vertices, m0Value, m0Pyramids, m0Active,
-  KINT, KP_M0, KP_KC, kintBlock, kintSummary, kintVertices, kintValue, kintPyramids, CC_DEF, ccEval, ccCombos, ccState, ccGeo, ccPartial, kcInBlock, ccExt, ccValue,
+  KINT, KP_M0, KP_KC, kintBlock, kintSummary, kintVertices, kintValue, kintPyramids, CC_DEF, ccEval, ccCombos, ccState, ccGeo, ccPartial, kcInBlock, ccExt, ccValue, ccSlicePos, ccPosOf, KP_KT, ktGeo, ktInBlock, ktExt,
   MX_IJ, KP_MU, mxGeo, mxPartial, mxState, muInBlock };
 
 /* ===== Seqret image simulation =====
@@ -11673,8 +11767,8 @@ const $ = s => document.querySelector(s);
 const S = {
   seq: null, name: '', t0: 0, t1: 1, sel: -1, selItems: [], selAnchor: -1, imgIdx: 0, hoverT: null, autoY: false, pauseHatch: true,
   gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'high', lineMode: 'exact', sideHidden: false,
-  vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, gc: false, kc: false, mu: false, pns: false, cns: false },
-  cc: { r: [0.05, 0.06, 0.07], B0: 3, a: 0.5, f: 0 }, // concomitant gradients: position (m), B0 (T), asymmetry, non-Maxwell term (T/m)
+  vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, gc: false, kc: false, kt: false, mu: false, pns: false, cns: false },
+  cc: { r: [0.05, 0.06, 0.07], B0: 3, a: 0.5, f: 0, pos: 'fixed' }, // concomitant gradients: position (m), B0 (T), asymmetry, non-Maxwell term (T/m), position mode ('fixed' r or 'slice' centre of each shot)
   stimNorm: true, combineG: true, rfMode: 'mag', linkMode: 'off',
   echo: { se: true, gf: true, gl: true, zoom: true }, // echo markers (Display › Echoes)
   sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, crop: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
@@ -11691,6 +11785,7 @@ const LANES = [
   { key: 'm0', label: 'k-vector', w: 1, col: 'gx', kind: 'sym' },
   { key: 'gc', label: 'Gc', w: 1, col: 'gx', kind: 'sym' }, // concomitant gradients at r
   { key: 'kc', label: 'kc', w: 1, col: 'gx', kind: 'sym' }, // their zeroth moment
+  { key: 'kt', label: 'k + kc', w: 1, col: 'gx', kind: 'sym' }, // total dephasing vector: k-vector plus kc
   { key: 'mu', label: 'Maxwell μ', w: 1, col: 'ink', kind: 'pos' }, // generalized Maxwell index
   { key: 'pns', label: 'PNS', w: 0.9, col: 'muted', kind: 'pos', stim: 'pns' },
   { key: 'cns', label: 'CNS', w: 0.9, col: 'muted', kind: 'pos', stim: 'cns' },
@@ -11729,8 +11824,8 @@ const sF = () => S.gUnit === 'mT' ? 1 / GAMMA : 1e-6;
 const sU = () => S.gUnit === 'mT' ? 'T/m/s' : 'kHz/m/ms';
 const rF = () => S.rfUnit === 'uT' ? 1e6 / GAMMA : 1;
 const rU = () => S.rfUnit === 'uT' ? 'µT' : 'Hz';
-function laneFactor(k) { return k === 'rfMag' ? rF() : (k === 'rfPh' || k === 'adc' || k === 'mu') ? 1 : k === 'slew' ? sF() : k === 'm0' || k === 'kc' ? mF() : gF(); }
-function laneUnit(k) { return k === 'rfMag' ? rU() : k === 'rfPh' ? 'rad' : k === 'mu' ? '1/m²' : k === 'slew' ? sU() : k === 'adc' ? '' : k === 'm0' || k === 'kc' ? mU() : gU(); }
+function laneFactor(k) { return k === 'rfMag' ? rF() : (k === 'rfPh' || k === 'adc' || k === 'mu') ? 1 : k === 'slew' ? sF() : k === 'm0' || k === 'kc' || k === 'kt' ? mF() : gF(); }
+function laneUnit(k) { return k === 'rfMag' ? rU() : k === 'rfPh' ? 'rad' : k === 'mu' ? '1/m²' : k === 'slew' ? sU() : k === 'adc' ? '' : k === 'm0' || k === 'kc' || k === 'kt' ? mU() : gU(); }
 /* concomitant gradients for the current parameters (rebuilt by ccState only when they, or the file, change) */
 function ccEnsure() { if (S.seq) ccState(S.seq, S.cc); }
 /* the generalized Maxwell index for the current B0 (its integrals are made once per file; B0 only scales them) */
@@ -11820,6 +11915,7 @@ function laneChannels(l) {
   if (l.key === 'm0') return [['gx', 'mx'], ['gy', 'my'], ['gz', 'mz']];
   if (l.key === 'gc') { ccEnsure(); return [['gx', 'cx'], ['gy', 'cy'], ['gz', 'cz']]; }
   if (l.key === 'kc') { ccEnsure(); return [['gx', 'qx'], ['gy', 'qy'], ['gz', 'qz']]; }
+  if (l.key === 'kt') { ccEnsure(); return [['gx', 'tx'], ['gy', 'ty'], ['gz', 'tz']]; }
   if (l.key === 'mu') { muEnsure(); return [['ink', 'mu']]; }
   if (l.key === 'rfMag' && S.rfMode === 'complex') return [['ph', 'rfIm'], ['rf', 'rfRe']]; // imaginary first: the real part is drawn on top
   if (l.key === 'g') return ['gx', 'gy', 'gz'].filter(k => S.vis[k]).map(k => [k, k]);
@@ -12331,6 +12427,7 @@ function render() {
     if (L.key === 'm0') m0Pyramids(s);
     if (L.key === 'gc') { ccEnsure(); for (const k of ['cx', 'cy', 'cz']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k); }
     if (L.key === 'kc') { ccEnsure(); kintPyramids(KP_KC, s); }
+    if (L.key === 'kt') { ccEnsure(); kintPyramids(KP_KT, s); }
     if (L.key === 'mu') { muEnsure(); kintPyramids(KP_MU, s); }
     if (L.key === 'rfMag' && S.rfMode === 'complex') for (const k of ['rfRe', 'rfIm']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k);
     laneBody(L);
@@ -12339,8 +12436,8 @@ function render() {
   }
   function laneBody(L) {
     const chans = laneChannels(L), f = laneFactor(L.key);
-    let m = L.key === 'm0' ? kViewMax(KP_M0, t0, t1) : L.key === 'kc' ? kViewMax(KP_KC, t0, t1) : L.key === 'mu' ? kViewMax(KP_MU, t0, t1) : laneMax(L);
-    if (S.autoY && L.key !== 'rfPh' && L.key !== 'adc' && L.key !== 'm0' && L.key !== 'kc' && L.key !== 'mu') { let mv = 0; for (const [, c] of chans) mv = Math.max(mv, chanRange(c, t0, t1)); if (mv > 0) m = mv; }
+    let m = L.key === 'm0' ? kViewMax(KP_M0, t0, t1) : L.key === 'kc' ? kViewMax(KP_KC, t0, t1) : L.key === 'kt' ? kViewMax(KP_KT, t0, t1) : L.key === 'mu' ? kViewMax(KP_MU, t0, t1) : laneMax(L);
+    if (S.autoY && L.key !== 'rfPh' && L.key !== 'adc' && L.key !== 'm0' && L.key !== 'kc' && L.key !== 'kt' && L.key !== 'mu') { let mv = 0; for (const [, c] of chans) mv = Math.max(mv, chanRange(c, t0, t1)); if (mv > 0) m = mv; }
     if (!(m > 0)) m = 1;
     const pad = 4;
     /* a figure: the scale goes up to the next multiple of half a power of ten above the largest value (58.3 mT/m:
@@ -12365,7 +12462,7 @@ function render() {
     pctx.strokeStyle = C.line; pctx.lineWidth = 1; pctx.setLineDash(!EXP && (L.kind === 'sym' || L.kind === 'phase') ? [3, 3] : []);
     pctx.beginPath(); pctx.moveTo(x0, Math.round(base) + 0.5); pctx.lineTo(x0 + pw, Math.round(base) + 0.5); pctx.stroke(); pctx.setLineDash([]);
     // gutter
-    const multi = L.key === 'slew' || L.key === 'g' || L.key === 'm0' || L.key === 'gc' || L.key === 'kc', color = multi ? C.ink : C[L.col];
+    const multi = L.key === 'slew' || L.key === 'g' || L.key === 'm0' || L.key === 'gc' || L.key === 'kc' || L.key === 'kt', color = multi ? C.ink : C[L.col];
     pctx.fillStyle = color; pctx.fillRect(8, L.y + 2, 3, L.h - 4);
     pctx.fillStyle = C.ink; pctx.textAlign = 'left'; pctx.font = `600 12px ${C.font}`;
     const twoLine = L.key !== 'adc' && (L.h > 58 || (EXP && L.h > 30)); // a figure's lanes are lower: the unit still fits below the name
@@ -12399,7 +12496,7 @@ function render() {
     }
     pctx.save(); pctx.beginPath(); pctx.rect(x0, L.y - 1, pw, L.h + 2); pctx.clip(); RY0 = L.y - 8; RY1 = L.y + L.h + 8;
     if (L.key === 'adc') drawADC(L, X, t0, t1, pw, x0);
-    else if (L.key === 'm0' || L.key === 'kc' || L.key === 'mu') {
+    else if (L.key === 'm0' || L.key === 'kc' || L.key === 'kt' || L.key === 'mu') {
       /* 1.22.0: the traces at full strength everywhere, drawn like any other lane; the stretches outside the active
          ones (excitation to last readout) are marked by a pale veil over the lane's background, drawn before the
          traces (one rectangle per gap). Fading the traces themselves needed either clip paths of thousands of
@@ -12451,7 +12548,7 @@ function render() {
    is faded (covered with the plot colour); a stretch without a readout is faded throughout */
 /* scale of the M0 lane: largest |m0| in the visible active stretches (moments differ by orders of magnitude between
    imaging, diffusion encoding and spoiling, and what happens after the last readout should not set the scale) */
-function kViewMax(P, t0, t1) { // P: KP_M0 (k-vector), KP_KC (kc) or KP_MU (Maxwell index)
+function kViewMax(P, t0, t1) { // P: KP_M0 (k-vector), KP_KC (kc), KP_KT (k + kc) or KP_MU (Maxwell index)
   const s = S.seq, A = m0Active(s), n = A.a.length, o = {}, tmp = {}; let m = 0, cnt = 0;
   for (let j = Math.max(0, ub(A.b, t0) - 1); j < n && A.a[j] < t1 && cnt < 400; j++, cnt++) {
     const a = Math.max(t0, A.a[j]), b = Math.min(t1, A.b[j]); if (b <= a) continue;
@@ -13071,9 +13168,10 @@ function updateReadout() {
     ['gx', 'gy', 'gz'].map(k => `<span class="v"><i style="--c:var(--c-${k})"></i>${'G' + k[1]} <b>${g(k)}</b></span>`).join('') +
     `<span class="muted">${gU()}</span>` + (adcOn ? `<span class="v"><i style="--c:var(--c-adc)"></i><b>ADC on</b></span>` : '') +
     (S.vis.m0 ? `<span class="v"><i style="--c:var(--ink)"></i>k <b>${['mx', 'my', 'mz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') +
-    (S.vis.gc || S.vis.kc ? (ccEnsure(), '') : '') +
+    (S.vis.gc || S.vis.kc || S.vis.kt ? (ccEnsure(), ccPosReadout(t)) : '') +
     (S.vis.gc ? `<span class="v"><i style="--c:var(--ink)"></i>Gc <b>${['cx', 'cy', 'cz'].map(k => fmt(channelValue(s, k, t) * gF(), 3)).join(', ')}</b> <span class="muted">${gU()}</span></span>` : '') +
     (S.vis.kc ? `<span class="v"><i style="--c:var(--ink)"></i>kc <b>${['qx', 'qy', 'qz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') +
+    (S.vis.kt ? `<span class="v" title="Total dephasing vector: the k-vector plus kc at the same position"><i style="--c:var(--ink)"></i>k + kc <b>${['tx', 'ty', 'tz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') +
     (S.vis.mu ? (muEnsure(), `<span class="v" title="Generalized Maxwell index (γ/B0)|∫g⊗g h dt|, from the last excitation"><i style="--c:var(--ink)"></i>μ <b>${fmt(channelValue(s, 'mu', t), 3)}</b> <span class="muted">1/m²</span></span>`) : '') + stimReadout(t);
 }
 
@@ -13280,17 +13378,18 @@ document.addEventListener('keydown', e => {
 
 /* ---------- toolbar ---------- */
 // chips grouped by kind of channel in the Display panel (RF; gradients, then slew and k-vector; concomitant; readout; stimulation), with short labels
-const CHIP_GROUP = { rfMag: 'rf', rfPh: 'rf', gx: 'g', gy: 'g', gz: 'g', slew: 'g2', m0: 'g2', gc: 'cc', kc: 'cc', mu: 'cc', adc: 'acq', labels: 'acq', pns: 'stim', cns: 'stim' };
+const CHIP_GROUP = { rfMag: 'rf', rfPh: 'rf', gx: 'g', gy: 'g', gz: 'g', slew: 'g2', m0: 'g2', gc: 'cc', kc: 'cc', kt: 'cc', mu: 'cc', adc: 'acq', labels: 'acq', pns: 'stim', cns: 'stim' };
 const CHIP_LABEL = { rfMag: '|B1|', rfPh: 'Phase', mu: 'μ' };
 function buildChips() {
   for (const el of document.querySelectorAll('#dispPop .chips[data-group]')) el.innerHTML = '';
   for (const L of LANES) {
     const el = document.querySelector(`#dispPop .chips[data-group="${CHIP_GROUP[L.key] || 'acq'}"]`);
     const b = document.createElement('button'); b.className = 'chip'; b.type = 'button';
-    b.style.setProperty('--c', L.key === 'slew' || L.key === 'labels' || L.key === 'm0' || L.key === 'gc' || L.key === 'kc' || L.key === 'mu' ? 'var(--ink)' : L.stim ? 'var(--muted)' : `var(--c-${L.col})`);
+    b.style.setProperty('--c', L.key === 'slew' || L.key === 'labels' || L.key === 'm0' || L.key === 'gc' || L.key === 'kc' || L.key === 'kt' || L.key === 'mu' ? 'var(--ink)' : L.stim ? 'var(--muted)' : `var(--c-${L.col})`);
     if (L.key === 'm0') b.title = 'k-vector (the zeroth gradient moment): reset at each excitation, sign flipped at each refocusing pulse, faded after the last readout';
     if (L.key === 'gc') { b.title = 'Concomitant gradients: the extra gradient seen by spins at the position set under Concomitant › Settings…'; b.setAttribute('aria-label', 'Concomitant gradients'); }
     if (L.key === 'kc') { b.title = 'Zeroth moment of the concomitant gradients (k-space shift at the position set under Concomitant › Settings…): reset at each excitation, sign flipped at each refocusing pulse'; b.setAttribute('aria-label', 'Concomitant k-space shift'); }
+    if (L.key === 'kt') { b.title = 'Total dephasing vector k + kc: the k-vector plus the concomitant k-space shift at the position set under Concomitant › Settings…; reset at each excitation, sign flipped at each refocusing pulse'; b.setAttribute('aria-label', 'Total dephasing vector k plus kc'); }
     if (L.key === 'mu') b.title = 'Generalized Maxwell index μ = (γ/B0)|∫g⊗g h dt| (1/m², Frobenius norm, γ = 42.58 MHz/T, B0 from Concomitant › Settings…): reset at each excitation, h flips at each refocusing pulse';
     if (L.stim) b.title = L.stim === 'pns' ? 'Peripheral nerve stimulation (SAFE model)' : 'Cardiac nerve stimulation (SAFE model)';
     b.setAttribute('aria-pressed', S.vis[L.key]); b.innerHTML = `<span class="sw"></span>${CHIP_LABEL[L.key] || L.label}`; if (CHIP_LABEL[L.key]) b.setAttribute('aria-label', L.key === 'mu' ? 'Generalized Maxwell index' : L.label);
@@ -13298,7 +13397,7 @@ function buildChips() {
       S.vis[L.key] = !S.vis[L.key]; if (!LANES.some(l => S.vis[l.key])) S.vis[L.key] = true; if (L.key === 'labels') S.labelsPref = S.vis.labels; b.setAttribute('aria-pressed', S.vis[L.key]);
       if (L.stim && S.vis[L.key] && !stimHasModel(L.stim)) openSafeDialog();
       request();
-      if ((L.key === 'gc' || L.key === 'kc') && S.seq) { renderSeqInfo(); renderBlock(); } // their rows in the side panel
+      if ((L.key === 'gc' || L.key === 'kc' || L.key === 'kt') && S.seq) { renderSeqInfo(); renderBlock(); } // their rows in the side panel
     };
     el.appendChild(b);
   }
@@ -13457,7 +13556,7 @@ function figExport(g) {
       S.vis = { ...figLanes }; AXH = o.axis ? 40 : 6; W = g.cssW; H = g.cssH; // (lane heights for the gutter)
       { // the gutter: the widest lane name or unit, then the tick values
         pctx.font = `600 12px ${C.font}`; let nw = 0; for (const L of lanesGeom()) nw = Math.max(nw, pctx.measureText(L.label).width);
-        const MULTI = new Set(['slew', 'g', 'm0', 'gc', 'kc']); // lanes with an x y z legend, which may follow the unit
+        const MULTI = new Set(['slew', 'g', 'm0', 'gc', 'kc', 'kt']); // lanes with an x y z legend, which may follow the unit
         pctx.font = `400 10.5px ${C.font}`; for (const L of lanesGeom()) nw = Math.max(nw, pctx.measureText(laneUnit(L.key)).width + (MULTI.has(L.key) && o.names && L.h > 30 && L.h <= 80 ? 8 + 36 : 0));
         const tw = pctx.measureText('−000.0').width;
         GUT = Math.ceil(o.names ? 16 + nw + 10 + (o.yNums ? tw + 8 : 0) : o.yNums ? tw + 12 : 6);
@@ -13653,7 +13752,7 @@ function openAbout() {
     `<h3>Acknowledgements</h3><ul>
       <li>The Pulseq file format and its conventions (event definitions, labels, k-space calculation): Layton KJ, Kroboth S, Jia F, et al. Pulseq: a rapid and hardware-independent pulse sequence prototyping framework. <i>Magn Reson Med</i> 2017;77(4):1544–1552. ${PULSEQ_LINKS}</li>
       <li>PyPulseq was used to validate the viewer: the reference files of its test suite check the reading of files, the gradient waveforms and k-space, and its waveforms were compared with the stimulation input and used for the independent checks of the concomitant gradients, kc and the Maxwell index. Ravi KS, Geethanath S, Vaughan JT. PyPulseq: a Python package for MRI pulse sequence design. <i>J Open Source Softw</i> 2019;4(42):1725. <a href="https://doi.org/10.21105/joss.01725" target="_blank" rel="noopener">doi:10.21105/joss.01725</a> · <a href="https://github.com/imr-framework/pypulseq" target="_blank" rel="noopener">github.com/imr-framework/pypulseq</a></li>
-      <li>Concomitant gradients (lanes Gc and kc) are computed as in Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. <i>Magn Reson Med</i> 2026;96(3):1178–1191. <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. The field model builds on Bernstein MA, Zhou XJ, Polzin JA, et al. Concomitant gradient terms in phase contrast MR: analysis and correction. <i>Magn Reson Med</i> 1998;39(2):300–308. <a href="https://doi.org/10.1002/mrm.1910390218" target="_blank" rel="noopener">doi:10.1002/mrm.1910390218</a></li>
+      <li>Concomitant gradients (lanes Gc, kc and k + kc) are computed as in Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. <i>Magn Reson Med</i> 2026;96(3):1178–1191. <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. The field model builds on Bernstein MA, Zhou XJ, Polzin JA, et al. Concomitant gradient terms in phase contrast MR: analysis and correction. <i>Magn Reson Med</i> 1998;39(2):300–308. <a href="https://doi.org/10.1002/mrm.1910390218" target="_blank" rel="noopener">doi:10.1002/mrm.1910390218</a></li>
       <li>Nerve stimulation (PNS, CNS) follows the SAFE model as implemented in safe_pns_prediction by F. Szczepankiewicz and T. Witzel (<a href="https://github.com/filip-szczepankiewicz/safe_pns_prediction" target="_blank" rel="noopener">github.com/filip-szczepankiewicz/safe_pns_prediction</a>), against which it was checked. Model: Hebrank FX, Gebhardt M. SAFE-Model: a new method for predicting peripheral nerve stimulations in MRI. <i>Proc Intl Soc Mag Reson Med</i> 2000;8:2007.</li>
     </ul>` +
     `<h3>Recent changes</h3>` + A.changelog.map(c => `<p style="margin:8px 0 2px"><b>${esc(c.version)}</b> <span class="muted">${esc(c.date)}</span></p><ul>${c.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`).join('') +
@@ -15362,21 +15461,29 @@ updateStimStat();
 })();
 
 /* ---------- concomitant gradients: settings dialog, panel rows ---------- */
-function ccValid(c) { // { r: [m, m, m], B0 (T), a, f (T/m) } or null
+function ccValid(c) { // { r: [m, m, m], B0 (T), a, f (T/m), pos ('fixed' or 'slice'; missing in settings before 1.43.0) } or null
   const ok = v => typeof v === 'number' && isFinite(v);
   if (!c || !Array.isArray(c.r) || c.r.length !== 3 || !c.r.every(ok) || !ok(c.B0) || !(c.B0 > 0) || !ok(c.a) || !ok(c.f)) return null;
-  return { r: c.r.slice(), B0: c.B0, a: c.a, f: c.f };
+  return { r: c.r.slice(), B0: c.B0, a: c.a, f: c.f, pos: c.pos === 'slice' ? 'slice' : 'fixed' };
+}
+/* cursor readout in slice mode: the position used there */
+function ccPosReadout(t) {
+  const s = S.seq; if (!s.cc.sp) return '';
+  const q = ccPosOf(s, blockAtTime(s, t));
+  return `<span class="v" title="${q.slice ? 'Concomitant terms at the centre of the slice excited at the start of this shot (frequency / gradient along the normal)' : 'No slice-selective excitation before this point in the shot: the fixed position r from Concomitant › Settings…'}">r${q.slice ? ' (slice)' : ' (fixed)'} <b>${q.r.map(v => fmt(v * 100, 3)).join(', ')}</b> <span class="muted">cm</span></span>`;
 }
 const ccCm = v => +(v * 100).toPrecision(10);
 function ccSync() { // dialog from S.cc
   const c = S.cc; $('#ccX').value = ccCm(c.r[0]); $('#ccY').value = ccCm(c.r[1]); $('#ccZ').value = ccCm(c.r[2]);
-  $('#ccB0').value = c.B0; $('#ccA').value = c.a; $('#ccF').value = c.f;
+  $('#ccB0').value = c.B0; $('#ccA').value = c.a; $('#ccF').value = c.f; $('#ccPos').value = c.pos;
+  $('#ccRLab').textContent = c.pos === 'slice' ? 'Fixed r (no slice)' : 'Position r';
   for (const id of ['ccX', 'ccY', 'ccZ', 'ccB0', 'ccA', 'ccF']) $('#' + id).classList.remove('bad');
   ccStatus();
 }
 function ccStatus() {
   const el = $('#ccNote'), c = S.cc, R = Math.hypot(...c.r) * 100;
-  let t = `|r| = ${fmt(R, 3)} cm.`;
+  let t = c.pos === 'slice' ? `Each shot uses the centre of the slice its excitation selects (frequency / gradient along the slice normal, no in-plane offset); r (|r| = ${fmt(R, 3)} cm) is used where there is no slice-selective excitation.` : `|r| = ${fmt(R, 3)} cm.`;
+  if (S.seq && c.pos === 'slice') { ccEnsure(); const cc = S.seq.cc, n = cc.posR.length - 1, nf = cc.sp.of.reduce((x, p, i) => x + (p === 0 && S.seq.B.ccx[i] ? 1 : 0), 0); t += ` ${S.name}: ${n} slice position${n === 1 ? '' : 's'}, ${cc.ent.length - 1} block geometries computed${nf ? `; ${nf} block${nf === 1 ? ' with gradients uses' : 's with gradients use'} the fixed r` : ''}.`; }
   if (S.seq) { ccEnsure(); const m = S.seq.cc.max; t += ` Peak Gc in ${S.name}: x ${fmt(m[0] * gF(), 3)}, y ${fmt(m[1] * gF(), 3)}, z ${fmt(m[2] * gF(), 3)} ${gU()}.`; }
   if (c.f !== 0) t += ' With f ≠ 0, Gc is not zero where the gradients are off (the static f term), so kc also grows during pauses.';
   el.textContent = t;
@@ -15391,31 +15498,38 @@ function ccRead() { // dialog to S.cc (only when every field is valid)
   const F = { x: num('ccX'), y: num('ccY'), z: num('ccZ'), B0: num('ccB0'), a: num('ccA'), f: num('ccF') };
   let ok = true; for (const k in F) { const bad = !isFinite(F[k].v) || (k === 'B0' && !(F[k].v > 0)); F[k].el.classList.toggle('bad', bad); if (bad) ok = false; }
   if (!ok) { $('#ccNote').textContent = 'Enter a number in every field (B0 above 0).'; return; }
-  S.cc = { r: [F.x.v / 100, F.y.v / 100, F.z.v / 100], B0: F.B0.v, a: F.a.v, f: F.f.v }; ccApply();
+  S.cc = { r: [F.x.v / 100, F.y.v / 100, F.z.v / 100], B0: F.B0.v, a: F.a.v, f: F.f.v, pos: $('#ccPos').value === 'slice' ? 'slice' : 'fixed' };
+  $('#ccRLab').textContent = S.cc.pos === 'slice' ? 'Fixed r (no slice)' : 'Position r'; ccApply();
 }
-for (const id of ['ccX', 'ccY', 'ccZ', 'ccB0', 'ccA', 'ccF']) $('#' + id).addEventListener('change', ccRead);
-$('#ccDefault').onclick = () => { S.cc = { r: CC_DEF.r.slice(), B0: CC_DEF.B0, a: CC_DEF.a, f: CC_DEF.f }; ccSync(); ccApply(); };
+for (const id of ['ccX', 'ccY', 'ccZ', 'ccB0', 'ccA', 'ccF', 'ccPos']) $('#' + id).addEventListener('change', ccRead);
+$('#ccDefault').onclick = () => { S.cc = { r: CC_DEF.r.slice(), B0: CC_DEF.B0, a: CC_DEF.a, f: CC_DEF.f, pos: CC_DEF.pos }; ccSync(); ccApply(); };
 function openCcDialog() {
   for (const id of ['morePop', 'dispPop']) { const p = $('#' + id); if (!p.hidden) { p.hidden = true; const b = document.querySelector(`[aria-controls="${id}"]`); if (b) b.setAttribute('aria-expanded', 'false'); } }
   ccSync(); const d = $('#ccDlg'); if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
 }
 $('#ccSpecBtn').onclick = openCcDialog; $('#ccMenuBtn').onclick = openCcDialog;
 $('#ccClose').onclick = () => { const d = $('#ccDlg'); if (d.close) d.close(); else d.removeAttribute('open'); };
-/* Selection tab, block card: peak Gc in the block and kc at its end (when a concomitant lane is on) */
+/* Selection tab, block card: the position (slice mode), peak Gc in the block, kc and k + kc at its end (when a
+   concomitant lane is on) */
 function ccRows(i) {
-  if (!S.seq || !(S.vis.gc || S.vis.kc)) return [];
+  if (!S.seq || !(S.vis.gc || S.vis.kc || S.vis.kt)) return [];
   ccEnsure(); const s = S.seq, id = s.B.ccx[i], pk = [0, 1, 2].map(a => { if (!id) return 0; const g = ccGeo(s, id).geo[a]; return Math.max(Math.abs(g.min), Math.abs(g.max)); });
-  return [['Gc peak', `${pk.map(v => fmt(v * gF(), 3)).join(', ')} <span class="muted">${gU()}</span>`],
-    ['kc at the end', `${[0, 1, 2].map(a => fmt(s.cc.kStart[a][i + 1] * mF(), 4)).join(', ')} <span class="muted">${mU()}</span>`]];
+  const rows = [];
+  if (s.cc.sp) { const q = ccPosOf(s, i); rows.push(['Position r', `<span title="${q.slice ? `Centre of the slice excited in block ${s.B.id[q.exc]}` : 'No slice-selective excitation: the fixed r'}">(${q.r.map(v => fmt(v * 100, 4)).join(', ')}) <span class="muted">cm, ${q.slice ? 'slice centre' : 'fixed'}</span></span>`]); }
+  rows.push(['Gc peak', `${pk.map(v => fmt(v * gF(), 3)).join(', ')} <span class="muted">${gU()}</span>`],
+    ['kc at the end', `${[0, 1, 2].map(a => fmt(s.cc.kStart[a][i + 1] * mF(), 4)).join(', ')} <span class="muted">${mU()}</span>`]);
+  if (S.vis.kt) rows.push(['k + kc at the end', `${[0, 1, 2].map(a => fmt(s.cc.ktStart[a][i + 1] * mF(), 4)).join(', ')} <span class="muted">${mU()}</span>`]);
+  return rows;
 }
 /* Sequence tab: the parameters, peak Gc and the largest |kc| in blocks with a readout */
 function ccSummaryHTML() {
-  if (!S.seq || !(S.vis.gc || S.vis.kc)) return '';
+  if (!S.seq || !(S.vis.gc || S.vis.kc || S.vis.kt)) return '';
   ccEnsure(); kintPyramids(KP_KC, S.seq);
   const s = S.seq, P = s.cc.P, km = [0, 0, 0], o = {};
   for (let j = 0; j < s.adcBlocks.length; j++) { const b = s.adcBlocks[j]; for (let a = 0; a < 3; a++) { blockSummary(s, KP_KC.keys[a], b, o); km[a] = Math.max(km[a], Math.abs(o.mn), Math.abs(o.mx)); } }
-  return `<h3>Concomitant gradients <span class="tag">at r = (${P.r.map(ccCm).join(', ')}) cm</span></h3>` +
-    kv([['B0, a, f', `${+P.B0.toPrecision(6)} T, ${+P.a.toPrecision(6)}, ${+P.f.toPrecision(6)} T/m`],
+  const nP = s.cc.sp ? s.cc.posR.length - 1 : 0;
+  return `<h3>Concomitant gradients <span class="tag">${s.cc.sp ? `at ${nP} slice centre${nP === 1 ? '' : 's'}` : `at r = (${P.r.map(ccCm).join(', ')}) cm`}</span></h3>` +
+    kv([s.cc.sp ? ['Fixed r (no slice)', `(${P.r.map(ccCm).join(', ')}) <span class="muted">cm</span>`] : null,['B0, a, f', `${+P.B0.toPrecision(6)} T, ${+P.a.toPrecision(6)}, ${+P.f.toPrecision(6)} T/m`],
       ['Peak Gc x / y / z', `${s.cc.max.map(v => fmt(v * gF(), 3)).join(' / ')} <span class="muted">${gU()}</span>`],
       s.adcBlocks.length ? ['Largest |kc| in readout blocks', `${km.map(v => fmt(v * mF(), 3)).join(' / ')} <span class="muted">${mU()}</span>`] : null]) +
     `<button class="btn" data-cc-open>Concomitant gradients…</button>`;

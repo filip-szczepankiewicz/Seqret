@@ -1,6 +1,13 @@
 # Seqret changelog
 
-All versions, newest first. The About dialog of the page shows the latest 3.
+All versions, newest first. The About dialog of the page shows the latest 8.
+
+## 1.43.0 (2026-11-08)
+
+- Concomitant gradients at the slice centre of each shot: Concomitant › Settings… › Position, fixed (r, as before) or slice centre of each shot. Each excitation sets the position from the slice it selects, f/|G| along the slice gradient at the pulse centre (the point of the slice plane closest to the isocentre; no in-plane offset), and it holds until the next excitation. Where there is no slice-selective excitation (before the first excitation, after a non-selective one) the fixed r is used. The Gc and kc lanes, the cursor readout (with the position used there), the Selection tab (Position r of the block) and the Sequence tab (number of slice centres) follow. The setting is kept in this browser.
+- Cost: blocks are computed per combination of gradient events and position, so the work grows with the number of distinct slice centres, at most to one computation per block. Measured (Node): 10 ms for the demo (3 positions), 35 ms for 55 rotated slices (45 positions), 50 ms for a 30-slice EPI of 78,620 blocks, and 0.4–0.5 s for a 20-slice spiral with 48 distinct interleaves (0.05 s with a fixed r). With the fixed position everything is as in 1.42.2, bit for bit (187,026 values compared).
+- New lane k + kc (Display › Concomitant): the total dephasing vector of the spins at the position, the k-vector plus kc, in 1/m with x, y and z, reset at each excitation and sign-flipped at each refocusing pulse, veiled like the k-vector after the last readout. In the cursor readout, the Selection tab (k + kc at the end of a block) and Save figure. kc is usually 10⁻³ or less of k, so at the lane's scale k + kc looks like the k-vector; the kc lane shows the difference.
+- Checked against an independent calculation (own slice centres from the frequency and the gradient, ∇|B| − g taken directly, midpoint integration on a 0.25 µs grid, reset and sign flips at the RF centres) on the demo, a 55-slice rotated-stack SE-EPI, a 30-slice EPI and a 20-slice spiral, with two parameter sets including f ≠ 0: kc within 2.9·10⁻⁸ to 1.6·10⁻⁷ of its largest value; k + kc equals the k-vector plus kc exactly. The demo case is a new test in tests/test_core.mjs; browser tests pass.
 
 ## 1.42.2 (2026-11-08)
 
