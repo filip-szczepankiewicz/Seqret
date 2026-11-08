@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.44.0 (2026-11-08) - Pulseq sequence viewer
+  Seqret 1.45.0 (2026-11-08) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.44.0">
-<meta name="description" content="Seqret 1.44.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
+<meta name="version" content="1.45.0">
+<meta name="description" content="Seqret 1.45.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -408,7 +408,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.44.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.45.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -7884,7 +7884,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.44.0", "date": "2026-11-08", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto, the new default: the diagram is drawn as with fast (1× pixel density) while the view moves, and as with high about 0.2 s after it stops. Panning and zooming on dense files is limited by the browser's drawing at full density, not by Seqret: on an 8,806-block free-waveform file at 2.5×, 40 fps with standard and 117 fps with fast, which draws the same columns and values with fewer pixels. Moving means two view changes within 150 ms, so a single jump (zoom to a block, a link) stays sharp. Only the diagram is affected; the overview, cursor, k-space and image keep their density. A quality chosen before is kept (Display › Diagram quality); the frame-rate test lists auto among the qualities. Saved figures and PNGs are unchanged.", "Frame-rate test: the verdict blamed Seqret's own work whenever it took most of what a frame on the screen allows (7.8 ms at 120 Hz), even when the frame itself took much longer (33 ms) and the browser's drawing was the limit. Seqret is now named only when it is also at least half of the frame; otherwise the verdict names the part whose removal helps most.", "Mark pauses: the hatch now covers every lane, so all lanes have the same background (up to 1.43 only the RF and gradient lanes). Its cost grows with the area it covers: in a software-drawn test, about 8 ms per frame with all lanes on, against about 3 ms for the RF and gradient lanes before; on a graphics card it is expected to be far less. ⋯ › Run frame-rate test shows it on a given machine (without pause texture).", "The k-vector, kc, k + kc and μ lanes have the same background as the other lanes. Up to 1.43 the stretches outside excitation-to-last-readout were covered with a pale veil, which hid the block shading there and made these lanes lighter than the rest; those stretches are no longer marked. Drawing cost is unchanged.", "Y zoom per lane: Ctrl + scroll over a lane zooms it in y, around its zero line, on top of its scale (fixed or Fit Y to view); the axis values follow and the lane shows its factor (y ×4) at the top left. From ×0.25 to ×10,000; it snaps back to ×1 on the way through, and double-clicking the lane's name resets it. Every lane but the RF phase, the ADC and the labels; Save figure and Save diagram as PNG draw what is shown. Kept until another file is opened (a reload keeps it).", "Touchpad pinch: over the plot it zooms in time, as before; over a lane's name in the left margin it zooms that lane in y (or anywhere over the lane with Ctrl held). Browsers send a pinch as scrolling with Ctrl but without a key press, so Ctrl + scroll zooms y only with the key actually held. In Safari on macOS, which sends a pinch as gesture events and before this zoomed the whole page, the pinch now zooms the diagram the same way.", "Fixed: the k-vector, kc, k + kc and Maxwell μ lanes rescaled with every pan and zoom even with Fit Y to view off, because they always took their scale from the active stretches in view. They now follow Fit Y like the other lanes: off, one scale for the whole sequence, the largest value in any active stretch (excitation to its last readout, so spoilers after the last readout still do not set it); on, the largest value in the stretches in view, as before.", "With Fit Y on, the view's scale no longer stops after the first 400 active stretches in view (zoomed out on a long sequence it could then come from the first 400 only, and change as stretches entered or left them); the maximum of each stretch is kept once per sequence, and only the stretches cut by the view's edges are computed per frame.", "Checked on the demo: with Fit Y off the scale is the same for the full view, thirds of it and single shots (k-vector 3.08·10⁴ 1/m including the 5 % margin, kc 19.6 1/m, μ 293 1/m²); with Fit Y on it equals the earlier view scale where at most 400 stretches are in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot: Concomitant › Settings… › Position, fixed (r, as before) or slice centre of each shot. Each excitation sets the position from the slice it selects, f/|G| along the slice gradient at the pulse centre (the point of the slice plane closest to the isocentre; no in-plane offset), and it holds until the next excitation. Where there is no slice-selective excitation (before the first excitation, after a non-selective one) the fixed r is used. The Gc and kc lanes, the cursor readout (with the position used there), the Selection tab (Position r of the block) and the Sequence tab (number of slice centres) follow. The setting is kept in this browser.", "Cost: blocks are computed per combination of gradient events and position, so the work grows with the number of distinct slice centres, at most to one computation per block. Measured (Node): 10 ms for the demo (3 positions), 35 ms for 55 rotated slices (45 positions), 50 ms for a 30-slice EPI of 78,620 blocks, and 0.4–0.5 s for a 20-slice spiral with 48 distinct interleaves (0.05 s with a fixed r). With the fixed position everything is as in 1.42.2, bit for bit (187,026 values compared).", "New lane k + kc (Display › Concomitant): the total dephasing vector of the spins at the position, the k-vector plus kc, in 1/m with x, y and z, reset at each excitation and sign-flipped at each refocusing pulse, veiled like the k-vector after the last readout. In the cursor readout, the Selection tab (k + kc at the end of a block) and Save figure. kc is usually 10⁻³ or less of k, so at the lane's scale k + kc looks like the k-vector; the kc lane shows the difference.", "Checked against an independent calculation (own slice centres from the frequency and the gradient, ∇|B| − g taken directly, midpoint integration on a 0.25 µs grid, reset and sign flips at the RF centres) on the demo, a 55-slice rotated-stack SE-EPI, a 30-slice EPI and a 20-slice spiral, with two parameter sets including f ≠ 0: kc within 2.9·10⁻⁸ to 1.6·10⁻⁷ of its largest value; k + kc equals the k-vector plus kc exactly. The demo case is a new test in tests/test_core.mjs; browser tests pass."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["ROTATIONS extension: a gradient that continues from a rotated block into the next (EPI blips split across readout blocks) now keeps its value at the block end. Before, the rotated waveform got an extra vertex 1 ps after the block end with the value 0, and vertex times of different events were compared exactly, so an event ending at 0.0006599999999999999 s was 0 at another's end at 0.00066 s. The diagram drew a spike to 0 at every such joint, and for about a third of block durations the Sequence tab's peak slew was that jump over 1 ps (up to 2.7·10⁹ T/m/s instead of 133 T/m/s in the test). Vertex times are now snapped to 0.1 ns and the rotated waveform is kept inside its block. k-space, the image simulation, stimulation and the concomitant lanes were not affected (k within 10⁻¹⁶).", "Sequence tab, Gradient peaks: each amplitude and slew value is a link to the first block that reaches it (selects the block and zooms to it).", "Selection tab: the shot and volume cards list the peak gradient amplitude and slew per physical axis over the whole shot or volume, each a link to the first block that reaches it. Before, a selected shot showed only the event cards of its first block (in the demo, the excitation: RF and Gz), which read as if the shot had no x or y gradients; that block's heading now says it is the first block of the shot or volume.", "Checked: new regression test (tests/rot_edge: a rotated 660 µs block, a label-only block and a continuation block, and 971 block durations from 300 µs to 10 ms); the demo, the demo rotated 45° about y, and the 11-stack and 3D-slab tests give the same peak gradients and slews, and k within 1.1·10⁻¹⁶ of its maximum."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image now uses only the shots whose excitation has the same frequency and the same slice orientation. Before, the frequency alone decided, so stacks rotated with the ROTATIONS extension, which reuse the frequencies of the unrotated stack, were combined into one image when they fell in the same volume. In a test with four stacks at 0°, 45°, 90° and 135° about y, six of eight images combined two orientations; in the 11 rotated stacks test, all 11 stacks were one image. The same rule now holds for the image list of a selection, the image colours of the k-space tab's all-readouts view, the other slices of the stack in the 3D view, and the TR used for T1 saturation (the time to the previous excitation of the same slice; before, it could be an excitation of another orientation: 0.1 s instead of fully relaxed for the 11 rotated stacks).", "The FOV definition is read in the sequence's own (logical) axes. The image's readout and phase directions are turned back through the rotation of the readout block, or, when the readout is rotated by hand in a shot whose excitation carries the ROTATIONS extension (as MATLAB sequences that rotate only some blocks with the extension write), through the excitation's rotation if that brings the readout onto a logical axis (within ~5°). Before, the definition was compared with the rotated directions, so an oblique readout, between x (220 mm) and z (a 20 mm slab), had no prescribed FOV: the image showed the whole oversampled readout (447–632 mm) uncropped and Crop to FOV did nothing. Gradients rotated by hand throughout (no extension anywhere) are read as before. The phase-encoding line statistics read the definition the same way.", "Checked: the demo and the 3D slab test give bit-identical images, line statistics and slice lists; the four-rotation test now gives 220 × 220 mm images at 2.05× readout oversampling for every rotation; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Pulseq binary files (.bin, written by MATLAB Pulseq's seq.writeBinary, format 1.5.2) open like .seq files: Open, drop or Reload. Their md5 signature is checked. Shape samples in a binary file are single precision. A custom label (mr.addCustomLabel) has no name in a binary file; it is shown as LABEL<number>, with a note.", "Arbitrary gradients sampled at the raster centres are drawn as MATLAB Pulseq draws them (mr.restoreAdditionalShapeSamples): where the samples imply a corner on a raster edge, as for a trapezoid or a free waveform given as samples, or a trapezoid added to an arbitrary gradient (mr.addGradients), the corner is restored instead of being cut by a straight line between the samples. The line was off by slew·Δt/4 at each corner (0.25 mT/m at 100 T/m/s), which also changed the slew lane there, the area slightly, and the peak where a corner is the peak (a triangle); the restored waveform has exactly the area of the samples. Curved shapes such as spirals are unchanged. Everything computed from the gradients follows: k-space, b-tensor, echoes, concomitant lanes, stimulation.", "Labels: in a block that both sets and increments a label, every LABELSET is applied before any LABELINC, as the Pulseq specification and the scanner do, whatever their order in the file. Before, they were applied in the order of the extension list, which MATLAB Pulseq writes in reverse, so addBlock(adc, SET LIN 5, INC LIN 1) gave LIN 5 instead of 6. (MATLAB's own evalLabels and plot have the same problem.)", "Files in format 1.4 and older, which do not store where an arbitrary gradient starts and ends: these values are now found as MATLAB Pulseq's read does: the start from the end of the gradient on the same axis in the previous block, the end by restoring the raster edges. Before, both were extrapolated from the first and last two samples. For a gradient that continues from one block into the next, the two differ by up to 0.3 % of the peak at the joint (in the test, MATLAB's estimate is 0.14 % from the true value, the old one 0.48 %).", "Checked against MATLAB Pulseq 1.5.2 (run in Octave) with new reference tests (tests/matlab, tests/compare_matlab.mjs): gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ of its maximum on sequences with corners, rotations, RF shims, soft delays, custom labels and ADC phase modulation (before: 1.2·10⁻² and 2.6·10⁻⁴); a v1.4.1 file within 2.2·10⁻⁷ (before 2.4·10⁻³); a .bin file and its .seq file give the same blocks and timing, gradients within 2.2·10⁻⁷ and k within 1.2·10⁻⁷."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers, switched under Display › Echoes: spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○). In the diagram they sit at the top of the RF lane, spin echoes in one row and gradient echoes in the row below, so a spin echo and a gradient echo at the same time line up. Hovering a marker names it, gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it (and the reverse); for an echo on another line, |k| there. By default they are drawn only while the view covers at most 4 shots (Only when zoomed in); without it, new shots are computed within 12 ms per frame, so zooming out stays responsive.", "k-space tab: the same markers on the trajectory, where each echo lies in k-space: a spin echo off the centre shows a mismatch between the spin echo and the k-space centre. Gradient echoes follow the kind of readout shown (imaging, reference, navigator); at most 400 shots are marked.", "Spin echoes: where the dephasing time τ returns to zero; τ starts at the excitation and changes sign at each refocusing pulse, at the pulses' centres (2·t₁₈₀ − t₉₀ for a Hahn echo, each echo of a train). Stimulated and secondary echoes are not marked. Gradient echoes: only during readouts (not noise); along a straight readout, where the k component along the readout crosses zero, solved exactly (it is quadratic between gradient vertices); k = 0 when the rest of k is zero too (within 10⁻⁴ of the largest |k| at the readouts' ends). A curved readout (spiral) has only k = 0 echoes, where k comes to zero in its block, e.g. where a spiral-out's gradient starts.", "Checked against separate calculations from PyPulseq (own k integration of its gradient waveforms on a grid of at most 0.5 µs, readouts from its ADC times, zero crossings by interpolation): the demo, an oblique SE-EPI, a gradient echo and a turbo spin echo give the same 22 spin echoes, 52 k = 0 and 540 other gradient echoes, with times within 0.04 ns. 10,240 shots take about 0.12 s."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab (shot card): the b-value, the 3×3 b-tensor in the scanner's x, y and z, and its eigenvalues, in ms/µm². B = (2π)² ∫ k kᵀ dt from the excitation to the echo, the readout sample closest to k = 0 in the shot's first echo, with k reset at the excitation and mirrored at each refocusing pulse as in the k-vector lane. All gradients count (diffusion, slice selection, crushers, readout prephasers), so cross-terms with the imaging gradients are included. A shot with only reference readouts uses those; a multi-echo shot says how many echoes it has. Hover the row names for the definition.", "The integral is exact: k is quadratic between gradient vertices and RF centres, so k kᵀ is integrated with 3-point Gauss–Legendre on each piece. The image simulation's b-value is now the trace of this tensor (before, 25 points per block, within 5·10⁻⁵ for diffusion-weighted shots and 2·10⁻³ for b ≈ 0).", "Checked against separate calculations from PyPulseq's gradient waveforms (own k integration with PyPulseq's excitation and refocusing times) on five sequences: the demo, a spin echo with one diffusion pair along (1, 2, 2)/3, an oblique slice-selective SE-EPI with two orthogonal diffusion pairs, a gradient echo with a bipolar gradient and a turbo spin echo. The tensors agree to 1.4·10⁻⁷ of b, the eigenvalues to 1.5·10⁻⁷, and the echo is the same readout sample as PyPulseq's nearest to k = 0 in every shot (22 of 22). The single pair matches the Stejskal–Tanner b for trapezoids, b n nᵀ, to 10⁻¹⁵."]}, {"version": "1.38.0", "date": "2026-10-27", "notes": ["Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.", "Lane kc: the zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r. It is reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.", "Lane Maxwell μ (chip μ): the generalized Maxwell index μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T. It is reset at each excitation, and h flips sign at each refocusing pulse. The six distinct components of the integral are computed exactly (the gradients are piecewise linear); the lane is drawn through up to 24 points per gradient stretch. μ depends only on the gradients and B0, and is the same for the physical and the logical gradients.", "Settings… (in the Concomitant row, or ⋯ › Concomitant gradients…): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. f is constant in time, so with f ≠ 0 Gc is not zero where the gradients are off and kc keeps changing in pauses; the dialog says so.", "With the lanes on, the cursor readout gives Gc, kc and μ, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.", "Display panel regrouped: Gx, Gy, Gz and One axis on one row, Slew and k-vector below them, then the gradient unit; Gc, kc, μ and Settings… in the new Concomitant row.", "Save figure… and Save diagram as PNG include the new lanes (Lanes in the figure dialog). In a figure, lanes too low for the unit on its own line before (k-vector, Gc, kc and μ at the default size) now keep it under the name, with the x y z legend after it; the gutter widens to fit.", "References in the dialog and under About › Acknowledgements: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; and for the field model Bernstein MA, Zhou XJ, Polzin JA, et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.", "Checked against separate calculations from PyPulseq's gradient waveforms (sampled every 0.25 µs, integrated with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated: kc agrees to 4·10⁻⁷ of its largest value over three settings including f ≠ 0, the drawn Gc lane to 0.1 %; μ agrees to 3·10⁻⁷, the drawn μ lane to 2.3·10⁻⁴. The k-vector now shares its code with kc and μ and is unchanged, bit for bit (750,430 values compared with 1.37.0)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.45.0", "date": "2026-11-08", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams, above all on large files and weaker graphics. A dense pixel column (one holding several values) is now two rectangles: its min/max band (0.6 opaque) and over it the curve's own span (opaque, at least a line wide). Up to 1.44 it was four: the band, its upper and lower edge, and the span; zoomed out on large files that was up to 70,000 rectangles per frame, and in the frame-rate test on a laptop the band edges alone took the frame rate from 61 to 38 fps. In a lane with one trace (RF, a gradient in its own lane) the span reaches the column's extremes; with peaks exact, so does a column built from the sequence's own vertices in a short dense stretch, where 1.44 drew the curve through its extremes as a stroked line (on an 8,806-block free-waveform file in full view about 440,000 pixels of stroked line per frame, now about 6,000). The values drawn are unchanged: each column still shows its exact minimum and maximum.", "How it looks: the bands have no darker edges; long dense stretches whose envelope jumps from column to column in a lane with several axes (spoilers every few columns, zoomed far out) look lighter than before, the values being the same. Rectangles of the traces have their top and bottom on whole device pixels (at most half a device pixel from before) so that equal neighbours merge into one. Shot boundaries are solid and fainter instead of dashed, and shot and volume boundaries are drawn as rectangles (dashed lines through the whole diagram were the largest stroke left, about 70,000 pixels per frame on a 100-shot view). Saved figures are drawn as before.", "k-vector, kc and k + kc lanes: in a block without an excitation or refocusing pulse the integral is the block's start value plus a part that depends only on the events it plays, which is now kept once per combination of events instead of once per block. On the 8,806-block file with the k-vector lane on, Seqret's time per frame in full view fell from about 0.8 s to 0.02–0.04 s: the per-block memory held fewer blocks than the file has, so every block was recomputed on every frame. The values are the same within 10⁻¹³ of the largest (a few duplicate points, at times differing by less than a picosecond, are drawn at the same value).", "Min/max summaries over blocks are kept with a factor of 4 between levels (before 16), and the labels lane's with a factor of 4 (before 32), so that a pixel column holding hundreds of blocks or label changes needs a few steps per level instead of up to 15 or 31; the level is chosen from the index's alignment. The drawing is the same pixel for pixel (checked on five files at three zoom levels each).", "Measured in a test browser (software drawing, which misrepresents graphics cards, so the frame-rate test on a real machine decides), at 2.5× pixels, Seqret's time plus the browser's painting per frame, committed 1.44.0 → 1.45.0, whole file in view: while moving (diagram quality auto, i.e. fast) 33 → 10 ms on the 8,806-block file, 33 → 21 ms on a million-block file, 14 → 10 ms on a 40,000-block ZTE-like file; at rest (high) 184 → 23, 147 → 111 and 46 → 35 ms. Over 60 cases (5 files, 3 zoom levels, 2 qualities, default lanes and with slew and k-vector) none was slower; the median frame took 21 % less. On a real machine (laptop, Chrome, 2.5× screen, the 8,806-block file with 15 s in view) the frame-rate test gave 118 fps against 54 fps with the drawing of 1.44 in the same run (and 38–40 fps measured with 1.44.0 itself), every frame within the 8.3 ms of a 120 Hz screen; the former drawing was then removed.", "Checked: the browser tests pass (all qualities draw, peaks exact and per column differ and switching back restores the drawing exactly, the frame-rate test completes), apart from the test still expecting the former default quality; side-by-side screenshots against 1.44.0 on the demo, an EPI, a spiral, a ZTE-like file, a million-block file and the free-waveform file, at three zoom levels, at rest and while moving."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto, the new default: the diagram is drawn as with fast (1× pixel density) while the view moves, and as with high about 0.2 s after it stops. Panning and zooming on dense files is limited by the browser's drawing at full density, not by Seqret: on an 8,806-block free-waveform file at 2.5×, 40 fps with standard and 117 fps with fast, which draws the same columns and values with fewer pixels. Moving means two view changes within 150 ms, so a single jump (zoom to a block, a link) stays sharp. Only the diagram is affected; the overview, cursor, k-space and image keep their density. A quality chosen before is kept (Display › Diagram quality); the frame-rate test lists auto among the qualities. Saved figures and PNGs are unchanged.", "Frame-rate test: the verdict blamed Seqret's own work whenever it took most of what a frame on the screen allows (7.8 ms at 120 Hz), even when the frame itself took much longer (33 ms) and the browser's drawing was the limit. Seqret is now named only when it is also at least half of the frame; otherwise the verdict names the part whose removal helps most.", "Mark pauses: the hatch now covers every lane, so all lanes have the same background (up to 1.43 only the RF and gradient lanes). Its cost grows with the area it covers: in a software-drawn test, about 8 ms per frame with all lanes on, against about 3 ms for the RF and gradient lanes before; on a graphics card it is expected to be far less. ⋯ › Run frame-rate test shows it on a given machine (without pause texture).", "The k-vector, kc, k + kc and μ lanes have the same background as the other lanes. Up to 1.43 the stretches outside excitation-to-last-readout were covered with a pale veil, which hid the block shading there and made these lanes lighter than the rest; those stretches are no longer marked. Drawing cost is unchanged.", "Y zoom per lane: Ctrl + scroll over a lane zooms it in y, around its zero line, on top of its scale (fixed or Fit Y to view); the axis values follow and the lane shows its factor (y ×4) at the top left. From ×0.25 to ×10,000; it snaps back to ×1 on the way through, and double-clicking the lane's name resets it. Every lane but the RF phase, the ADC and the labels; Save figure and Save diagram as PNG draw what is shown. Kept until another file is opened (a reload keeps it).", "Touchpad pinch: over the plot it zooms in time, as before; over a lane's name in the left margin it zooms that lane in y (or anywhere over the lane with Ctrl held). Browsers send a pinch as scrolling with Ctrl but without a key press, so Ctrl + scroll zooms y only with the key actually held. In Safari on macOS, which sends a pinch as gesture events and before this zoomed the whole page, the pinch now zooms the diagram the same way.", "Fixed: the k-vector, kc, k + kc and Maxwell μ lanes rescaled with every pan and zoom even with Fit Y to view off, because they always took their scale from the active stretches in view. They now follow Fit Y like the other lanes: off, one scale for the whole sequence, the largest value in any active stretch (excitation to its last readout, so spoilers after the last readout still do not set it); on, the largest value in the stretches in view, as before.", "With Fit Y on, the view's scale no longer stops after the first 400 active stretches in view (zoomed out on a long sequence it could then come from the first 400 only, and change as stretches entered or left them); the maximum of each stretch is kept once per sequence, and only the stretches cut by the view's edges are computed per frame.", "Checked on the demo: with Fit Y off the scale is the same for the full view, thirds of it and single shots (k-vector 3.08·10⁴ 1/m including the 5 % margin, kc 19.6 1/m, μ 293 1/m²); with Fit Y on it equals the earlier view scale where at most 400 stretches are in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot: Concomitant › Settings… › Position, fixed (r, as before) or slice centre of each shot. Each excitation sets the position from the slice it selects, f/|G| along the slice gradient at the pulse centre (the point of the slice plane closest to the isocentre; no in-plane offset), and it holds until the next excitation. Where there is no slice-selective excitation (before the first excitation, after a non-selective one) the fixed r is used. The Gc and kc lanes, the cursor readout (with the position used there), the Selection tab (Position r of the block) and the Sequence tab (number of slice centres) follow. The setting is kept in this browser.", "Cost: blocks are computed per combination of gradient events and position, so the work grows with the number of distinct slice centres, at most to one computation per block. Measured (Node): 10 ms for the demo (3 positions), 35 ms for 55 rotated slices (45 positions), 50 ms for a 30-slice EPI of 78,620 blocks, and 0.4–0.5 s for a 20-slice spiral with 48 distinct interleaves (0.05 s with a fixed r). With the fixed position everything is as in 1.42.2, bit for bit (187,026 values compared).", "New lane k + kc (Display › Concomitant): the total dephasing vector of the spins at the position, the k-vector plus kc, in 1/m with x, y and z, reset at each excitation and sign-flipped at each refocusing pulse, veiled like the k-vector after the last readout. In the cursor readout, the Selection tab (k + kc at the end of a block) and Save figure. kc is usually 10⁻³ or less of k, so at the lane's scale k + kc looks like the k-vector; the kc lane shows the difference.", "Checked against an independent calculation (own slice centres from the frequency and the gradient, ∇|B| − g taken directly, midpoint integration on a 0.25 µs grid, reset and sign flips at the RF centres) on the demo, a 55-slice rotated-stack SE-EPI, a 30-slice EPI and a 20-slice spiral, with two parameter sets including f ≠ 0: kc within 2.9·10⁻⁸ to 1.6·10⁻⁷ of its largest value; k + kc equals the k-vector plus kc exactly. The demo case is a new test in tests/test_core.mjs; browser tests pass."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["ROTATIONS extension: a gradient that continues from a rotated block into the next (EPI blips split across readout blocks) now keeps its value at the block end. Before, the rotated waveform got an extra vertex 1 ps after the block end with the value 0, and vertex times of different events were compared exactly, so an event ending at 0.0006599999999999999 s was 0 at another's end at 0.00066 s. The diagram drew a spike to 0 at every such joint, and for about a third of block durations the Sequence tab's peak slew was that jump over 1 ps (up to 2.7·10⁹ T/m/s instead of 133 T/m/s in the test). Vertex times are now snapped to 0.1 ns and the rotated waveform is kept inside its block. k-space, the image simulation, stimulation and the concomitant lanes were not affected (k within 10⁻¹⁶).", "Sequence tab, Gradient peaks: each amplitude and slew value is a link to the first block that reaches it (selects the block and zooms to it).", "Selection tab: the shot and volume cards list the peak gradient amplitude and slew per physical axis over the whole shot or volume, each a link to the first block that reaches it. Before, a selected shot showed only the event cards of its first block (in the demo, the excitation: RF and Gz), which read as if the shot had no x or y gradients; that block's heading now says it is the first block of the shot or volume.", "Checked: new regression test (tests/rot_edge: a rotated 660 µs block, a label-only block and a continuation block, and 971 block durations from 300 µs to 10 ms); the demo, the demo rotated 45° about y, and the 11-stack and 3D-slab tests give the same peak gradients and slews, and k within 1.1·10⁻¹⁶ of its maximum."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image now uses only the shots whose excitation has the same frequency and the same slice orientation. Before, the frequency alone decided, so stacks rotated with the ROTATIONS extension, which reuse the frequencies of the unrotated stack, were combined into one image when they fell in the same volume. In a test with four stacks at 0°, 45°, 90° and 135° about y, six of eight images combined two orientations; in the 11 rotated stacks test, all 11 stacks were one image. The same rule now holds for the image list of a selection, the image colours of the k-space tab's all-readouts view, the other slices of the stack in the 3D view, and the TR used for T1 saturation (the time to the previous excitation of the same slice; before, it could be an excitation of another orientation: 0.1 s instead of fully relaxed for the 11 rotated stacks).", "The FOV definition is read in the sequence's own (logical) axes. The image's readout and phase directions are turned back through the rotation of the readout block, or, when the readout is rotated by hand in a shot whose excitation carries the ROTATIONS extension (as MATLAB sequences that rotate only some blocks with the extension write), through the excitation's rotation if that brings the readout onto a logical axis (within ~5°). Before, the definition was compared with the rotated directions, so an oblique readout, between x (220 mm) and z (a 20 mm slab), had no prescribed FOV: the image showed the whole oversampled readout (447–632 mm) uncropped and Crop to FOV did nothing. Gradients rotated by hand throughout (no extension anywhere) are read as before. The phase-encoding line statistics read the definition the same way.", "Checked: the demo and the 3D slab test give bit-identical images, line statistics and slice lists; the four-rotation test now gives 220 × 220 mm images at 2.05× readout oversampling for every rotation; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Pulseq binary files (.bin, written by MATLAB Pulseq's seq.writeBinary, format 1.5.2) open like .seq files: Open, drop or Reload. Their md5 signature is checked. Shape samples in a binary file are single precision. A custom label (mr.addCustomLabel) has no name in a binary file; it is shown as LABEL<number>, with a note.", "Arbitrary gradients sampled at the raster centres are drawn as MATLAB Pulseq draws them (mr.restoreAdditionalShapeSamples): where the samples imply a corner on a raster edge, as for a trapezoid or a free waveform given as samples, or a trapezoid added to an arbitrary gradient (mr.addGradients), the corner is restored instead of being cut by a straight line between the samples. The line was off by slew·Δt/4 at each corner (0.25 mT/m at 100 T/m/s), which also changed the slew lane there, the area slightly, and the peak where a corner is the peak (a triangle); the restored waveform has exactly the area of the samples. Curved shapes such as spirals are unchanged. Everything computed from the gradients follows: k-space, b-tensor, echoes, concomitant lanes, stimulation.", "Labels: in a block that both sets and increments a label, every LABELSET is applied before any LABELINC, as the Pulseq specification and the scanner do, whatever their order in the file. Before, they were applied in the order of the extension list, which MATLAB Pulseq writes in reverse, so addBlock(adc, SET LIN 5, INC LIN 1) gave LIN 5 instead of 6. (MATLAB's own evalLabels and plot have the same problem.)", "Files in format 1.4 and older, which do not store where an arbitrary gradient starts and ends: these values are now found as MATLAB Pulseq's read does: the start from the end of the gradient on the same axis in the previous block, the end by restoring the raster edges. Before, both were extrapolated from the first and last two samples. For a gradient that continues from one block into the next, the two differ by up to 0.3 % of the peak at the joint (in the test, MATLAB's estimate is 0.14 % from the true value, the old one 0.48 %).", "Checked against MATLAB Pulseq 1.5.2 (run in Octave) with new reference tests (tests/matlab, tests/compare_matlab.mjs): gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ of its maximum on sequences with corners, rotations, RF shims, soft delays, custom labels and ADC phase modulation (before: 1.2·10⁻² and 2.6·10⁻⁴); a v1.4.1 file within 2.2·10⁻⁷ (before 2.4·10⁻³); a .bin file and its .seq file give the same blocks and timing, gradients within 2.2·10⁻⁷ and k within 1.2·10⁻⁷."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers, switched under Display › Echoes: spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○). In the diagram they sit at the top of the RF lane, spin echoes in one row and gradient echoes in the row below, so a spin echo and a gradient echo at the same time line up. Hovering a marker names it, gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it (and the reverse); for an echo on another line, |k| there. By default they are drawn only while the view covers at most 4 shots (Only when zoomed in); without it, new shots are computed within 12 ms per frame, so zooming out stays responsive.", "k-space tab: the same markers on the trajectory, where each echo lies in k-space: a spin echo off the centre shows a mismatch between the spin echo and the k-space centre. Gradient echoes follow the kind of readout shown (imaging, reference, navigator); at most 400 shots are marked.", "Spin echoes: where the dephasing time τ returns to zero; τ starts at the excitation and changes sign at each refocusing pulse, at the pulses' centres (2·t₁₈₀ − t₉₀ for a Hahn echo, each echo of a train). Stimulated and secondary echoes are not marked. Gradient echoes: only during readouts (not noise); along a straight readout, where the k component along the readout crosses zero, solved exactly (it is quadratic between gradient vertices); k = 0 when the rest of k is zero too (within 10⁻⁴ of the largest |k| at the readouts' ends). A curved readout (spiral) has only k = 0 echoes, where k comes to zero in its block, e.g. where a spiral-out's gradient starts.", "Checked against separate calculations from PyPulseq (own k integration of its gradient waveforms on a grid of at most 0.5 µs, readouts from its ADC times, zero crossings by interpolation): the demo, an oblique SE-EPI, a gradient echo and a turbo spin echo give the same 22 spin echoes, 52 k = 0 and 540 other gradient echoes, with times within 0.04 ns. 10,240 shots take about 0.12 s."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab (shot card): the b-value, the 3×3 b-tensor in the scanner's x, y and z, and its eigenvalues, in ms/µm². B = (2π)² ∫ k kᵀ dt from the excitation to the echo, the readout sample closest to k = 0 in the shot's first echo, with k reset at the excitation and mirrored at each refocusing pulse as in the k-vector lane. All gradients count (diffusion, slice selection, crushers, readout prephasers), so cross-terms with the imaging gradients are included. A shot with only reference readouts uses those; a multi-echo shot says how many echoes it has. Hover the row names for the definition.", "The integral is exact: k is quadratic between gradient vertices and RF centres, so k kᵀ is integrated with 3-point Gauss–Legendre on each piece. The image simulation's b-value is now the trace of this tensor (before, 25 points per block, within 5·10⁻⁵ for diffusion-weighted shots and 2·10⁻³ for b ≈ 0).", "Checked against separate calculations from PyPulseq's gradient waveforms (own k integration with PyPulseq's excitation and refocusing times) on five sequences: the demo, a spin echo with one diffusion pair along (1, 2, 2)/3, an oblique slice-selective SE-EPI with two orthogonal diffusion pairs, a gradient echo with a bipolar gradient and a turbo spin echo. The tensors agree to 1.4·10⁻⁷ of b, the eigenvalues to 1.5·10⁻⁷, and the echo is the same readout sample as PyPulseq's nearest to k = 0 in every shot (22 of 22). The single pair matches the Stejskal–Tanner b for trapezoids, b n nᵀ, to 10⁻¹⁵."]}, {"version": "1.38.0", "date": "2026-10-27", "notes": ["Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.", "Lane kc: the zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r. It is reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.", "Lane Maxwell μ (chip μ): the generalized Maxwell index μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T. It is reset at each excitation, and h flips sign at each refocusing pulse. The six distinct components of the integral are computed exactly (the gradients are piecewise linear); the lane is drawn through up to 24 points per gradient stretch. μ depends only on the gradients and B0, and is the same for the physical and the logical gradients.", "Settings… (in the Concomitant row, or ⋯ › Concomitant gradients…): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. f is constant in time, so with f ≠ 0 Gc is not zero where the gradients are off and kc keeps changing in pauses; the dialog says so.", "With the lanes on, the cursor readout gives Gc, kc and μ, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.", "Display panel regrouped: Gx, Gy, Gz and One axis on one row, Slew and k-vector below them, then the gradient unit; Gc, kc, μ and Settings… in the new Concomitant row.", "Save figure… and Save diagram as PNG include the new lanes (Lanes in the figure dialog). In a figure, lanes too low for the unit on its own line before (k-vector, Gc, kc and μ at the default size) now keep it under the name, with the x y z legend after it; the gutter widens to fit.", "References in the dialog and under About › Acknowledgements: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; and for the field model Bernstein MA, Zhou XJ, Polzin JA, et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.", "Checked against separate calculations from PyPulseq's gradient waveforms (sampled every 0.25 µs, integrated with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated: kc agrees to 4·10⁻⁷ of its largest value over three settings including f ≠ 0, the drawn Gc lane to 0.1 %; μ agrees to 3·10⁻⁷, the drawn μ lane to 2.3·10⁻⁴. The k-vector now shares its code with kc and μ and is unchanged, bit for bit (750,430 values compared with 1.37.0)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -8390,9 +8390,37 @@ const KP_M0 = { name: 'm0', keys: ['mx', 'my', 'mz'], start: s => s.kStart, ids:
   st: s => s.m0St || (s.m0St = {}), memo: { tok: null, map: new Map(), nv: 0 } };
 const M0_KEYS = { mx: 0, my: 1, mz: 2 };
 const KINT = { mx: [KP_M0, 0], my: [KP_M0, 1], mz: [KP_M0, 2] }; // the kc keys are added with the concomitant provider
-function kintBlock(P, seq, i) { // { t: relative times, v: [x, y, z] values } for block i
-  const M = P.memo, tok = P.tok(seq); if (M.tok !== tok) { M.tok = tok; M.map = new Map(); M.nv = 0; }
+/* { t: relative times, v: [x, y, z] values, off: [x, y, z], reset } for block i; the values are v + off.
+   1.45.0: in a block without an excitation or refocusing pulse the integral is its start value plus a part that depends
+   only on the events the block plays (its gradient events and duration; for kc and k + kc the combination-and-position
+   id, which also holds the duration), so that part is kept once per combination (v) and the start value is off. Before,
+   every block was kept on its own, up to about a million vertices: an 8,806-block free-waveform file in full view
+   needed more and recomputed every block on every frame (about 0.8 s per frame in a test browser). */
+function kintBlock(P, seq, i) {
+  const M = P.memo, tok = P.tok(seq); if (M.tok !== tok) { M.tok = tok; M.map = new Map(); M.nv = 0; M.cmb = new Map(); M.cnv = 0; }
   const hit = M.map.get(i); if (hit) return hit;
+  if (!P.nl && m0Plain(seq, i)) {
+    const ids = P.ids(seq), ix = ids[0][i], iy = ids[1][i], iz = ids[2][i];
+    if (P !== KP_M0 ? ix : true) { // kc, k + kc: only with a combination (without one, f ≠ 0 still gives gc that depends on the position)
+      const key = P === KP_M0 ? ix + ',' + iy + ',' + iz + ',' + Math.round((seq.blockStart[i + 1] - seq.blockStart[i]) * 1e10) : ix;
+      const st = P.start(seq), off = [st[0][i], st[1][i], st[2][i]];
+      let c = M.cmb.get(key);
+      if (!c) {
+        const r = kintCompute(P, seq, i); // absolute values of this block, made relative to its start
+        for (let a = 0; a < 3; a++) { const v = r.v[a]; for (let k = 0; k < v.length; k++) v[k] -= off[a]; }
+        c = { t: r.t, v: r.v, reset: -1 }; M.cnv += r.t.length;
+        if (M.cnv > 4e6) { M.cmb.clear(); M.cnv = r.t.length; } M.cmb.set(key, c);
+      }
+      return { t: c.t, v: c.v, off, reset: -1, host: c }; // host: where per-combination caches (chunk extremes) live
+    }
+  }
+  const r = kintCompute(P, seq, i); r.off = [0, 0, 0];
+  // kept up to about a million vertices (~32 MB) rather than 4,096 blocks: a ZTE view can hold thousands of excitation
+  // blocks, which are drawn vertex by vertex (their reset breaks the curve), and recomputing them every frame was slow
+  M.nv += r.t.length;
+  if (M.nv > 1e6) { M.map.clear(); M.nv = r.t.length; } M.map.set(i, r); return r;
+}
+function kintCompute(P, seq, i) {
   const B = seq.B, dur = seq.blockStart[i + 1] - seq.blockStart[i], T = [0, dur], ids = P.ids(seq);
   for (let ax = 0; ax < 3; ax++) {
     const id = ids[ax][i]; if (!id) continue; const g = P.geo(seq, id, ax);
@@ -8415,10 +8443,7 @@ function kintBlock(P, seq, i) { // { t: relative times, v: [x, y, z] values } fo
   if (rc >= 0) { const j = t.findIndex(x => Math.abs(x - rc) <= 1e-12); if (j >= 0) { t.splice(j, 1, rc - 1e-12, rc); if (exc) reset = j + 1; } } // both sides of the jump
   const v = [new Float64Array(t.length), new Float64Array(t.length), new Float64Array(t.length)];
   P.inBlock(seq, i, Float64Array.from(t), v, 0);
-  // kept up to about a million vertices (~32 MB) rather than 4,096 blocks: a ZTE view can hold thousands of excitation
-  // blocks, which are drawn vertex by vertex (their reset breaks the curve), and recomputing them every frame was slow
-  const r = { t, v, reset }; M.nv += t.length;
-  if (M.nv > 1e6) { M.map.clear(); M.nv = t.length; } M.map.set(i, r); return r;
+  return { t, v, reset };
 }
 /* extremes of the running integral of one gradient event (from 0, including 0 and its total area): per event, not
    per block, because a block without an excitation or refocusing pulse only adds its start value */
@@ -8441,13 +8466,13 @@ function kintSummary(P, seq, i, a, o) {
   }
   const S0 = P.st(seq).blk; // per-block summaries kept by kintPyramids: no recomputation (the memo below holds 4096 blocks;
   if (S0) { const Q = S0[a]; o.has = 1; o.brk = 0; o.n = S0.n[i]; o.mn = Q.mn[i]; o.mx = Q.mx[i]; o.first = Q.first[i]; o.last = Q.last[i]; return o; } // a ZTE has one excitation per spoke)
-  const m = kintBlock(P, seq, i), v = m.v[a]; let mn = Infinity, mx = -Infinity;
+  const m = kintBlock(P, seq, i), v = m.v[a], f = m.off[a]; let mn = Infinity, mx = -Infinity;
   for (let k = 0; k < v.length; k++) { if (v[k] < mn) mn = v[k]; if (v[k] > mx) mx = v[k]; }
-  o.has = 1; o.brk = 0; o.n = v.length; o.mn = mn; o.mx = mx; o.first = v[0]; o.last = v[v.length - 1]; return o;
+  o.has = 1; o.brk = 0; o.n = v.length; o.mn = mn + f; o.mx = mx + f; o.first = v[0] + f; o.last = v[v.length - 1] + f; return o;
 }
 function kintVertices(P, seq, i, a, push) { // a NaN at an excitation's reset: the curve starts anew at zero, no line to it
-  const m = kintBlock(P, seq, i), t0 = seq.blockStart[i];
-  for (let k = 0; k < m.t.length; k++) { if (k === m.reset) push(t0 + m.t[k], NaN); push(t0 + m.t[k], m.v[a][k]); }
+  const m = kintBlock(P, seq, i), t0 = seq.blockStart[i], f = m.off[a];
+  for (let k = 0; k < m.t.length; k++) { if (k === m.reset) push(t0 + m.t[k], NaN); push(t0 + m.t[k], m.v[a][k] + f); }
 }
 function kintValue(P, seq, a, t) { const i = blockAtTime(seq, t), out = [new Float64Array(1), new Float64Array(1), new Float64Array(1)]; P.inBlock(seq, i, Float64Array.of(t - seq.blockStart[i]), out, 0); return out[a][0]; }
 /* pyramids for the provider's three keys (built on first use); P.st(seq).max = largest |value| */
@@ -8872,7 +8897,9 @@ function channelValue(seq, key, t) {
 }
 
 /* ---------- min/max pyramid over blocks, per channel ---------- */
-const PYR_SIZES = [16, 256, 4096, 65536, 1048576];
+/* 1.45.0: a factor of 4 between levels (before 16): a pixel column holding a few hundred blocks needed up to 15
+   steps per level on each side; now at most 3. The extra levels cost about 2 % more summary memory. */
+const PYR_SIZES = [16, 64, 256, 1024, 4096, 16384, 65536, 262144, 1048576];
 /* summary levels: files up to a million blocks also get 4-block buckets. Zoomed out, a pixel column spans ~10-20
    blocks that rarely line up with the 16-block buckets, so most were summarised block by block; with 4-block buckets
    that is a few per column. (18 bytes per 4 blocks and channel, hence the limit.) */
@@ -8920,18 +8947,25 @@ function buildPyramid(seq, key) {
 }
 
 /* combine the summaries of blocks bA..bB (inclusive) using the fewest aligned pyramid buckets */
+/* pyrLevel(pyr)[i]: the largest level whose bucket size is at most 2^i (-1: none). With it rangeSummary picks the
+   level at each step from the block index's alignment and the blocks left (1.45.0), instead of trying every level */
+function pyrLevel(pyr) {
+  if (pyr.lv) return pyr.lv;
+  const lv = new Int8Array(33).fill(-1); for (let i = 0; i <= 32; i++) for (let L = 0; L < pyr.length; L++) if (pyr[L].size <= 2 ** i) lv[i] = L;
+  return (pyr.lv = lv);
+}
 function rangeSummary(seq, key, bA, bB, o, tmp) {
-  const pyr = seq.pyr[key], KI = KINT[key], m0a = KI ? KI[1] : -1, KS = KI ? KI[0].st(seq) : null, z0 = pyr && pyr.length ? pyr[0].size - 1 : -1;
+  const pyr = seq.pyr[key], KI = KINT[key], m0a = KI ? KI[1] : -1, KS = KI ? KI[0].st(seq) : null, z0 = pyr && pyr.length ? pyr[0].size - 1 : -1, lv = z0 >= 0 ? pyrLevel(pyr) : null;
   let has = 0, mn = Infinity, mx = -Infinity, first = 0, last = 0, brk = 0, b = bA;
   while (b <= bB) {
-    let used = false;
-    if (z0 >= 0 && (b & z0) === 0 && b + z0 <= bB) for (let L = pyr.length - 1; L >= 0; L--) { // sizes are powers of two
-      const P = pyr[L], sz = P.size; if (b % sz || b + sz - 1 > bB) continue;
-      const q = b / sz; if (P.brk[q]) brk = 1;
-      if (P.has[q]) { if (!has) first = P.first[q]; last = P.last[q]; has = 1; if (P.mn[q] < mn) mn = P.mn[q]; if (P.mx[q] > mx) mx = P.mx[q]; }
-      b += sz; used = true; break;
+    if (z0 >= 0 && (b & z0) === 0 && b + z0 <= bB) { // sizes are powers of two: the largest bucket starting at b inside the range
+      const al = b === 0 ? 32 : 31 - Math.clz32(b & -b), fit = 31 - Math.clz32(bB - b + 1), L = lv[al < fit ? al : fit];
+      if (L >= 0) {
+        const P = pyr[L], sz = P.size, q = b / sz; if (P.brk[q]) brk = 1;
+        if (P.has[q]) { if (!has) first = P.first[q]; last = P.last[q]; has = 1; if (P.mn[q] < mn) mn = P.mn[q]; if (P.mx[q] > mx) mx = P.mx[q]; }
+        b += sz; continue;
+      }
     }
-    if (used) continue;
     if (m0a >= 0 && KS.ev) { // k-vector, kc: start value plus the event's integral extremes (blocks without excitation/refocusing)
       const T = KS.ev, r = seq.B.rf[b];
       if (!r || T.plainRf[r]) {
@@ -8962,7 +8996,7 @@ function rangeSummary(seq, key, bA, bB, o, tmp) {
 const TYPE_RANK = [1, 4, 3, 5, 2];
 function buildAdcPyramid(seq) {
   const out = [], T = seq.adcType, n0 = T.length; let prev = null;
-  for (const sz of [32, 1024, 32768]) {
+  for (const sz of [32, 128, 512, 2048, 8192, 32768, 131072]) { // 1.45.0: factor 4 (was 32), fewer steps per pixel column
     const n = Math.floor(n0 / sz); if (n < 2) break;
     const P = { size: sz, type: new Int8Array(n) };
     for (let k = 0; k < n; k++) {
@@ -11983,27 +12017,34 @@ function tracePoints(c, t0, t1, x0, w) {
   const tail = c.t[i1] > t1; if (tail) e--;
   const pyr = c.pyr || (c.pyr = buildPyr(c));
   const col = t => { let k = Math.floor((t - t0) * sc); return k < 0 ? 0 : k >= nc ? nc - 1 : k; };
+  /* 1.45.0: per column, its vertex range by binary search, then that range from the largest aligned buckets (sizes
+     are powers of two, so the bucket follows from the index's alignment and the vertices left, as in rangeSummary).
+     The same result as trying every level at every vertex, with far fewer steps (the labels lane of a 1M-block file
+     was over half of a zoomed-out frame). */
+  const lv = pyrLevel(pyr), T = c.t, V = c.v, z0 = pyr.length ? pyr[0].size - 1 : -1;
   let i = s;
   while (i <= e) {
-    let used = false;
-    for (let L = pyr.length - 1; L >= 0; L--) {
-      const P = pyr[L], sz = P.size;
-      if (i % sz || i + sz - 1 > e) continue;
-      const b = i / sz, k = col(P.t0[b]);
-      if (k !== col(P.t1[b])) continue;
-      if (P.nan[b]) colBrk[k] = 1;
-      if (P.has[b]) {
-        if (!colHas[k]) { colHas[k] = 1; colMin[k] = P.mn[b]; colMax[k] = P.mx[b]; colFirst[k] = P.first[b]; }
-        else { if (P.mn[b] < colMin[k]) colMin[k] = P.mn[b]; if (P.mx[b] > colMax[k]) colMax[k] = P.mx[b]; }
-        colLast[k] = P.last[b];
+    const k = col(T[i]); let j = e;
+    if (k < nc - 1) { const tEnd = t0 + (k + 1) / sc; let lo = i, hi = e; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (T[m] < tEnd) lo = m; else hi = m - 1; } j = lo; }
+    while (i <= j) {
+      if (z0 >= 0 && (i & z0) === 0 && i + z0 <= j) {
+        const al = i === 0 ? 32 : 31 - Math.clz32(i & -i), fit = 31 - Math.clz32(j - i + 1), L = lv[al < fit ? al : fit];
+        if (L >= 0) {
+          const P = pyr[L], sz = P.size, b = i / sz;
+          if (P.nan[b]) colBrk[k] = 1;
+          if (P.has[b]) {
+            if (!colHas[k]) { colHas[k] = 1; colMin[k] = P.mn[b]; colMax[k] = P.mx[b]; colFirst[k] = P.first[b]; }
+            else { if (P.mn[b] < colMin[k]) colMin[k] = P.mn[b]; if (P.mx[b] > colMax[k]) colMax[k] = P.mx[b]; }
+            colLast[k] = P.last[b];
+          }
+          i += sz; continue;
+        }
       }
-      i += sz; used = true; break;
+      const v = V[i]; i++;
+      if (v !== v) { colBrk[k] = 1; continue; }
+      if (!colHas[k]) { colHas[k] = 1; colMin[k] = colMax[k] = colFirst[k] = colLast[k] = v; }
+      else { if (v < colMin[k]) colMin[k] = v; if (v > colMax[k]) colMax[k] = v; colLast[k] = v; }
     }
-    if (used) continue;
-    const k = col(c.t[i]), v = c.v[i]; i++;
-    if (v !== v) { colBrk[k] = 1; continue; }
-    if (!colHas[k]) { colHas[k] = 1; colMin[k] = colMax[k] = colFirst[k] = colLast[k] = v; }
-    else { if (v < colMin[k]) colMin[k] = v; if (v > colMax[k]) colMax[k] = v; colLast[k] = v; }
   }
   for (let k = 0; k < nc; k++) {
     const x = x0 + k + 0.5;
@@ -12016,7 +12057,7 @@ function tracePoints(c, t0, t1, x0, w) {
 function buildPyr(c) {
   // min/max summaries over fixed-size vertex buckets, for fast zoomed-out drawing
   const out = [], n = c.t.length;
-  for (const sz of [32, 1024, 32768]) {
+  for (const sz of [32, 128, 512, 2048, 8192, 32768, 131072]) { // 1.45.0: factor 4 (was 32), fewer steps per pixel column
     const nb = Math.floor(n / sz); if (nb < 2) break;
     const P = { size: sz, t0: new Float64Array(nb), t1: new Float64Array(nb), mn: new Float64Array(nb), mx: new Float64Array(nb), first: new Float64Array(nb), last: new Float64Array(nb), has: new Uint8Array(nb), nan: new Uint8Array(nb) };
     for (let b = 0; b < nb; b++) {
@@ -12098,7 +12139,7 @@ function traceChan(key, t0, t1, x0, w) {
     const KI = KINT[key], m0a = KI ? KI[1] : -1, ch = CHANNELS[key];
     if (m0a < 0 && (!ch || ch.p)) return false;
     let T, V, n, tb = bs[b];
-    if (m0a >= 0) { const m = kintBlock(KI[0], s, b); T = m.t; V = m.v[m0a]; n = T.length; if (n < 64 || m.reset >= 0) return false; aggVerts(T, V, n, tb, m, 'c' + m0a); return true; } // a reset: vertex by vertex (it breaks the curve)
+    if (m0a >= 0) { const m = kintBlock(KI[0], s, b); T = m.t; V = m.v[m0a]; n = T.length; if (n < 64 || m.reset >= 0) return false; aggVerts(T, V, n, tb, m.host || m, 'c' + m0a, m.off[m0a]); return true; } // a reset: vertex by vertex (it breaks the curve)
     const id = s.B[ch.col][b]; if (!id) return false;
     const g = ch.fn(s, id); n = g.n; if (n < 64) return false;
     const dur = bs[b + 1] - tb, first = g.t[0] <= 1e-9 ? g.v[0] : 0, last = Math.abs(g.t[n - 1] - dur) <= 1e-9 ? g.v[n - 1] : 0;
@@ -12107,21 +12148,21 @@ function traceChan(key, t0, t1, x0, w) {
     if (last === 0 && g.v[n - 1] !== 0) add(tb + g.t[n - 1], 0); add(bs[b + 1], last);
     return true;
   }
-  function aggVerts(T, V, n, tb, host, tag) {
+  function aggVerts(T, V, n, tb, host, tag, off = 0) { // values V + off (off: a block's start value, 1.45.0)
     const cc = host._chunks || (host._chunks = {}); let C = cc[tag];
     if (!C) { const m = Math.ceil(n / 32), mn = new Float64Array(m).fill(Infinity), mx = new Float64Array(m).fill(-Infinity), imn = new Int32Array(m), imx = new Int32Array(m); for (let i = 0; i < n; i++) { const q = i >> 5, v = V[i]; if (v < mn[q]) { mn[q] = v; imn[q] = i; } if (v > mx[q]) { mx[q] = v; imx[q] = i; } } C = cc[tag] = { mn, mx, imn, imx }; }
     const colOf = i => col(tb + T[i]);
     let i = 0;
     // vertices left of the view: the last one becomes `pre` (as add() does)
-    if (colOf(0) < 0) { let lo = 0, hi = n - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (colOf(m) < 0) lo = m; else hi = m - 1; } const v = V[lo]; pre = v === v ? [tb + T[lo], v] : null; i = lo + 1; }
+    if (colOf(0) < 0) { let lo = 0, hi = n - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (colOf(m) < 0) lo = m; else hi = m - 1; } const v = V[lo] + off; pre = v === v ? [tb + T[lo], v] : null; i = lo + 1; }
     while (i < n) {
-      const k = colOf(i); if (k >= nc) { if (!post && V[i] === V[i]) post = [tb + T[i], V[i]]; return; }
+      const k = colOf(i); if (k >= nc) { if (!post && V[i] === V[i]) post = [tb + T[i], V[i] + off]; return; }
       let lo = i, hi = n - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (colOf(m) <= k) lo = m; else hi = m - 1; }
       let mn = Infinity, mx = -Infinity, a = i, jn = i, jx = i; const e = lo;
       while (a <= e && (a & 31)) { const v = V[a]; if (v < mn) { mn = v; jn = a; } if (v > mx) { mx = v; jx = a; } a++; }
       while (a + 31 <= e) { const q = a >> 5; if (C.mn[q] < mn) { mn = C.mn[q]; jn = C.imn[q]; } if (C.mx[q] > mx) { mx = C.mx[q]; jx = C.imx[q]; } a += 32; }
       while (a <= e) { const v = V[a]; if (v < mn) { mn = v; jn = a; } if (v > mx) { mx = v; jx = a; } a++; }
-      agg(k, mn, mx, V[i], V[e], x0 + (tb + T[i] - t0) * sc, e - i + 1, tb + T[jn], tb + T[jx], tb + T[i], tb + T[e]);
+      agg(k, mn + off, mx + off, V[i] + off, V[e] + off, x0 + (tb + T[i] - t0) * sc, e - i + 1, tb + T[jn], tb + T[jx], tb + T[i], tb + T[e]);
       i = e + 1;
     }
   }
@@ -12134,14 +12175,14 @@ function traceChan(key, t0, t1, x0, w) {
   for (let k = 0; k < nc; k++) {
     if (preHas[k] || brkPre[k]) { // the part before a break inside this column, then the break
       if (preHas[k]) {
-        if (preN[k] === 1) { pts.push(preX[k], preFirst[k]); if (run) { run.x.push(preX[k]); run.mn.push(preFirst[k]); run.mx.push(preFirst[k]); } }
-        else { const x = x0 + (k + 0.5) / r; pts.push(x, preFirst[k], x, preLast[k]); if (!run) { run = { x: [], mn: [], mx: [] }; env.push(run); } run.x.push(x); run.mn.push(preMin[k]); run.mx.push(preMax[k]); }
+        if (preN[k] === 1) { pts.push(preX[k], preFirst[k]); if (run) { run.x.push(preX[k]); run.mn.push(preFirst[k]); run.mx.push(preFirst[k]); if (run.xt) run.xt.push(0); } }
+        else { const x = x0 + (k + 0.5) / r; pts.push(x, preFirst[k], x, preLast[k]); if (!run) { run = { x: [], mn: [], mx: [], xt: [] }; env.push(run); } run.x.push(x); run.mn.push(preMin[k]); run.mx.push(preMax[k]); run.xt.push(0); }
       }
       pts.push(x0 + (k + 0.5) / r, NaN); run = null;
     }
     if (colHas[k]) {
-      if (cN[k] === 1) { pts.push(cX[k], colFirst[k]); if (run) { run.x.push(cX[k]); run.mn.push(colFirst[k]); run.mx.push(colFirst[k]); } } // a single sample continues a band
-      else if (exactMode && colEx[k] && (EXP || colRun[k] < SPAN_MIN)) { // first, minimum, maximum and last in time order, where they happen
+      if (cN[k] === 1) { pts.push(cX[k], colFirst[k]); if (run) { run.x.push(cX[k]); run.mn.push(colFirst[k]); run.mx.push(colFirst[k]); if (run.xt) run.xt.push(0); } } // a single sample continues a band
+      else if (exactMode && colEx[k] && EXP) { // first, minimum, maximum and last in time order, where they happen
         q4.length = 0; q4.push(colTf[k], colFirst[k], colTmn[k], colMin[k], colTmx[k], colMax[k], colTl[k], colLast[k]);
         /* the first value first and the last value last, the minimum and maximum between them in time order: vertex
            times are sums (block start + event time) and can be out of order by rounding where a block's last vertex
@@ -12157,7 +12198,8 @@ function traceChan(key, t0, t1, x0, w) {
       }
       else {
         const x = x0 + (k + 0.5) / r; pts.push(x, colFirst[k], x, colLast[k]);
-        if (!run) { run = { x: [], mn: [], mx: [] }; env.push(run); } run.x.push(x); run.mn.push(colMin[k]); run.mx.push(colMax[k]);
+        if (!run) { run = { x: [], mn: [], mx: [], xt: [] }; env.push(run); } run.x.push(x); run.mn.push(colMin[k]); run.mx.push(colMax[k]);
+        run.xt.push(exactMode && colEx[k] && colRun[k] < SPAN_MIN ? 1 : 0); // peaks exact (1.45.0 on screen): drawn to its extremes
       }
     } else run = null;
     if (colBrk[k]) { pts.push(x0 + (k + 0.5) / r, NaN); run = null; }
@@ -12193,7 +12235,10 @@ const SPAN_MIN = 24; // runs shorter than this stay paths (cheap either way)
    is slower on a real graphics card: a path of hundreds of rectangles is rasterised as a general path, fillRect as
    rectangles (frame-rate test on a laptop, whole demo in view: 111 fps as a path, 170 fps as fillRect, same pixels;
    the comparison case was removed from the frame-rate test in 1.24.3). */
-function rectRun(ctx) {
+/* snapY (1.45.0, the traces' rectangles): top and bottom also on whole device pixels (at least one pixel high), so that
+   neighbouring columns whose extremes differ by less than a pixel merge into one rectangle (a flat envelope zoomed out
+   is then one rectangle instead of one per column), and every rectangle is drawn without anti-aliasing */
+function rectRun(ctx, snapY = false) {
   let x = 0, y = 0, w = 0, h = 0, on = false;
   // left and right edges on whole device pixels, so that neighbouring rectangles meet exactly as in one path; else both
   // cover the shared pixel partly and the colour underneath shows through as a faint seam (at 1.25× or 1.75× pixels)
@@ -12202,7 +12247,9 @@ function rectRun(ctx) {
   const d = pdpr || 1, ultra = diagQ() === 'ultra', sn = ultra ? (v => v) : (v => Math.round(v * d) / d);
   const put = () => { const xa = sn(x); let xb = sn(x + w); if (xb <= xa) xb = xa + (ultra ? 1e-3 : 1 / d); ctx.fillRect(xa, y, xb - xa, h); }; // never thinner than one device pixel
   return {
-    add(ax, ay, aw, ah) { if (on && ay === y && ah === h && Math.abs(ax - (x + w)) < 1e-9) { w += aw; return; } if (on) put(); x = ax; y = ay; w = aw; h = ah; on = true; },
+    add(ax, ay, aw, ah) {
+      if (snapY && !ultra) { const ya = Math.round(ay * d) / d; let yb = Math.round((ay + ah) * d) / d; if (yb <= ya) yb = ya + 1 / d; ay = ya; ah = yb - ya; }
+      if (on && ay === y && ah === h && Math.abs(ax - (x + w)) < 1e-9) { w += aw; return; } if (on) put(); x = ax; y = ay; w = aw; h = ah; on = true; },
     flush() { if (on) put(); on = false; }
   };
 }
@@ -12250,14 +12297,88 @@ function fillEnvelope(ctx, env, yOf, color) {
   }
   ctx.globalAlpha = 1;
 }
-function strokePts(ctx, pts, yOf, color, fillBase) {
+/* traces on screen (1.45.0): each dense pixel column (several values) is two rectangles, as in 1.44 but without the
+   band's edges: the column's min/max band, faint (0.45), from its lowest to its highest value (the exact extremes
+   from traceChan), and over it the curve's own span, opaque, from its first to its last value and the previous
+   point where the curve comes from the neighbouring column, at least a line wide (in a lane with one trace, and with
+   peaks exact where 1.44 drew the curve through the extremes, from its lowest to its highest value). The band is 0.6 opaque (1.44: 0.45, with edges, which made it look stronger). Up to 1.44 the band also had an
+   upper and a lower edge, two more rectangles per column; with them a dense column was four rectangles, up to 70,000
+   fillRect calls per frame zoomed out on large files, and in the frame-rate test on a laptop the edges alone took the
+   frame rate from 61 to 38 fps. The band's rectangles meet without overlapping (top and bottom on whole device pixels,
+   so that equal neighbours merge); the spans may overlap, being opaque. Short dense stretches are drawn this way too
+   (in peaks exact, 1.44 drew them as a path through each column's four extremes, which on a zoomed-out free-waveform
+   file was up to 1.1 million pixels of stroked line per frame); their extremes are in the band. The rest is an anti-aliased line. Tried and dropped:
+   one anti-aliased polygon per dense stretch (in a software-drawn test up to ten times as slow to paint); a single
+   opaque rectangle per column (hid the axes drawn before it); a single translucent one (pale RF pulses, stripes where
+   single-sample columns meet dense ones). Saved figures keep the exact path (strokePtsFig). On a laptop (Chrome,
+   2.5× screen) with the 8,806-block file mostly in view, the frame-rate test gave 118 fps against 54 fps with the
+   drawing of 1.44 (which was then removed). */
+function strokePts(ctx, pts, yOf, color, fillBase, solo = false) { // solo: the lane's only trace (nothing under it to hide)
+  if (EXP) return strokePtsFig(ctx, pts, yOf, color, fillBase);
+  if (!pts.length) return;
+  const LW = 1.35, hw = LW / 2, env = pts.env || [], cw = pts.r ? 1 / pts.r : 1, wd = Math.max(cw, LW), ga = ctx.globalAlpha;
+  ctx.fillStyle = color;
+  // the bands, first (under the curve)
+  if (env.length && !BENCH.skip.env) {
+    ctx.globalAlpha = ga * 0.6; const band = rectRun(ctx, true);
+    for (const run of env) for (let i = 0; i < run.x.length; i++) { const ya = cy(yOf(run.mx[i])), yb = cy(yOf(run.mn[i])); if (yb !== ya) band.add(run.x[i] - cw / 2, Math.min(ya, yb), cw, Math.abs(yb - ya)); }
+    band.flush(); ctx.globalAlpha = ga;
+  }
+  let qx = NaN, qy = NaN, qDown = false; // the line is clipped to the lane's rows as it is built (as strokePtsFig)
+  const M_ = (x, y) => { qx = x; qy = y; qDown = false; };
+  const L_ = (x, y) => {
+    const ax = qx, ay = qy; qx = x; qy = y;
+    if (ay !== ay) { qDown = false; return; }
+    if ((ay < RY0 && y < RY0) || (ay > RY1 && y > RY1)) { qDown = false; return; }
+    let ta = 0, tb = 1; const dy = y - ay;
+    if (dy !== 0) { const t1 = (RY0 - ay) / dy, t2 = (RY1 - ay) / dy; ta = Math.max(0, Math.min(t1, t2)); tb = Math.min(1, Math.max(t1, t2)); if (ta > tb) { qDown = false; return; } }
+    const xa = ax + (x - ax) * ta, ya = ay + dy * ta;
+    if (!qDown || ta > 0) ctx.moveTo(xa, ya);
+    ctx.lineTo(ax + (x - ax) * tb, ay + dy * tb); qDown = tb >= 1;
+  };
+  /* the span reaches the column's extremes in a lane with one trace (RF, a gradient in its own lane: there is nothing
+     under it to hide) and, with peaks exact, where 1.44 drew the curve through them: a column built from vertices (the
+     extremes' times known) in a stretch of fewer than SPAN_MIN dense columns (traceChan's xt). Elsewhere the extremes
+     are in the band (0.6), so that the axes drawn before stay visible (an opaque span to the extremes of every short
+     stretch, tried, hid the x readout of an EPI under its y blips). */
+  let ne = 0; for (const run of env) ne += run.x.length;
+  const ex = new Float64Array(ne), emn = new Float64Array(ne), emx = new Float64Array(ne), ext = new Uint8Array(ne); { let q = 0; for (const run of env) for (let i = 0; i < run.x.length; i++, q++) { ex[q] = run.x[i]; emn[q] = run.mn[i]; emx[q] = run.mx[i]; ext[q] = run.xt ? run.xt[i] : 0; } }
+  let eq = 0;
+  ctx.beginPath(); const spans = rectRun(ctx, true);
+  let pen = false, px = NaN, py = NaN, fx = null;
+  for (let i = 0; i < pts.length;) {
+    const x = pts[i], v = pts[i + 1];
+    if (v !== v) { pen = false; px = NaN; i += 2; continue; }
+    let j = i + 2; while (j < pts.length && pts[j] === x && pts[j + 1] === pts[j + 1]) j += 2;
+    if (j - i >= 4) { // a dense column: the curve's span (its points and the join from the previous point)
+      let lo = Infinity, hi = -Infinity; for (let q = i; q < j; q += 2) { const y = yOf(pts[q + 1]); if (y < lo) lo = y; if (y > hi) hi = y; }
+      while (eq < ne && ex[eq] < x - 1e-9) eq++;
+      if (eq < ne && Math.abs(ex[eq] - x) <= 1e-9) { // the lane's only trace, or (peaks exact) a column built from vertices in a short stretch: to its extremes
+        if (solo || ext[eq]) { const a = yOf(emx[eq]), b = yOf(emn[eq]); lo = Math.min(lo, a, b); hi = Math.max(hi, a, b); }
+        eq++;
+      }
+      if (pen && px === px) {
+        if (x - px > 1.5 * cw) L_(x, yOf(pts[i + 1])); // a longer join stays part of the line
+        else { if (py < lo) lo = py; if (py > hi) hi = py; }
+      }
+      lo = cy(lo); hi = cy(hi); spans.add(x - wd / 2, lo - hw, wd, hi - lo + LW);
+      py = yOf(pts[j - 1]); px = x; M_(x, py); pen = true;
+      if (fx === null) fx = x; i = j; continue;
+    }
+    const y = yOf(v);
+    if (!pen) { M_(x, y); pen = true; if (fx === null) fx = x; } else L_(x, y);
+    px = x; py = y; i += 2;
+  }
+  ctx.strokeStyle = color; ctx.lineWidth = LW; ctx.lineJoin = 'round'; ctx.stroke();
+  spans.flush();
+  if (fillBase !== undefined && fx !== null && !BENCH.skip.area) areaRects(ctx, pts, yOf, fillBase, color);
+}
+/* a saved figure: every point on one anti-aliased path (the same line width everywhere; traceChan gives a figure each
+   column's extremes in time order, without bands), with the bands of split columns (fillEnvelope) */
+function strokePtsFig(ctx, pts, yOf, color, fillBase) {
   if (!pts.length) return;
   fillEnvelope(ctx, pts.env, yOf, color);
-  const LW = EXP ? EXP.lwCss : 1.35, hw = LW / 2;
-  // dense columns (runs of points at the same x) become spans; the rest is one anti-aliased path (a figure: all path,
-  // so the line has the same width everywhere)
-  let nDense = 0; if (!EXP) for (let i = 2; i < pts.length; i += 2) if (pts[i] === pts[i - 2]) nDense++;
-  const useSpans = nDense >= SPAN_MIN, spans = [];
+  const LW = EXP.lwCss;
   /* the path is clipped to the lane's rows (RY0..RY1) as it is built: a value far outside the lane's scale (the k-vector
      after the last readout) otherwise gives segments millions of pixels long, which the browser strokes very slowly
      although the clip hides them. Exact inside the lane. */
@@ -12273,35 +12394,16 @@ function strokePts(ctx, pts, yOf, color, fillBase) {
     if (!qDown || ta > 0) ctx.moveTo(xa, ya);
     ctx.lineTo(ax + (x - ax) * tb, ay + dy * tb); qDown = tb >= 1;
   };
-  ctx.beginPath(); let pen = false, px = NaN, py = NaN, fx = null;
-  /* column width: the grid of traceChan when known (1.23.2). Before, the smallest spacing between any two points,
-     which a single sample near a column centre made tiny: dense spans were then drawn a fraction of a column wide, and
-     almost every join between dense columns counted as a gap and was stroked (on a ZTE sequence about 150,000 pixels
-     of line per frame in the gradient lane, most of a frame on a graphics card) */
-  const cw = pts.r ? 1 / pts.r : useSpans ? (() => { let w = Infinity, last = NaN; for (let i = 0; i < pts.length; i += 2) { const x = pts[i]; if (x !== last && last === last && x - last > 1e-6 && x - last < w) w = x - last; last = x; } return w === Infinity ? 1 : Math.min(1, w); })() : 1;
-  for (let i = 0; i < pts.length;) {
+  ctx.beginPath(); let pen = false, fx = null;
+  for (let i = 0; i < pts.length; i += 2) {
     const x = pts[i], v = pts[i + 1];
-    if (v !== v) { pen = false; px = NaN; i += 2; continue; }
-    let j = i + 2; if (useSpans) while (j < pts.length && pts[j] === x && pts[j + 1] === pts[j + 1]) j += 2;
-    if (j - i >= 4) { // a dense column: the zigzag through its points, plus the join from the previous point
-      let lo = Infinity, hi = -Infinity; for (let q = i; q < j; q += 2) { const y = yOf(pts[q + 1]); if (y < lo) lo = y; if (y > hi) hi = y; }
-      if (pen && px === px) {
-        if (x - px > 1.5 * cw) L_(x, yOf(pts[i + 1])); // a longer join stays part of the path
-        else { if (py < lo) lo = py; if (py > hi) hi = py; }
-      }
-      spans.push(x, lo, hi);
-      py = yOf(pts[j - 1]); px = x; M_(x, py); pen = true;
-      if (fx === null) fx = x; i = j; continue;
-    }
+    if (v !== v) { pen = false; continue; }
     const y = yOf(v);
     if (!pen) { M_(x, y); pen = true; if (fx === null) fx = x; } else L_(x, y);
-    px = x; py = y; i += 2;
   }
-  ctx.strokeStyle = color; ctx.lineWidth = LW; ctx.lineJoin = 'round'; if (EXP) ctx.lineCap = 'round'; ctx.stroke(); ctx.lineCap = 'butt';
-  if (spans.length) { ctx.fillStyle = color; const sp = rectRun(ctx); for (let k = 0; k < spans.length; k += 3) sp.add(spans[k] - cw / 2, cy(spans[k + 1]) - hw, cw, cy(spans[k + 2]) - cy(spans[k + 1]) + LW); sp.flush(); }
+  ctx.strokeStyle = color; ctx.lineWidth = LW; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); ctx.lineCap = 'butt';
   if (fillBase !== undefined && fx !== null && !BENCH.skip.area) areaRects(ctx, pts, yOf, fillBase, color);
 }
-
 /* area between a trace and its zero line (RF |B1|; a gradient in its own lane), 1.23.0: one faint rectangle per pixel
    column from the zero line to the highest point the curve reaches in that column, and one to the lowest point below
    it (its points, and where its lines cross the column's edges). Until 1.22.3 it was one filled polygon through every
@@ -12322,7 +12424,7 @@ function areaRects(ctx, pts, yOf, base, color) {
     if (k >= 0 && k < nc) put(k, y); pk = k; py = y; px = x;
   }
   if (!top.size && !bot.size) return;
-  const w = 1 / r; ctx.globalAlpha = 0.13; ctx.fillStyle = color; const rr = rectRun(ctx);
+  const w = 1 / r; ctx.globalAlpha = 0.13; ctx.fillStyle = color; const rr = rectRun(ctx, !EXP);
   for (const k of [...top.keys()].sort((a, b) => a - b)) { const y = top.get(k); rr.add(x0 + k * w, y, w, base - y); }
   rr.flush();
   for (const k of [...bot.keys()].sort((a, b) => a - b)) { const y = bot.get(k); rr.add(x0 + k * w, base, w, y - base); }
@@ -12356,7 +12458,7 @@ function solidTrace(ctx, pts, yOf, color) {
     if (k >= 0 && k < nc) addY(k, y); pk = k; py = y; px = x;
   }
   flush();
-  ctx.fillStyle = color; ctx.globalAlpha = 1; const rr = rectRun(ctx), w = 1 / r;
+  ctx.fillStyle = color; ctx.globalAlpha = 1; const rr = rectRun(ctx, true), w = 1 / r;
   for (let q = 0; q < R.length; q += 3) rr.add(x0 + R[q] * w, R[q + 1] - hw, w, R[q + 2] - R[q + 1] + LW);
   rr.flush();
 }
@@ -12419,19 +12521,21 @@ function render() {
   let si0 = 0, si1 = -1;
   if (shotsOn()) {
     const sh = s.shots; si0 = Math.max(0, ub(S.shotT0, t0) - 1); si1 = Math.min(sh.length - 1, lb(S.shotT0, t1));
-    if (si1 - si0 < pw / 4) {
-      pctx.strokeStyle = C.ink; pctx.globalAlpha = 0.4; pctx.setLineDash([4, 3]); pctx.lineWidth = 1; pctx.beginPath();
-      for (let k = si0; k <= si1; k++) { const x = Math.round(X(sh[k].t0)) + 0.5; pctx.moveTo(x, shotY()); pctx.lineTo(x, bot); }
-      pctx.stroke(); pctx.setLineDash([]); pctx.globalAlpha = 1;
+    if (si1 - si0 < pw / 4) { // 1.45.0: solid, fainter, as pixel-aligned rectangles (were dashed strokes: on a 100-shot view
+      // about 70,000 px of dashed line per frame, then the largest stroke in the diagram)
+      const d = pdpr || 1, w = Math.max(1, Math.round(d)) / d, ya = shotY(); pctx.fillStyle = C.ink; pctx.globalAlpha = EXP ? 0.4 : 0.18;
+      if (EXP) { pctx.strokeStyle = C.ink; pctx.setLineDash([4, 3]); pctx.lineWidth = 1; pctx.beginPath(); for (let k = si0; k <= si1; k++) { const x = Math.round(X(sh[k].t0)) + 0.5; pctx.moveTo(x, ya); pctx.lineTo(x, bot); } pctx.stroke(); pctx.setLineDash([]); }
+      else for (let k = si0; k <= si1; k++) pctx.fillRect(Math.round(X(sh[k].t0) * d) / d, ya, w, bot - ya);
+      pctx.globalAlpha = 1;
     }
   }
   let vi0 = 0, vi1 = -1;
   if (volsOn()) {
     const v = S.vols; vi0 = Math.max(0, ub(S.volT0, t0) - 1); vi1 = Math.min(v.length - 1, lb(S.volT0, t1));
-    if (vi1 - vi0 < pw / 4) {
-      pctx.strokeStyle = C.ink; pctx.globalAlpha = 0.7; pctx.lineWidth = 1.5; pctx.beginPath();
-      for (let k = vi0; k <= vi1; k++) { if (!k) continue; const x = Math.round(X(v[k].t0)) + 0.5; pctx.moveTo(x, volY()); pctx.lineTo(x, bot); }
-      pctx.stroke(); pctx.globalAlpha = 1; pctx.lineWidth = 1;
+    if (vi1 - vi0 < pw / 4) { // 1.45.0: pixel-aligned rectangles (were 1.5 px strokes)
+      const d = pdpr || 1, w = Math.max(1, Math.round(1.5 * d)) / d, ya = volY(); pctx.fillStyle = C.ink; pctx.globalAlpha = 0.7;
+      for (let k = vi0; k <= vi1; k++) { if (!k) continue; pctx.fillRect(Math.round((X(v[k].t0) - w / 2) * d) / d, ya, w, bot - ya); }
+      pctx.globalAlpha = 1;
     }
   }
   pctx.restore();
@@ -12530,7 +12634,7 @@ function render() {
     }
     else for (const [col, c] of chans) {
       const pts = traceChan(c, t0, t1, x0, pw);
-      strokePts(pctx, pts, yOf, C[col], L.kind === 'phase' || chans.length > 1 || (EXP && !EXP.fill) ? undefined : base);
+      strokePts(pctx, pts, yOf, C[col], L.kind === 'phase' || chans.length > 1 || (EXP && !EXP.fill) ? undefined : base, chans.length === 1);
     }
     pctx.restore(); RY0 = -1e6; RY1 = 1e6; // only this lane's rows were limited
     if (yz !== 1 && !EXP) yZoomTag(L, x0);
