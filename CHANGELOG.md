@@ -4,67 +4,55 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.46.0 (2026-11-08)
 
-- k-space plot: the trajectory is drawn into a pixel buffer instead of as canvas lines. Its points are projected and thinned to what the screen resolves (0.6 device pixel), then stepped as segments into a coverage mask, so a pixel crossed many times is shaded once, as a line drawn over itself looked before. While the plot is dragged or zoomed only every Nth segment is drawn when the trajectory is long; at rest all of it, unless it would still cover the plot many times over, and then the info line says "trajectory: every Nth segment drawn". Echo markers (gradient, spin and stimulated echoes) are stamped from cached images, one per device pixel and kind. Saved figures still draw vector lines. Measured per redraw (test browser, 2.5× pixels), before → after, while dragging / at rest: a million-block file 18.7 s / 18.5 s → 15 / 70 ms; a 20,000-shot ZTE file 7.4 s / 6.4 s → 10 / 21 ms; an EPI, whole sequence in view, 985 / 955 → 16 / 132 ms; a 100-shot ResQ file 200 / 205 → 10 / 33 ms; a single EPI volume 29 / 33 → 9 / 18 ms; a single shot unchanged (about 6 ms). How it looks: lines are 1 device pixel wide without anti-aliasing; compared side by side with 1.45.0 on these files.
-- Image simulation, which shots image the same slice: each shot's excitation (time, frequency, slice-selection direction) is now found once per file and kept, and the search for the previous excitation of the same slice (the TR) compares the kept values. On radial and ZTE scans, where every excitation plays a different gradient direction, that search ran 400 shots each way for every shot and re-read the gradients each time, and it ran twice per image (the image and its info line). Preparation pulses are found by jumping between RF pulses instead of walking every block back up to 10 s. Same result: the shot information (TR, inversion, saturation pulses, slice) is identical on seven files for every shot, including files with inversion pulses planted for the test.
-- Image simulation, non-Cartesian reconstruction on the CPU (exact inverse Fourier sum): computed as a matrix product, the phase factor of each sample split into its x and y parts, over blocks of 64 samples and 4 samples per pass over a row. Half the arithmetic; the image is the same within 2·10⁻¹⁴ of its peak. The GPU path is unchanged.
-- Measured in a test browser (2 cores, one worker, no GPU), time to the image, 1.45.0 → 1.46.0: ZTE file 22 s → 0.7–0.9 s; spiral (48 interleaves, 44,160 samples) 6.2 s → 4.3 s; EPI, ResQ and the demo unchanged (0.1–0.3 s; they are Cartesian). Images identical bit for bit on the Cartesian files and within 2·10⁻¹⁴ of the peak on spiral and ZTE.
-- Checked: browser tests pass, apart from the test still expecting the former default diagram quality.
+- Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.
+- Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.
+- Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak.
 
 ## 1.45.0 (2026-11-08)
 
-- Faster drawing of zoomed-out diagrams, above all on large files and weaker graphics. A dense pixel column (one holding several values) is now two rectangles: its min/max band (0.6 opaque) and over it the curve's own span (opaque, at least a line wide). Up to 1.44 it was four: the band, its upper and lower edge, and the span; zoomed out on large files that was up to 70,000 rectangles per frame, and in the frame-rate test on a laptop the band edges alone took the frame rate from 61 to 38 fps. In a lane with one trace (RF, a gradient in its own lane) the span reaches the column's extremes; with peaks exact, so does a column built from the sequence's own vertices in a short dense stretch, where 1.44 drew the curve through its extremes as a stroked line (on an 8,806-block free-waveform file in full view about 440,000 pixels of stroked line per frame, now about 6,000). The values drawn are unchanged: each column still shows its exact minimum and maximum.
-- How it looks: the bands have no darker edges; long dense stretches whose envelope jumps from column to column in a lane with several axes (spoilers every few columns, zoomed far out) look lighter than before, the values being the same. Rectangles of the traces have their top and bottom on whole device pixels (at most half a device pixel from before) so that equal neighbours merge into one. Shot boundaries are solid and fainter instead of dashed, and shot and volume boundaries are drawn as rectangles (dashed lines through the whole diagram were the largest stroke left, about 70,000 pixels per frame on a 100-shot view). Saved figures are drawn as before.
-- k-vector, kc and k + kc lanes: in a block without an excitation or refocusing pulse the integral is the block's start value plus a part that depends only on the events it plays, which is now kept once per combination of events instead of once per block. On the 8,806-block file with the k-vector lane on, Seqret's time per frame in full view fell from about 0.8 s to 0.02–0.04 s: the per-block memory held fewer blocks than the file has, so every block was recomputed on every frame. The values are the same within 10⁻¹³ of the largest (a few duplicate points, at times differing by less than a picosecond, are drawn at the same value).
-- Min/max summaries over blocks are kept with a factor of 4 between levels (before 16), and the labels lane's with a factor of 4 (before 32), so that a pixel column holding hundreds of blocks or label changes needs a few steps per level instead of up to 15 or 31; the level is chosen from the index's alignment. The drawing is the same pixel for pixel (checked on five files at three zoom levels each).
-- Measured in a test browser (software drawing, which misrepresents graphics cards, so the frame-rate test on a real machine decides), at 2.5× pixels, Seqret's time plus the browser's painting per frame, committed 1.44.0 → 1.45.0, whole file in view: while moving (diagram quality auto, i.e. fast) 33 → 10 ms on the 8,806-block file, 33 → 21 ms on a million-block file, 14 → 10 ms on a 40,000-block ZTE-like file; at rest (high) 184 → 23, 147 → 111 and 46 → 35 ms. Over 60 cases (5 files, 3 zoom levels, 2 qualities, default lanes and with slew and k-vector) none was slower; the median frame took 21 % less. On a real machine (laptop, Chrome, 2.5× screen, the 8,806-block file with 15 s in view) the frame-rate test gave 118 fps against 54 fps with the drawing of 1.44 in the same run (and 38–40 fps measured with 1.44.0 itself), every frame within the 8.3 ms of a 120 Hz screen; the former drawing was then removed.
-- Checked: the browser tests pass (all qualities draw, peaks exact and per column differ and switching back restores the drawing exactly, the frame-rate test completes), apart from the test still expecting the former default quality; side-by-side screenshots against 1.44.0 on the demo, an EPI, a spiral, a ZTE-like file, a million-block file and the free-waveform file, at three zoom levels, at rest and while moving.
+- Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.
+- Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.
+- Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing.
 
 ## 1.44.0 (2026-11-08)
 
-- Diagram quality auto, the new default: the diagram is drawn as with fast (1× pixel density) while the view moves, and as with high about 0.2 s after it stops. Panning and zooming on dense files is limited by the browser's drawing at full density, not by Seqret: on an 8,806-block free-waveform file at 2.5×, 40 fps with standard and 117 fps with fast, which draws the same columns and values with fewer pixels. Moving means two view changes within 150 ms, so a single jump (zoom to a block, a link) stays sharp. Only the diagram is affected; the overview, cursor, k-space and image keep their density. A quality chosen before is kept (Display › Diagram quality); the frame-rate test lists auto among the qualities. Saved figures and PNGs are unchanged.
-- Frame-rate test: the verdict blamed Seqret's own work whenever it took most of what a frame on the screen allows (7.8 ms at 120 Hz), even when the frame itself took much longer (33 ms) and the browser's drawing was the limit. Seqret is now named only when it is also at least half of the frame; otherwise the verdict names the part whose removal helps most.
-- Mark pauses: the hatch now covers every lane, so all lanes have the same background (up to 1.43 only the RF and gradient lanes). Its cost grows with the area it covers: in a software-drawn test, about 8 ms per frame with all lanes on, against about 3 ms for the RF and gradient lanes before; on a graphics card it is expected to be far less. ⋯ › Run frame-rate test shows it on a given machine (without pause texture).
-- The k-vector, kc, k + kc and μ lanes have the same background as the other lanes. Up to 1.43 the stretches outside excitation-to-last-readout were covered with a pale veil, which hid the block shading there and made these lanes lighter than the rest; those stretches are no longer marked. Drawing cost is unchanged.
-- Y zoom per lane: Ctrl + scroll over a lane zooms it in y, around its zero line, on top of its scale (fixed or Fit Y to view); the axis values follow and the lane shows its factor (y ×4) at the top left. From ×0.25 to ×10,000; it snaps back to ×1 on the way through, and double-clicking the lane's name resets it. Every lane but the RF phase, the ADC and the labels; Save figure and Save diagram as PNG draw what is shown. Kept until another file is opened (a reload keeps it).
-- Touchpad pinch: over the plot it zooms in time, as before; over a lane's name in the left margin it zooms that lane in y (or anywhere over the lane with Ctrl held). Browsers send a pinch as scrolling with Ctrl but without a key press, so Ctrl + scroll zooms y only with the key actually held. In Safari on macOS, which sends a pinch as gesture events and before this zoomed the whole page, the pinch now zooms the diagram the same way.
-- Fixed: the k-vector, kc, k + kc and Maxwell μ lanes rescaled with every pan and zoom even with Fit Y to view off, because they always took their scale from the active stretches in view. They now follow Fit Y like the other lanes: off, one scale for the whole sequence, the largest value in any active stretch (excitation to its last readout, so spoilers after the last readout still do not set it); on, the largest value in the stretches in view, as before.
-- With Fit Y on, the view's scale no longer stops after the first 400 active stretches in view (zoomed out on a long sequence it could then come from the first 400 only, and change as stretches entered or left them); the maximum of each stretch is kept once per sequence, and only the stretches cut by the view's edges are computed per frame.
-- Checked on the demo: with Fit Y off the scale is the same for the full view, thirds of it and single shots (k-vector 3.08·10⁴ 1/m including the 5 % margin, kc 19.6 1/m, μ 293 1/m²); with Fit Y on it equals the earlier view scale where at most 400 stretches are in view.
+- Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.
+- Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.
+- Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).
+- Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.
+- Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.
+- Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view.
 
 ## 1.43.0 (2026-11-08)
 
-- Concomitant gradients at the slice centre of each shot: Concomitant › Settings… › Position, fixed (r, as before) or slice centre of each shot. Each excitation sets the position from the slice it selects, f/|G| along the slice gradient at the pulse centre (the point of the slice plane closest to the isocentre; no in-plane offset), and it holds until the next excitation. Where there is no slice-selective excitation (before the first excitation, after a non-selective one) the fixed r is used. The Gc and kc lanes, the cursor readout (with the position used there), the Selection tab (Position r of the block) and the Sequence tab (number of slice centres) follow. The setting is kept in this browser.
-- Cost: blocks are computed per combination of gradient events and position, so the work grows with the number of distinct slice centres, at most to one computation per block. Measured (Node): 10 ms for the demo (3 positions), 35 ms for 55 rotated slices (45 positions), 50 ms for a 30-slice EPI of 78,620 blocks, and 0.4–0.5 s for a 20-slice spiral with 48 distinct interleaves (0.05 s with a fixed r). With the fixed position everything is as in 1.42.2, bit for bit (187,026 values compared).
-- New lane k + kc (Display › Concomitant): the total dephasing vector of the spins at the position, the k-vector plus kc, in 1/m with x, y and z, reset at each excitation and sign-flipped at each refocusing pulse, veiled like the k-vector after the last readout. In the cursor readout, the Selection tab (k + kc at the end of a block) and Save figure. kc is usually 10⁻³ or less of k, so at the lane's scale k + kc looks like the k-vector; the kc lane shows the difference.
-- Checked against an independent calculation (own slice centres from the frequency and the gradient, ∇|B| − g taken directly, midpoint integration on a 0.25 µs grid, reset and sign flips at the RF centres) on the demo, a 55-slice rotated-stack SE-EPI, a 30-slice EPI and a 20-slice spiral, with two parameter sets including f ≠ 0: kc within 2.9·10⁻⁸ to 1.6·10⁻⁷ of its largest value; k + kc equals the k-vector plus kc exactly. The demo case is a new test in tests/test_core.mjs; browser tests pass.
+- Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.
+- New lane k + kc: the k-vector plus kc.
+- Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position.
 
 ## 1.42.2 (2026-11-08)
 
-- ROTATIONS extension: a gradient that continues from a rotated block into the next (EPI blips split across readout blocks) now keeps its value at the block end. Before, the rotated waveform got an extra vertex 1 ps after the block end with the value 0, and vertex times of different events were compared exactly, so an event ending at 0.0006599999999999999 s was 0 at another's end at 0.00066 s. The diagram drew a spike to 0 at every such joint, and for about a third of block durations the Sequence tab's peak slew was that jump over 1 ps (up to 2.7·10⁹ T/m/s instead of 133 T/m/s in the test). Vertex times are now snapped to 0.1 ns and the rotated waveform is kept inside its block. k-space, the image simulation, stimulation and the concomitant lanes were not affected (k within 10⁻¹⁶).
-- Sequence tab, Gradient peaks: each amplitude and slew value is a link to the first block that reaches it (selects the block and zooms to it).
-- Selection tab: the shot and volume cards list the peak gradient amplitude and slew per physical axis over the whole shot or volume, each a link to the first block that reaches it. Before, a selected shot showed only the event cards of its first block (in the demo, the excitation: RF and Gz), which read as if the shot had no x or y gradients; that block's heading now says it is the first block of the shot or volume.
-- Checked: new regression test (tests/rot_edge: a rotated 660 µs block, a label-only block and a continuation block, and 971 block durations from 300 µs to 10 ms); the demo, the demo rotated 45° about y, and the 11-stack and 3D-slab tests give the same peak gradients and slews, and k within 1.1·10⁻¹⁶ of its maximum.
+- Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.
+- Sequence tab: each gradient peak links to the first block that reaches it.
+- Selection tab: shot and volume cards list the peak gradient and slew per axis.
 
 ## 1.42.1 (2026-11-07)
 
-- Rotated slice stacks: an image now uses only the shots whose excitation has the same frequency and the same slice orientation. Before, the frequency alone decided, so stacks rotated with the ROTATIONS extension, which reuse the frequencies of the unrotated stack, were combined into one image when they fell in the same volume. In a test with four stacks at 0°, 45°, 90° and 135° about y, six of eight images combined two orientations; in the 11 rotated stacks test, all 11 stacks were one image. The same rule now holds for the image list of a selection, the image colours of the k-space tab's all-readouts view, the other slices of the stack in the 3D view, and the TR used for T1 saturation (the time to the previous excitation of the same slice; before, it could be an excitation of another orientation: 0.1 s instead of fully relaxed for the 11 rotated stacks).
-- The FOV definition is read in the sequence's own (logical) axes. The image's readout and phase directions are turned back through the rotation of the readout block, or, when the readout is rotated by hand in a shot whose excitation carries the ROTATIONS extension (as MATLAB sequences that rotate only some blocks with the extension write), through the excitation's rotation if that brings the readout onto a logical axis (within ~5°). Before, the definition was compared with the rotated directions, so an oblique readout, between x (220 mm) and z (a 20 mm slab), had no prescribed FOV: the image showed the whole oversampled readout (447–632 mm) uncropped and Crop to FOV did nothing. Gradients rotated by hand throughout (no extension anywhere) are read as before. The phase-encoding line statistics read the definition the same way.
-- Checked: the demo and the 3D slab test give bit-identical images, line statistics and slice lists; the four-rotation test now gives 220 × 220 mm images at 2.05× readout oversampling for every rotation; browser tests pass.
+- Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.
+- The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.
+- Checked: demo and 3D slab images bit-identical; browser tests pass.
 
 ## 1.42.0 (2026-11-07)
 
-- Pulseq binary files (.bin, written by MATLAB Pulseq's seq.writeBinary, format 1.5.2) open like .seq files: Open, drop or Reload. Their md5 signature is checked. Shape samples in a binary file are single precision. A custom label (mr.addCustomLabel) has no name in a binary file; it is shown as LABEL<number>, with a note.
-- Arbitrary gradients sampled at the raster centres are drawn as MATLAB Pulseq draws them (mr.restoreAdditionalShapeSamples): where the samples imply a corner on a raster edge, as for a trapezoid or a free waveform given as samples, or a trapezoid added to an arbitrary gradient (mr.addGradients), the corner is restored instead of being cut by a straight line between the samples. The line was off by slew·Δt/4 at each corner (0.25 mT/m at 100 T/m/s), which also changed the slew lane there, the area slightly, and the peak where a corner is the peak (a triangle); the restored waveform has exactly the area of the samples. Curved shapes such as spirals are unchanged. Everything computed from the gradients follows: k-space, b-tensor, echoes, concomitant lanes, stimulation.
-- Labels: in a block that both sets and increments a label, every LABELSET is applied before any LABELINC, as the Pulseq specification and the scanner do, whatever their order in the file. Before, they were applied in the order of the extension list, which MATLAB Pulseq writes in reverse, so addBlock(adc, SET LIN 5, INC LIN 1) gave LIN 5 instead of 6. (MATLAB's own evalLabels and plot have the same problem.)
-- Files in format 1.4 and older, which do not store where an arbitrary gradient starts and ends: these values are now found as MATLAB Pulseq's read does: the start from the end of the gradient on the same axis in the previous block, the end by restoring the raster edges. Before, both were extrapolated from the first and last two samples. For a gradient that continues from one block into the next, the two differ by up to 0.3 % of the peak at the joint (in the test, MATLAB's estimate is 0.14 % from the true value, the old one 0.48 %).
-- Checked against MATLAB Pulseq 1.5.2 (run in Octave) with new reference tests (tests/matlab, tests/compare_matlab.mjs): gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ of its maximum on sequences with corners, rotations, RF shims, soft delays, custom labels and ADC phase modulation (before: 1.2·10⁻² and 2.6·10⁻⁴); a v1.4.1 file within 2.2·10⁻⁷ (before 2.4·10⁻³); a .bin file and its .seq file give the same blocks and timing, gradients within 2.2·10⁻⁷ and k within 1.2·10⁻⁷.
+- Opens Pulseq binary files (.bin, format 1.5.2).
+- Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).
+- Labels: LABELSET is applied before LABELINC, as the specification says.
+- Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.
+- Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴).
 
 ## 1.41.0 (2026-10-31)
 
-- Echo markers, switched under Display › Echoes: spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○). In the diagram they sit at the top of the RF lane, spin echoes in one row and gradient echoes in the row below, so a spin echo and a gradient echo at the same time line up. Hovering a marker names it, gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it (and the reverse); for an echo on another line, |k| there. By default they are drawn only while the view covers at most 4 shots (Only when zoomed in); without it, new shots are computed within 12 ms per frame, so zooming out stays responsive.
-- k-space tab: the same markers on the trajectory, where each echo lies in k-space: a spin echo off the centre shows a mismatch between the spin echo and the k-space centre. Gradient echoes follow the kind of readout shown (imaging, reference, navigator); at most 400 shots are marked.
-- Spin echoes: where the dephasing time τ returns to zero; τ starts at the excitation and changes sign at each refocusing pulse, at the pulses' centres (2·t₁₈₀ − t₉₀ for a Hahn echo, each echo of a train). Stimulated and secondary echoes are not marked. Gradient echoes: only during readouts (not noise); along a straight readout, where the k component along the readout crosses zero, solved exactly (it is quadratic between gradient vertices); k = 0 when the rest of k is zero too (within 10⁻⁴ of the largest |k| at the readouts' ends). A curved readout (spiral) has only k = 0 echoes, where k comes to zero in its block, e.g. where a spiral-out's gradient starts.
-- Checked against separate calculations from PyPulseq (own k integration of its gradient waveforms on a grid of at most 0.5 µs, readouts from its ADC times, zero crossings by interpolation): the demo, an oblique SE-EPI, a gradient echo and a turbo spin echo give the same 22 spin echoes, 52 k = 0 and 540 other gradient echoes, with times within 0.04 ns. 10,240 shots take about 0.12 s.
+- Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.
+- Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns.
 
 ## 1.40.0 (2026-10-31)
 
@@ -73,21 +61,16 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.39.0 (2026-10-31)
 
-- b-tensor per shot in the Selection tab (shot card): the b-value, the 3×3 b-tensor in the scanner's x, y and z, and its eigenvalues, in ms/µm². B = (2π)² ∫ k kᵀ dt from the excitation to the echo, the readout sample closest to k = 0 in the shot's first echo, with k reset at the excitation and mirrored at each refocusing pulse as in the k-vector lane. All gradients count (diffusion, slice selection, crushers, readout prephasers), so cross-terms with the imaging gradients are included. A shot with only reference readouts uses those; a multi-echo shot says how many echoes it has. Hover the row names for the definition.
-- The integral is exact: k is quadratic between gradient vertices and RF centres, so k kᵀ is integrated with 3-point Gauss–Legendre on each piece. The image simulation's b-value is now the trace of this tensor (before, 25 points per block, within 5·10⁻⁵ for diffusion-weighted shots and 2·10⁻³ for b ≈ 0).
-- Checked against separate calculations from PyPulseq's gradient waveforms (own k integration with PyPulseq's excitation and refocusing times) on five sequences: the demo, a spin echo with one diffusion pair along (1, 2, 2)/3, an oblique slice-selective SE-EPI with two orthogonal diffusion pairs, a gradient echo with a bipolar gradient and a turbo spin echo. The tensors agree to 1.4·10⁻⁷ of b, the eigenvalues to 1.5·10⁻⁷, and the echo is the same readout sample as PyPulseq's nearest to k = 0 in every shot (22 of 22). The single pair matches the Stejskal–Tanner b for trapezoids, b n nᵀ, to 10⁻¹⁵.
+- b-tensor per shot in the Selection tab: b-value, tensor and eigenvalues, integrated exactly over all gradients from the excitation to the echo. The simulation's b-value is now its trace.
+- Checked against PyPulseq-based calculations on five sequences: within 1.5·10⁻⁷.
 
 ## 1.38.0 (2026-10-27)
 
-- Concomitant gradients, in a new Concomitant row of the Display panel. Lane Gc is the gradient that spins at a chosen position r see on top of the nominal one, ∇|B| − g, from the full field of the gradient coils (Bz = B0 + g·r, Bx = gx z − a gz x + f y, By = gy z + (a − 1) gz y + f x) rather than its second-order expansion, with x, y and z in the gradient colours. It is computed in a form that avoids subtracting two nearly equal numbers, [v p + w q − g (p² + q²)/(Bd + N)]/N: against a 60-digit reference it is accurate to 2·10⁻¹⁵ of Gc, where taking ∇|B| − g directly loses about 5·10⁻¹⁰.
-- Lane kc: the zeroth moment ∫Gc dt (1/m), the k-space shift of the spins at r. It is reset at each excitation and sign-flipped at each refocusing pulse like the k-vector, and veiled outside the stretches from an excitation to its last readout.
-- Lane Maxwell μ (chip μ): the generalized Maxwell index μ(t) = (γ/B0)|∫g⊗g h dt|, the Frobenius norm of the running integral of the gradient's outer product, in 1/m² with γ = 42.58 MHz/T. It is reset at each excitation, and h flips sign at each refocusing pulse. The six distinct components of the integral are computed exactly (the gradients are piecewise linear); the lane is drawn through up to 24 points per gradient stretch. μ depends only on the gradients and B0, and is the same for the physical and the logical gradients.
-- Settings… (in the Concomitant row, or ⋯ › Concomitant gradients…): the position r (default (5, 6, 7) cm), B0 (3 T), the asymmetry a of the z coil (0.5) and a non-Maxwell term f (0 T/m), kept in this browser. Computed from the physical (rotated) gradients, taking the sequence's x, y and z as the scanner's, with B0 along z. f is constant in time, so with f ≠ 0 Gc is not zero where the gradients are off and kc keeps changing in pauses; the dialog says so.
-- With the lanes on, the cursor readout gives Gc, kc and μ, the Selection tab the peak Gc of a block and kc at its end, and the Sequence tab the peak Gc and the largest |kc| in blocks with a readout.
-- Display panel regrouped: Gx, Gy, Gz and One axis on one row, Slew and k-vector below them, then the gradient unit; Gc, kc, μ and Settings… in the new Concomitant row.
-- Save figure… and Save diagram as PNG include the new lanes (Lanes in the figure dialog). In a figure, lanes too low for the unit on its own line before (k-vector, Gc, kc and μ at the default size) now keep it under the name, with the x y z legend after it; the gutter widens to fit.
-- References in the dialog and under About › Acknowledgements: Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; and for the field model Bernstein MA, Zhou XJ, Polzin JA, et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.
-- Checked against separate calculations from PyPulseq's gradient waveforms (sampled every 0.25 µs, integrated with PyPulseq's excitation and refocusing times) on four sequences, one of them rotated: kc agrees to 4·10⁻⁷ of its largest value over three settings including f ≠ 0, the drawn Gc lane to 0.1 %; μ agrees to 3·10⁻⁷, the drawn μ lane to 2.3·10⁻⁴. The k-vector now shares its code with kc and μ and is unchanged, bit for bit (750,430 values compared with 1.37.0).
+- Concomitant gradient lanes: Gc (from the full coil field, not the second-order expansion), kc (its zeroth moment) and the Maxwell index μ.
+- Settings for the position r, B0, z-coil asymmetry a and non-Maxwell term f.
+- The cursor readout, Selection and Sequence tabs and saved figures include them; Display panel regrouped.
+- References: Olsson V et al. Magn Reson Med 2026;96(3):1178–1191, doi:10.1002/mrm.70422; Bernstein MA et al. Magn Reson Med 1998;39(2):300–308, doi:10.1002/mrm.1910390218.
+- Checked against PyPulseq-based calculations on four sequences: kc within 4·10⁻⁷, μ within 3·10⁻⁷; k-vector unchanged bit for bit.
 
 ## 1.37.0 (2026-10-02)
 
@@ -97,8 +80,7 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.36.0 (2026-10-02)
 
-- Save figure… (Display menu, and next to Save as PNG in the k-space and Image tabs): a PNG of the sequence diagram, k-space or simulated image for publications. Choose the printed size (mm or inches, with column-width presets), the resolution (dpi) and the text size in points at that size; lines and marks scale with the text. The PNG carries its resolution, so layout programs place it at the chosen size.
-- Contents: for the diagram the lanes (independent of the screen), the volume and shot strips, time axis, lane names and units, value ranges, block numbers, block shading, selection and pause hatching; for k-space the path, axes, |k| range, legend and group boxes; for the image the text, directions, scout, cropping to the image and sharp pixels. Colours from any theme (e.g. Paper while working in Dark), with the theme's, a white or a transparent background, and optionally the Seqret version, file and date below. The figure shows the current view (time range, k-space view, image).
+- Save figure…: a publication PNG of the diagram, k-space or image, with printed size, dpi, text size, theme, background and an optional version stamp.
 
 ## 1.35.1 (2026-10-02)
 
@@ -111,9 +93,9 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.34.0 (2026-10-02)
 
-- Multi-echo sequences (several images per excitation, e.g. multi-spin echo): the k-space arrows show each echo's readouts separately (Imaging readouts, echo 1, echo 2, …), each with its own trajectory, and the last view, all readouts by type, gives each echo's image its own colour. Echoes are found from the ECO label, or else from the k-space lines: readouts at the same position in each shot that cover the same lines are echoes of separate images, also when a refocusing pulse mirrors echo 2 onto the opposite line. Turbo spin echo and EPI trains stay one image.
-- All readouts by type: where samples of two images lie on each other (echoes or slices covering the same k-space), their colours mix half and half, so the overlap shows; a lone image keeps its full colour. Dots are sized by the largest image rather than all samples together, so overlapping images do not shrink them.
-- The image tab uses the same echo detection (a multi-spin echo without ECO label was one image before), and the phase-encoding line statistics are per echo, in both tabs.
+- Multi-echo sequences: each echo is its own image in the k-space and Image tabs, found from the ECO label or from the k-space lines.
+- All readouts by type: overlapping images mix their colours.
+- Phase-encoding line statistics are per echo.
 
 ## 1.33.6 (2026-10-02)
 
@@ -133,10 +115,9 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.30.0 (2026-10-01)
 
-- Volumes and shots: a click on a bar above the diagram selects it without zooming; a double-click zooms to it.
-- Stepping through volumes or shots (arrows, steppers) keeps the zoom and keeps the left edge of the selected item where it was on screen, instead of centring the next one.
-- Several volumes or shots can be selected: Ctrl+click (Cmd+click on a Mac) adds or removes one, Shift+click selects the range from the last clicked one, Ctrl+Shift+click adds that range. Arrow keys step from the focused one and select it alone.
-- Image tab: when the selection holds several images (several slices of a volume, or several volumes or shots), arrows step through them ('Image 2 / 6 · volume 3 · shot 14'); the echo arrows stay as before. The 3D view outlines the slices of the other selected images with dashed lines, numbered as in the arrows, so fields of view in other positions or orientations (e.g. rotated stacks) are seen together. The outlines are drawn on top of the phantom (tissue in front does not hide them). Their planes equal those of the simulated images to within 4e-13 (checked on 11 rotated stacks, oblique slabs and the demo).
+- Volume and shot bars: click selects, double-click zooms; stepping keeps the zoom.
+- Several volumes or shots can be selected (Ctrl+click, Shift+click).
+- Image tab: arrows step through the images of a selection; the 3D view outlines the other selected slices.
 
 ## 1.29.1 (2026-09-30)
 
@@ -176,10 +157,10 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.24.3 (2026-09-29)
 
-- Fixed: the simulated image of a slab-selective 3D scan was taken in the plane of the readout and the slab normal (e.g. 64×8 pixels for a 64×64×8 scan) whenever the partitions spread k-space about as far as the phase encoding, which was the case for 8 to 64 partitions. The slab normal (the gradient during the excitation) is now never an image axis, so the image lies in the readout × phase-encoding plane, also for oblique slabs. Checked on slabs rotated 20° about x and y, 35° about z and 90° about x: the image axes are perpendicular to the slab normal to within 1e-6. Images of 2D sequences (demo, rotated stacks, EPI, spiral) are unchanged, bit for bit.
-- Frame-rate test: the two cases that drew the rectangles as one path are gone. They showed in 1.16 that single rectangles are faster on real graphics cards. The peaks comparison stays until exact peaks are confirmed on real hardware.
-- Unused code removed (the 2D phantoms replaced by the 3D ones, and some unused functions and variables). The page is 4 kB smaller and behaves the same.
-- Development package: a script compares waveforms, RF shapes and k-space with PyPulseq on its 31 test sequences (all agree to within 1e-6 relative, most to 1e-7), and the browser tests check settings, their migration, the diagram qualities and peaks, the side panel, stepping and linked tabs.
+- Fixed: images of slab-selective 3D scans with 8–64 partitions lay in the readout × slab-normal plane. 2D images unchanged.
+- Frame-rate test: the path-drawn rectangle cases removed.
+- Unused code removed (4 kB smaller).
+- Development package: comparison with PyPulseq on 31 sequences (within 10⁻⁶) and more browser tests.
 
 ## 1.24.2 (2026-09-29)
 
@@ -191,10 +172,9 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.24.0 (2026-09-29)
 
-- Less blocky waveforms when zoomed out: Display › View › Peaks › exact (new default). Each pixel column now also keeps the times of its first, minimum, maximum and last value, and short features (RF pulses, ramps, crushers; stretches of fewer than 24 dense columns) are drawn through their extremes at the times they happen, as a line. An RF pulse a pixel or two wide is now a thin pointed spike instead of a flat-topped bar a column or two wide. This is the M4 method: Jugel U, Jerzak Z, Hackenbroich G, Markl V. M4: A Visualization-Oriented Time Series Data Aggregation. PVLDB 2014;7(10):797–808.
-- Checked against a drawing of every vertex at its own time: on the demo in full view 2.0 % of pixels differ from it (3.4 % before), zoomed in 0.01 % (0.8 % before). Long dense stretches (readout trains, a ZTE sequence) are drawn as before, which keeps them cheap; the frame rate is unchanged in a test browser (demo, a spiral and a 40,000-block ZTE-like sequence).
-- Peaks › per column gives the previous drawing, pixel for pixel, for comparison; the frame-rate test compares the two.
-- Fixed (from 1.22.0): without saved settings, Display › View › Quality showed 'ultra' although the diagram was drawn in high (the default).
+- Peaks › exact (new default): short features are drawn through their extremes at their true times (M4 method: Jugel U et al. PVLDB 2014;7(10):797–808), so narrow RF pulses are thin spikes. Demo in full view: pixels differing from an exact drawing 3.4 % → 2.0 %; frame rate unchanged.
+- Peaks › per column keeps the previous drawing.
+- Fixed: Quality showed ultra while high was drawn.
 
 ## 1.23.3 (2026-09-29)
 
@@ -217,9 +197,8 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.22.3 (2026-09-29)
 
-- Faster k-vector lane again, after the reset change of 1.22.2 made it slow: breaking the curve at every excitation turned each spoke of a ZTE sequence into a ramp that had to be stroked as an anti-aliased line (tens of thousands of pixels of line per frame, at medium zoom). The k-vector is now drawn only with rectangles: one opaque rectangle per pixel column and stretch of the curve, from the lowest to the highest point the curve reaches there (its samples, the column's summary, and where its lines cross the column's edges), at least a line wide. Resets still start the curve anew.
-- Measured on a 40,000-block ZTE-like sequence in a test browser, the frame rate with the k-vector on now equals the rate without it at every zoom level tried (full view to single spokes; before: half at medium zoom). Sloped stretches look slightly more stepped than an anti-aliased line; ultra quality smooths them.
-- The k-vector's per-block data is now kept for up to about a million vertices instead of 4,096 blocks.
+- Faster k-vector lane after 1.22.2: drawn with rectangles only. On a 40,000-block ZTE-like file the frame rate with it on equals the rate without it.
+- Per-block k-vector data kept for up to about a million vertices.
 
 ## 1.22.2 (2026-09-29)
 
@@ -231,10 +210,10 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.22.0 (2026-09-29)
 
-- The k-vector lane now costs no more than the gradient lane: on a 40,000-block ZTE-like sequence in full view, turning it on took the frame rate in a test browser from 15 to 3 fps in 1.20.0 and 9 fps in 1.21.0; now 12–15 fps. Three causes, all fixed: (1) the traces were faded outside the active stretches with clip paths or an extra image; they are now drawn at full strength, and the stretches outside the active ones (after the last readout) are marked by a pale veil over the lane's background instead. (2) Dense stretches of the k-vector are drawn as one opaque rectangle per pixel column from minimum to maximum, without the half-transparent band and its edges. (3) Lines between neighbouring columns that those rectangles already cover are left out; they were thousands of long strokes per frame.
-- The per-block k-vector summaries are kept after they are first computed; before, a sequence with more than 4,096 excitations recomputed them while drawing.
-- Lines and rectangles are limited to the lane's rows as they are built (exactly, inside the lane), so values far outside a lane's scale no longer make the browser draw very long shapes.
-- Display › View › Quality › ultra: two columns per screen pixel, drawn anti-aliased, for the smoothest waveforms when zoomed out on computers that draw fast. Its cost grows with the file: on the ZTE-like sequence it took Seqret's time per frame from 12 to 69 ms in a slow test browser (high stays the default). The frame-rate test compares it with the other qualities.
+- Faster k-vector lane: on a 40,000-block ZTE-like file 3 → 12–15 fps (veil instead of fading, opaque rectangles, no covered lines).
+- Per-block k-vector summaries are kept after the first computation.
+- Shapes are clipped to their lane.
+- Quality ultra: two anti-aliased columns per screen pixel.
 
 ## 1.21.0 (2026-09-29)
 
@@ -249,9 +228,8 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.19.0 (2026-09-27)
 
-- Display › Dense waveforms › time-weighted fill (option; the default stays min/max band). Where the waveform goes back and forth within a pixel column, each level is shaded by the fraction of the column's time the waveform spends at that level or beyond it (further from zero). A readout train that spends half its time at +G and half at −G shows as two smooth blocks at half strength, and levels passed only briefly stay faint; the opaque min/max edges are kept, so extremes stay visible. Smooth stretches that are merely finely sampled (free waveforms) stay lines, so the fill marks oscillation, not sampling density.
-- The fill is computed exactly from every segment under the dense stretches, per frame. With more than 10,000 blocks under them in a lane (large files zoomed out), the band is drawn instead, decided from the view alone. In a slow test browser it took about 20–45 ms per frame on the demo and a 7,600-block file, several times the band's cost; the frame-rate test includes a case comparing the two.
-- Frame-rate test: the suggestion no longer blames the browser when Seqret's own work is most of the frame; it then says so, notes that zooming in helps, and lists the lower settings that were faster.
+- Dense waveforms › time-weighted fill (option): each level shaded by the time the waveform spends there. Several times the band's cost; falls back to the band above 10,000 blocks.
+- Frame-rate test: better suggestions when Seqret's own work limits the frame.
 
 ## 1.18.1 (2026-09-27)
 
@@ -259,9 +237,9 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.18.0 (2026-09-27)
 
-- Smoother waveforms when zoomed out: Display › Diagram quality › high (new default) draws the waveforms with one column per screen pixel at every zoom level. Dense stretches keep their shape: RF pulses are drawn at their true width instead of as blocks, and readout trains and ramps are finer. Before, zoomed out used one column per CSS pixel, 1.75 to 2 screen pixels wide on high-density screens. On 1× screens nothing changes.
-- Diagram quality replaces diagram resolution: high (new), standard (the drawing of 1.14.2–1.17.0) and fast (standard at 1× pixel density, as 'fast' in 1.17.0). A saved 'sharp' becomes high. Cost of high when zoomed out: up to about twice Seqret's time per frame on small files (3.6 → 8.1 ms on the demo in a slow test browser) and 15–30 % more on a 45,000-block file, plus more rectangles for the browser to draw. Zoomed in, and on 1× screens, high and standard are the same.
-- Frame-rate test: compares the current quality with the other two, and when drawing limits the frame rate, suggests the lower qualities with the rates they gave.
+- Diagram quality high (new default): one column per screen pixel, so RF pulses keep their true width. Up to about twice Seqret's time per frame on small files.
+- Diagram quality (high, standard, fast) replaces diagram resolution.
+- Frame-rate test compares the qualities.
 
 ## 1.17.0 (2026-09-27)
 
@@ -279,14 +257,11 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.16.5 (2026-09-27)
 
-- Fixed (from 1.16.4): in the Image tab, a rotated slice stack whose readout has no FOV in the definition had its phase-encoding axis 0.8 % too long (221.8 instead of 220 mm for 64 lines), because the line spacing was estimated from positions rounded to a coarse step. It is now the median step between the actual line positions, and the FOV definition is used for each image axis on its own, so the phase-encoding axis of a stack rotated about it gets its FOV from the definition.
-- Checked across 11 stacks rotated about the phase-encoding axis: slice normals and positions exact, the pixel size the same in every stack, each image matches the phantom in the plane it claims to show (better than any mirrored or rotated version), and the profile along the phase-encoding axis through the isocentre, which lies in the central slice of every stack, agrees between stacks (correlation 0.992). Images of the demo, the PyPulseq test sequences and the stress sequences are unchanged.
+- Fixed (from 1.16.4): the phase-encoding FOV of rotated stacks was 0.8 % too long. Checked over 11 rotated stacks; other images unchanged.
 
 ## 1.16.4 (2026-09-27)
 
-- Fixed: in the Image tab, slice stacks rotated so that their readout ran mostly along z were simulated a few pixels wide (64×8 instead of 64×64). The FOV definition gives the FOV along the sequence's x, y and z, and it was applied to the image axes by their nearest sequence axis, so such a readout took the slab thickness as its FOV.
-- The FOV definition now applies to an image axis only when every sequence axis it has a component along has the same FOV (an axis along x, or any direction in the x–y plane when x and y have the same FOV, as for radial), and only when it agrees with the sampling: along the readout the sample spacing may be finer than 1/FOV (oversampling) but not coarser, across Cartesian lines it may be coarser (parallel imaging) but not finer. Otherwise the grid follows the sampling itself.
-- Checked on the demo, the PyPulseq test sequences and the stress sequences: identical images to 1.16.3. A rotated-stack sequence (11 stacks rotated about the phase-encoding axis) is now a test case.
+- Fixed: rotated stacks with the readout mostly along z were simulated 64×8 instead of 64×64. The FOV definition now applies only when it fits the axis and the sampling. Other images unchanged.
 
 ## 1.16.3 (2026-09-27)
 
@@ -348,10 +323,8 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.13.0 (2026-09-26)
 
-- New M0 lane (switch it on under Display): the zeroth gradient moment on x, y and z in the gradient colours, reset at each excitation and sign-flipped at each refocusing pulse (at the RF centres, as Pulseq's calculateKspacePP), from the physical gradients. It is shown at full strength from each excitation to the end of the last readout before the next one and faded elsewhere; a stretch without a readout is faded throughout.
-- Units follow the gradient unit: mT·ms/m with gradients in mT/m, or 1/m (the same as k) with gradients in kHz/m. The lane scales to the largest moment in the visible active stretches, since moments differ by orders of magnitude between imaging, diffusion encoding and spoiling.
-- The cursor readout shows M0 when the lane is on, and the Selection tab shows M0 at the end of the selected block.
-- Checked against a reference built from PyPulseq (gradients, their integral and the RF times) over whole trajectories: agreement to 1e-7 relative or better, including a turbo spin echo with many refocusing pulses.
+- New M0 lane: the zeroth gradient moment, reset at each excitation and sign-flipped at each refocusing pulse; also in the cursor readout and Selection tab.
+- Checked against PyPulseq: within 10⁻⁷.
 
 ## 1.12.3 (2026-09-26)
 
@@ -374,10 +347,10 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.11.0 (2026-09-26)
 
-- Peripheral (PNS) and cardiac (CNS) nerve stimulation predicted with the SAFE model (Hebrank and Gebhardt, ISMRM 2000) as implemented in safe_pns_prediction by F. Szczepankiewicz and T. Witzel: two new lanes, switched on under Display, with x, y and z in the gradient colours, the L2 norm in grey (optional) and the 100 % limit.
-- System specifications (Display panel or the ⋯ menu): load MP_GPA_*.asc or MP_GradSys_*.asc files (a file with $INCLUDE together with the file it includes), type the parameters in, or load the example hardware of safe_pns_prediction (not a real scanner). The parameters are checked as in safe_hw_check, compared with the library of known systems (SHA-256, as in safe_hw_verify), and kept only in this browser.
-- Computed in the background over the whole sequence from the physical gradients on the gradient raster; the Sequence tab gives the peak of the norm and of each axis with a link to its time, block, shot and volume cards give their own peaks, and the cursor readout the values at the cursor.
-- Checked against safe_gwf_to_pns running in Octave on five sequences (agreement about 1e-15 relative) and against PyPulseq's gradient waveforms.
+- PNS and cardiac stimulation lanes with the SAFE model (Hebrank and Gebhardt, ISMRM 2000), as in safe_pns_prediction.
+- System specifications from .asc files, typed in, or the example hardware; checked as in safe_hw_check and safe_hw_verify.
+- Peaks in the Sequence tab, block, shot and volume cards and the cursor readout.
+- Checked against safe_gwf_to_pns in Octave: within 10⁻¹⁵.
 
 ## 1.10.0 (2026-09-26)
 
@@ -393,10 +366,9 @@ All versions, newest first. The About dialog of the page shows the latest 8.
 
 ## 1.8.0 (2026-09-26)
 
-- Selection tab: RF blocks show the slice they select: slice gradient, normal and orientation, position from isocentre and slice centre (x, y, z), thickness (FWHM of the small-tip profile), bandwidth and time–bandwidth product, fat shift, and for pulses after the excitation (refocusing) the comparison with the excited slice, including the separation of the fat slices when the slice gradients have opposite signs. A warning when the gradient varies during the pulse.
-- Pulseq 1.5 ppm frequency offsets (freqPPM) are now used: the total frequency at the Image tab's B0 is shown, and the simulation places ppm-specified pulses correctly. Before, a fat saturation written the PyPulseq 1.5 way (0 Hz, −3.45 ppm) saturated water instead of fat.
-- Inversion recovery in the simulation follows the actual inversion cycle (all pulses acting on the slice until the next inversion, in the steady state). The previous formula could give a longitudinal magnetization above 1 (MPRAGE); it now agrees with a step-by-step calculation over the whole file.
-- Pulse purpose inference and block descriptions treat a ppm offset as off-resonance.
+- Selection tab: RF blocks show the slice they select (orientation, position, thickness, bandwidth, fat shift; refocusing against excited slice).
+- Pulseq 1.5 ppm frequency offsets are used (before, a ppm fat saturation saturated water).
+- Inversion recovery follows the actual inversion cycle (before, Mz could exceed 1, e.g. MPRAGE).
 
 ## 1.7.3 (2026-09-25)
 
