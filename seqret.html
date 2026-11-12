@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.47.0 (2026-11-12) - Pulseq sequence viewer
+  Seqret 1.48.0 (2026-11-12) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.47.0">
-<meta name="description" content="Seqret 1.47.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
+<meta name="version" content="1.48.0">
+<meta name="description" content="Seqret 1.48.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -294,7 +294,16 @@ dialog#figDlg{border:1px solid var(--line);border-radius:12px;background:var(--s
 .fchips{display:flex;flex-wrap:wrap;gap:6px}
 #figBody .fsec{border-top:1px solid var(--line-soft);margin-top:10px;padding-top:2px}
 #figBody .note{margin:8px 0 0}
-dialog#figDlg::backdrop,dialog#about::backdrop,dialog#safeDlg::backdrop,dialog#ccDlg::backdrop{background:rgba(10,15,20,.4)}
+dialog#multiDlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(520px,94vw);max-height:90vh}
+#multiBody{padding:0 20px 18px;overflow:auto;max-height:calc(90vh - 80px);font-size:13.5px}
+#multiList{margin:10px 0;padding:0;list-style:none;border:1px solid var(--line);border-radius:8px;background:var(--plot);max-height:220px;overflow:auto}
+#multiList li{display:flex;justify-content:space-between;gap:12px;padding:4px 10px;border-top:1px solid var(--line-soft)}
+#multiList li:first-child{border-top:0}
+#multiList li b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#multiList li span{color:var(--muted);white-space:nowrap}
+#multiList li.done span{color:var(--ink)}
+#multiBody select{border:1px solid var(--line);background:var(--plot);color:var(--ink);border-radius:6px;padding:3px 6px;font:inherit}
+dialog#multiDlg::backdrop,dialog#figDlg::backdrop,dialog#about::backdrop,dialog#safeDlg::backdrop,dialog#ccDlg::backdrop{background:rgba(10,15,20,.4)}
 dialog#ccDlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(600px,94vw);max-height:90vh}
 #ccBody{padding:0 20px 20px;overflow:auto;max-height:calc(90vh - 80px);font-size:13.5px}
 #kAct{justify-self:start}
@@ -428,7 +437,7 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.47.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.48.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -454,7 +463,7 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
       </div>
     </div>
   </div>
-  <input type="file" id="fileIn" accept=".seq,.bin,text/plain" hidden>
+  <input type="file" id="fileIn" accept=".seq,.bin,text/plain" multiple hidden>
 </header>
 
 <div class="app">
@@ -515,7 +524,7 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
             <path d="M0 86h420" stroke="var(--line)"/>
           </svg>
           <h2>Open a Pulseq sequence</h2>
-          <p>Drop a <b>.seq</b> file (or a Pulseq binary <b>.bin</b> file) anywhere on this page, or choose one. Files are read locally in your browser and never uploaded. Pulseq formats 1.2 to 1.5 are supported.</p>
+          <p>Drop a <b>.seq</b> file (or a Pulseq binary <b>.bin</b> file) anywhere on this page, or choose one. Several files open in linked tabs. Files are read locally in your browser and never uploaded. Pulseq formats 1.2 to 1.5 are supported.</p>
           <p class="pq">New to Pulseq? See the <a href="https://pulseq.github.io" target="_blank" rel="noopener">Pulseq website</a> and the paper by Layton et al., <i>Magn Reson Med</i> 2017;77(4):1544–1552, <a href="https://doi.org/10.1002/mrm.26235" target="_blank" rel="noopener">doi:10.1002/mrm.26235</a>.</p>
           <div class="row">
             <button class="btn primary" id="openBtn2">Choose file</button>
@@ -663,6 +672,18 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
     <div class="frow fend"><button class="btn" id="figCancel">Cancel</button><button class="btn primary" id="figSave">Save PNG</button></div>
   </div>
 </dialog>
+<dialog id="multiDlg" aria-labelledby="multiTitle">
+  <div class="about-head">
+    <div><h2 id="multiTitle">Open several files</h2><p class="muted">Each file in its own Seqret tab</p></div>
+    <button class="btn icon" id="multiClose" aria-label="Close">✕</button>
+  </div>
+  <div id="multiBody">
+    <ul id="multiList"></ul>
+    <div class="frow"><label for="multiLink">Link the tabs</label><select id="multiLink"><option value="time">Same time</option><option value="shot">Same shot</option><option value="vol">Same volume</option><option value="off">Not linked</option></select></div>
+    <p class="note" id="multiNote" role="status" aria-live="polite"></p>
+    <div class="frow fend"><button class="btn" id="multiFirst">Open only the first</button><button class="btn primary" id="multiGo">Open in tabs</button></div>
+  </div>
+</dialog>
 <dialog id="about" aria-labelledby="aboutTitle">
   <div class="about-head">
     <div><h2 id="aboutTitle"></h2><p class="muted" id="aboutSub"></p></div>
@@ -670,7 +691,7 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
   </div>
   <div id="aboutBody"></div>
 </dialog>
-<div class="drop" id="drop"><div>Drop a .seq or .bin file to open</div></div>
+<div class="drop" id="drop"><div>Drop .seq or .bin files to open</div></div>
 
 <script type="text/plain" id="demoSeq"># Pulseq sequence file
 # Created by MATLAB mr toolbox
@@ -7913,7 +7934,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.47.0", "date": "2026-11-12", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "k-space: Nominal or Actual (k + kc) trajectory (k-space options). For files corrected for concomitant fields (MxwlCorrParams), the field they were corrected for can be taken over in one click.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.", "Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab: b-value, tensor and eigenvalues, integrated exactly over all gradients from the excitation to the echo. The simulation's b-value is now its trace.", "Checked against PyPulseq-based calculations on five sequences: within 1.5·10⁻⁷."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.48.0", "date": "2026-11-12", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.48.0", "date": "2026-11-12", "notes": ["Several files at once: dropping two or more .seq or .bin files (or choosing several with Open .seq) asks whether to open each in its own Seqret tab, linked by time, shot or volume, or only the first. This tab opens the first file; the others get new tabs that are handed their file directly.", "If the browser blocks the extra tabs (most allow one per click), the dialog offers a button that opens the next file, one per click, or pop-ups can be allowed for the page."]}, {"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "k-space: Nominal or Actual (k + kc) trajectory (k-space options). For files corrected for concomitant fields (MxwlCorrParams), the field they were corrected for can be taken over in one click.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.", "Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab: b-value, tensor and eigenvalues, integrated exactly over all gradients from the excitation to the echo. The simulation's b-value is now its trace.", "Checked against PyPulseq-based calculations on five sequences: within 1.5·10⁻⁷."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -15527,13 +15548,13 @@ async function pickFile() { // File System Access picker where available (reload
   const types = [{ description: 'Pulseq sequence (.seq, or binary .bin)', accept: { 'text/plain': ['.seq'], 'application/octet-stream': ['.bin'] } }];
   // start in the folder of the last opened file; without one (or if the browser rejects it), in the folder the
   // browser remembers for this picker
-  try { [h] = await window.showOpenFilePicker(lastHandle ? { startIn: lastHandle, types } : { id: 'seqret', types }); }
+  try { h = await window.showOpenFilePicker(lastHandle ? { startIn: lastHandle, types, multiple: true } : { id: 'seqret', types, multiple: true }); }
   catch (e) {
     if (e.name === 'AbortError') return;
-    if (lastHandle) { try { [h] = await window.showOpenFilePicker({ id: 'seqret', types }); } catch (e2) { if (e2.name !== 'AbortError') $('#fileIn').click(); return; } }
+    if (lastHandle) { try { h = await window.showOpenFilePicker({ id: 'seqret', types, multiple: true }); } catch (e2) { if (e2.name !== 'AbortError') $('#fileIn').click(); return; } }
     else { $('#fileIn').click(); return; }
   }
-  try { openFile(await h.getFile(), { handle: h }); } catch (e) { showError(`Could not read the file: ${e.message}`); }
+  try { openMany(await Promise.all(h.map(async x => ({ file: await x.getFile(), handle: x })))); } catch (e) { showError(`Could not read the file: ${e.message}`); }
 }
 $('#openBtn').onclick = $('#openBtn2').onclick = pickFile;
 /* ---------- recent files (1.47.0) ----------
@@ -15581,7 +15602,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-recent-clear]')) { RECENT = []; renderRecent(); closeRecentPop(); kvSet('recentSeq', []).catch(() => { }); }
 });
 if (window.indexedDB) kvGet('recentSeq').then(v => { if (Array.isArray(v)) { RECENT = v.filter(r => r && typeof r.name === 'string').slice(0, RECENT_N); renderRecent(); } }, () => { });
-$('#fileIn').onchange = e => { const f = e.target.files[0]; openFile(f, { file: f }); e.target.value = ''; };
+$('#fileIn').onchange = e => { openMany([...e.target.files].map(f => ({ file: f }))); e.target.value = ''; };
 $('#demoBtn').onclick = () => load(new TextEncoder().encode($('#demoSeq').textContent), 'seqret_default.seq', { src: { demo: true } });
 let dragDepth = 0;
 window.addEventListener('dragenter', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { dragDepth++; $('#drop').classList.add('on'); e.preventDefault(); } });
@@ -15589,12 +15610,98 @@ window.addEventListener('dragleave', () => { dragDepth = Math.max(0, dragDepth -
 window.addEventListener('dragover', e => e.preventDefault());
 window.addEventListener('drop', e => {
   e.preventDefault(); dragDepth = 0; $('#drop').classList.remove('on');
-  const f = e.dataTransfer?.files?.[0]; if (!f) return;
-  const it = e.dataTransfer.items && e.dataTransfer.items[0]; // the handle must be requested during the event
-  const hp = it && it.kind === 'file' && typeof it.getAsFileSystemHandle === 'function' ? it.getAsFileSystemHandle() : null;
-  if (!hp) { openFile(f, { file: f }); return; }
-  hp.then(h => openFile(f, h && h.kind === 'file' ? { handle: h } : { file: f }), () => openFile(f, { file: f }));
+  const files = [...(e.dataTransfer?.files || [])]; if (!files.length) return;
+  // the handles must be requested during the event; file items come in the same order as the files
+  const items = [...(e.dataTransfer.items || [])].filter(it => it.kind === 'file');
+  const hps = files.map((f, i) => { const it = items.length === files.length ? items[i] : null;
+    return it && typeof it.getAsFileSystemHandle === 'function' ? it.getAsFileSystemHandle().catch(() => null) : null; });
+  Promise.all(hps).then(hs => openMany(files.map((f, i) => ({ file: f, handle: hs[i] && hs[i].kind === 'file' ? hs[i] : null }))));
 });
+
+/* ---------- several files at once (1.48.0) ----------
+   Two or more files (dropped, or chosen with Open) ask whether to open each in its own Seqret tab, linked by
+   time, shot or volume, or only the first. This tab opens the first; each other file gets a new tab (#recv=token)
+   that asks its opener for the file by postMessage once it has started; the File, and its File System Access
+   handle where the browser can pass it on, are sent back. postMessage, not the BroadcastChannel, so it also
+   works for pages opened from disk (file://). Browsers allow about one new tab per click: the tabs that could not
+   be opened stay in the dialog, which then opens one per click. */
+const HANDOFF = new Map(); let MULTI = null;
+const isSeqName = n => /\.(seq|bin)$/i.test(n);
+function openMany(list) {
+  list = (list || []).filter(x => x && x.file); if (!list.length) return;
+  const seqs = list.filter(x => isSeqName(x.file.name)); if (seqs.length) list = seqs;
+  if (list.length === 1) { const x = list[0]; openFile(x.file, x.handle ? { handle: x.handle } : { file: x.file }); return; }
+  MULTI = { list, opened: list.map(() => false), started: false };
+  $('#multiLink').value = S.linkMode !== 'off' ? S.linkMode : 'time';
+  $('#multiTitle').textContent = `Open ${list.length} files`;
+  $('#multiLink').disabled = false; $('#multiFirst').hidden = false; $('#multiGo').disabled = false;
+  $('#multiGo').textContent = `Open in ${list.length} tabs`; $('#multiNote').textContent = '';
+  renderMulti();
+  const d = $('#multiDlg'); if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', '');
+}
+function renderMulti() {
+  if (!MULTI) return;
+  $('#multiList').innerHTML = MULTI.list.map((x, i) => `<li class="${MULTI.opened[i] ? 'done' : ''}"><b title="${esc(x.file.name)}">${esc(x.file.name)}</b><span>${i === 0 ? 'this tab' : MULTI.opened[i] ? 'opened' : 'new tab'}</span></li>`).join('');
+}
+function closeMulti() { const d = $('#multiDlg'); if (d.open) d.close(); else d.removeAttribute('open'); MULTI = null; }
+function openMultiTab(i, mode) {
+  const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const url = location.href.split('#')[0] + '#' + (mode !== 'off' ? 'link=' + mode + '&' : '') + 'recv=' + token;
+  const w = window.open(url, '_blank'); if (!w) return false;
+  HANDOFF.set(token, { win: w, file: MULTI.list[i].file, handle: MULTI.list[i].handle || null, t: Date.now() });
+  return true;
+}
+function multiStep() { // opens the tabs not opened yet, as many as the browser allows for this click
+  if (!MULTI) return;
+  const mode = $('#multiLink').value;
+  if (!MULTI.started) {
+    MULTI.started = true; MULTI.mode = mode;
+    if (mode !== S.linkMode) { $('#linkSel').value = mode; $('#linkSel').onchange({ target: $('#linkSel') }); }
+  }
+  for (let i = 1; i < MULTI.list.length; i++) {
+    if (MULTI.opened[i]) continue;
+    if (!openMultiTab(i, MULTI.mode)) break;
+    MULTI.opened[i] = true;
+  }
+  if (!MULTI.opened[0]) { MULTI.opened[0] = true; const x = MULTI.list[0]; openFile(x.file, x.handle ? { handle: x.handle } : { file: x.file }); }
+  const left = MULTI.opened.filter(o => !o).length;
+  if (!left) { closeMulti(); return; }
+  renderMulti();
+  const next = MULTI.list[MULTI.opened.indexOf(false)].file.name;
+  $('#multiLink').disabled = true; $('#multiFirst').hidden = true;
+  $('#multiGo').textContent = left > 1 ? `Open next tab (${left} left)` : 'Open the last tab';
+  $('#multiNote').textContent = `The browser blocked ${left === 1 ? 'a new tab' : left + ' new tabs'}: click to open ${next}${left > 1 ? ' and continue' : ''}, or allow pop-ups for this page and click once more to open all.`;
+}
+$('#multiGo').onclick = multiStep;
+$('#multiFirst').onclick = () => { const x = MULTI && MULTI.list[0]; closeMulti(); if (x) openFile(x.file, x.handle ? { handle: x.handle } : { file: x.file }); };
+$('#multiClose').onclick = closeMulti;
+$('#multiDlg').addEventListener('cancel', () => { MULTI = null; });
+window.addEventListener('message', e => {
+  const d = e.data; if (!d || typeof d !== 'object' || d.seqret !== 'handoff') return;
+  if (d.type === 'ready') { // a tab opened here asks for its file
+    const h = HANDOFF.get(d.token); if (!h || h.win !== e.source) return;
+    // a repeated request means the last message did not arrive (a handle the other page could not take): no handle
+    const m = { seqret: 'handoff', type: 'file', token: d.token, file: h.file, handle: h.sent ? null : h.handle }; h.sent = true;
+    try { e.source.postMessage(m, '*'); } catch (_) { try { e.source.postMessage({ ...m, handle: null }, '*'); } catch (_) { } }
+  } else if (d.type === 'got') { const h = HANDOFF.get(d.token); if (h && h.win === e.source) HANDOFF.delete(d.token);
+  } else if (d.type === 'file' && RECV && d.token === RECV.token && e.source === window.opener) { // this tab's file
+    const t = RECV; RECV = null; clearInterval(t.timer);
+    try { window.opener.postMessage({ seqret: 'handoff', type: 'got', token: t.token }, '*'); } catch (_) { }
+    if (d.file) openFile(d.file, d.handle && d.handle.kind === 'file' ? { handle: d.handle } : { file: d.file });
+  }
+});
+let RECV = null;
+{ const m = /recv=([a-z0-9]+)/.exec(location.hash);
+  if (m) {
+    try { history.replaceState(null, '', location.href.replace(/[&#]?recv=[a-z0-9]+/, '')); } catch (_) { }
+    if (window.opener) {
+      RECV = { token: m[1], n: 0 };
+      const ask = () => { if (!RECV) return; if (++RECV.n > 40) { clearInterval(RECV.timer); RECV = null; showError('The file was not received from the tab that opened this one (closed or reloaded?). Open it here instead.'); return; }
+        try { window.opener.postMessage({ seqret: 'handoff', type: 'ready', token: RECV.token }, '*'); } catch (_) { } };
+      RECV.timer = setInterval(ask, 250); ask();
+    }
+  }
+}
 
 /* ---------- settings kept between sessions (browser local storage) ---------- */
 const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'pauseHatch', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kTraj', 'kActual', 'cc', 'echo'];

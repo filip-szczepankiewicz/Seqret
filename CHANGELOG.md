@@ -2,6 +2,12 @@
 
 All versions, newest first. The About dialog of the page shows the latest 5.
 
+## 1.48.0 (2026-11-12)
+
+- Several files at once: dropping two or more .seq or .bin files (or choosing several with Open .seq) asks whether to open each in its own Seqret tab, linked by time, shot or volume (or not linked), or only the first. This tab opens the first file; the others get new tabs that are handed their file directly (postMessage, so it also works for the page opened from disk). Other dropped files (e.g. .txt) are ignored when there is at least one .seq or .bin.
+- If the browser blocks the extra tabs (most allow one new tab per click), the dialog stays open with a button that opens the next file, one per click; allowing pop-ups for the page opens all at once.
+- A single file opens directly, as before.
+
 ## 1.47.0 (2026-11-12)
 
 - k-space: Nominal or Actual (k + kc) trajectory, under the k-space options. Actual is the k-vector plus the concomitant shift kc at the position set under Concomitant gradients, as in lane k + kc. A file corrected for concomitant fields (MxwlCorrParams in [DEFINITIONS]) has a distorted nominal trajectory; the field it was corrected for can be taken over in one click. Checked on a corrected EPI (B0 = 0.01 T): its actual trajectory at the slice centres is within 2.8 m⁻¹ (of 249) of the nominal trajectory of the uncorrected file.
