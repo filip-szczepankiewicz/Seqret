@@ -4,6 +4,7 @@ All versions, newest first. The About dialog of the page shows the latest 5.
 
 ## 1.47.0 (2026-11-12)
 
+- k-space: Nominal or Actual (k + kc) trajectory, under the k-space options. Actual is the k-vector plus the concomitant shift kc at the position set under Concomitant gradients, as in lane k + kc. A file corrected for concomitant fields (MxwlCorrParams in [DEFINITIONS]) has a distorted nominal trajectory; the field it was corrected for can be taken over in one click. Checked on a corrected EPI (B0 = 0.01 T): its actual trajectory at the slice centres is within 2.8 m⁻¹ (of 249) of the nominal trajectory of the uncorrected file.
 - Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).
 - Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.
 - Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.
