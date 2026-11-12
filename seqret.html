@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.46.0 (2026-11-08) - Pulseq sequence viewer
+  Seqret 1.47.0 (2026-11-12) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.46.0">
-<meta name="description" content="Seqret 1.46.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
+<meta name="version" content="1.47.0">
+<meta name="description" content="Seqret 1.47.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -367,9 +367,28 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
 .popbody .linkbox{flex-wrap:wrap}
 .kctl .sp{flex:1}
 .btn.sideopt{padding:5px 7px;line-height:0}
-#reloadBtn{padding:6px 8px;line-height:0}
-#reloadBtn svg{width:16px;height:16px}
-#reloadBtn[hidden]{display:none}
+#reloadBtn{display:inline-flex;align-items:center;gap:6px}
+#reloadBtn svg{width:14px;height:14px;flex:none}
+.opengrp{display:inline-flex;align-items:stretch}
+#recentWrap[hidden]{display:none}
+.opengrp.hasrecent #openBtn{border-top-right-radius:0;border-bottom-right-radius:0}
+#recentBtn{border-top-left-radius:0;border-bottom-left-radius:0;border-left-color:color-mix(in srgb,var(--plot) 35%,var(--ink));padding:6px 7px;line-height:0}
+#recentBtn svg{width:10px;height:10px}
+#recentPop{min-width:300px}
+.recent{display:flex;flex-direction:column;gap:1px}
+.recent .ritem{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:7px;padding:5px 8px;cursor:pointer;color:var(--ink);font:inherit;min-width:0}
+.recent .ritem:hover{background:var(--chip);border-color:var(--line)}
+.recent .ritem b{font-weight:600;font-size:13.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent .ritem small{color:var(--muted);font-size:11.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent .ritem.noreopen b{font-weight:500;color:var(--muted)}
+.recent .rclear{align-self:flex-end;margin-top:6px;font-size:12px}
+.empty .recentbox{margin-top:18px}
+.empty .recentbox h3{font-size:13px;font-weight:600;color:var(--muted);margin:0 0 6px}
+.empty .recentbox[hidden]{display:none}
+.file .fname{cursor:copy}
+button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
+.sighash{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;margin-top:5px;user-select:all}
+.sighash[hidden]{display:none}
 .fnote{font-size:12.5px;color:var(--muted);margin-left:10px}
 .fnote.warn{color:var(--c-rf)}
 #reloadBtn.spin svg{animation:rspin .6s linear infinite}
@@ -397,7 +416,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
   .file{order:3;flex-basis:100%;flex-wrap:wrap;gap:2px 10px}
   .file .fname{max-width:100%}
   .hint{display:none}
-  #openBtn .wide{display:none}
+  #openBtn .wide,#reloadBtn .wide{display:none}
   .fnote{margin-left:0}
   .plotwrap{min-height:66vh}
 }
@@ -407,13 +426,19 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
 <header>
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
-    Seqret <small>Pulseq viewer</small>
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.46.0</button>
+    Seqret
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.47.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
-    <button class="btn primary" id="openBtn" aria-label="Open a .seq file">Open<span class="wide"> .seq</span></button>
-    <button class="btn icon" id="reloadBtn" aria-label="Reload the file from disk" title="Reload the file from disk (R). Keeps zoom, selection and settings." hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 8.6A5.3 5.3 0 1 1 11.6 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12.4 1.6v3.1H9.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="opengrp" id="openGrp">
+      <button class="btn primary" id="openBtn" aria-label="Open a .seq file">Open<span class="wide"> .seq</span></button>
+      <div class="pop" id="recentWrap" hidden>
+        <button class="btn primary optbtn" id="recentBtn" aria-expanded="false" aria-controls="recentPop" aria-haspopup="dialog" title="Recently opened files" aria-label="Recently opened files"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="popbody float" id="recentPop" role="dialog" aria-label="Recent files" hidden><h6>Recent files</h6><div class="recent" id="recentList"></div></div>
+      </div>
+    </div>
+    <button class="btn" id="reloadBtn" aria-label="Reload the file from disk" title="Reload the file from disk (R). Keeps zoom, selection and settings." disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.2 8.6A5.3 5.3 0 1 1 11.6 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12.4 1.6v3.1H9.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="wide">Reload</span></button>
     <div class="pop">
       <button class="btn icon optbtn" id="moreBtn" aria-expanded="false" aria-controls="morePop" aria-haspopup="dialog" title="New tab, linked tabs, theme" aria-label="More: new tab, linked tabs, theme"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></button>
       <div class="popbody float" id="morePop" role="dialog" aria-label="More" hidden>
@@ -495,6 +520,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
             <button class="btn primary" id="openBtn2">Choose file</button>
             <button class="btn" id="demoBtn">Load demo: diffusion SE-EPI</button>
           </div>
+          <div class="recentbox" id="recentEmptyBox" hidden><h3>Recent files</h3><div class="recent" id="recentEmpty"></div></div>
           <div class="err" id="err"></div>
         </div>
       </div>
@@ -585,14 +611,14 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
 </dialog>
 <dialog id="ccDlg" aria-labelledby="ccTitle">
   <div class="about-head">
-    <div><h2 id="ccTitle">Concomitant gradients</h2><p class="muted">The gradient that spins at one position see, from the full field of the gradient coils</p></div>
+    <div><h2 id="ccTitle">Concomitant gradients</h2><p class="muted">The gradients seen by spins at one position, from the full field of the gradient coils</p></div>
     <button class="btn icon" id="ccClose" aria-label="Close">✕</button>
   </div>
   <div id="ccBody">
-    <p class="note">Besides the field along B<sub>0</sub>, the gradient coils make transverse fields. With them the field is B<sub>z</sub> = B<sub>0</sub> + g·r, B<sub>x</sub> = g<sub>x</sub>z − a g<sub>z</sub>x + f y, B<sub>y</sub> = g<sub>y</sub>z + (a − 1) g<sub>z</sub>y + f x, and spins at r precess at γ|B|: the gradient they see is ∇|B| = g + G<sub>c</sub>. Lane <b>Gc</b> shows G<sub>c</sub> at r (computed exactly, not as its second-order expansion; for a = 0.5, f = 0 the Maxwell terms of Bernstein et al., <i>Magn Reson Med</i> 1998;39:300–308). The calculation follows Olsson et al., <i>Magn Reson Med</i> 2026;96(3):1178–1191, <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. Lane <b>kc</b> its zeroth moment k<sub>c</sub> = ∫G<sub>c</sub> dt, the k-space shift of the spins at r, reset at each excitation and sign-flipped at each refocusing pulse like the k-vector. Lane <b>k + kc</b> is the total dephasing vector of the spins at r, the k-vector plus k<sub>c</sub>, under the same rules. Lane <b>Maxwell μ</b> is the generalized Maxwell index μ = (γ/B<sub>0</sub>)|∫<b>g</b>(t)<sup>⊗2</sup>h(t) dt|<sub>F</sub> in 1/m² (γ = 42.58 MHz/T), from the nominal gradients and B<sub>0</sub> only, reset at each excitation with h flipping sign at each refocusing pulse. From the physical (rotated) gradients; the sequence's x, y and z are taken as the scanner's, with B<sub>0</sub> along z. Turn the lanes on under Display › Concomitant.</p>
+    <p class="note">Computed as in Olsson et al., <i>Magn Reson Med</i> 2026, <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. Turn the lanes on under Display › Concomitant.</p>
     <div class="ccgrid">
       <label for="ccPos">Position</label><div class="frow"><select id="ccPos"><option value="fixed">fixed: r below</option><option value="slice">slice centre of each shot</option></select></div>
-      <span id="ccRLab">Position r</span><div class="frow"><label>x <input type="number" step="any" id="ccX" aria-label="Position x (cm)"></label><label>y <input type="number" step="any" id="ccY" aria-label="Position y (cm)"></label><label>z <input type="number" step="any" id="ccZ" aria-label="Position z (cm)"></label> cm</div>
+      <span id="ccRLab">Position r (x, y, z)</span><div class="frow"><input type="number" step="any" id="ccX" aria-label="Position x (cm)" title="x"><input type="number" step="any" id="ccY" aria-label="Position y (cm)" title="y"><input type="number" step="any" id="ccZ" aria-label="Position z (cm)" title="z"> cm</div>
       <label for="ccB0">Field strength B<sub>0</sub></label><div class="frow"><input type="number" step="any" min="0" id="ccB0"> T</div>
       <label for="ccA">Asymmetry a</label><div class="frow"><input type="number" step="any" id="ccA"><span class="muted">of the z coil; 0.5 for a symmetric one</span></div>
       <label for="ccF">Non-Maxwell term f</label><div class="frow"><input type="number" step="any" id="ccF"> T/m <span class="muted">constant in time; 0 for none</span></div>
@@ -7884,7 +7910,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.46.0", "date": "2026-11-08", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.", "Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab: b-value, tensor and eigenvalues, integrated exactly over all gradients from the excitation to the echo. The simulation's b-value is now its trace.", "Checked against PyPulseq-based calculations on five sequences: within 1.5·10⁻⁷."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.47.0", "date": "2026-11-12", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.", "Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab: b-value, tensor and eigenvalues, integrated exactly over all gradients from the excitation to the echo. The simulation's b-value is now its trace.", "Checked against PyPulseq-based calculations on five sequences: within 1.5·10⁻⁷."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -11894,7 +11920,7 @@ const USE = { e: 'excitation', r: 'refocusing', i: 'inversion', s: 'saturation',
 let C = {}; // resolved colors
 function readColors() {
   const cs = getComputedStyle(document.documentElement);
-  for (const k of ['bg', 'plot', 'ink', 'muted', 'faint', 'line', 'line-soft', 'c-rf', 'c-ph', 'c-gx', 'c-gy', 'c-gz', 'c-adc', 'c-ref', 'c-refima', 'c-noise', 'c-nav', 'sel', 'shade', 'warn'])
+  for (const k of ['bg', 'plot', 'ink', 'muted', 'faint', 'line', 'line-soft', 'bad', 'c-rf', 'c-ph', 'c-gx', 'c-gy', 'c-gz', 'c-adc', 'c-ref', 'c-refima', 'c-noise', 'c-nav', 'sel', 'shade', 'warn'])
     C[k.replace('c-', '')] = cs.getPropertyValue('--' + k).trim();
   C.font = cs.getPropertyValue('--font');
 }
@@ -13530,6 +13556,7 @@ function selectBlock(b, opts = {}) {
 const ptrs = new Map(); let drag = null;
 ovl.addEventListener('pointerdown', e => {
   if (!S.seq) return;
+  if (e.button === 0 && !ptrs.size) { const k = yzCrossAt(e.offsetX, e.offsetY); if (k) { delete S.yZoom[k]; ovl.style.cursor = ''; e.preventDefault(); request(); return; } } // the y-zoom tag's reset cross
   ovl.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
   if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; drag = { pinch: true, d0: Math.abs(a.x - b.x) || 1, t0: S.t0, t1: S.t1, cx: xToT((a.x + b.x) / 2) }; return; }
   if (e.button === 1 || e.button === 2) e.preventDefault();
@@ -13551,6 +13578,7 @@ ovl.addEventListener('pointermove', e => {
     else if (drag.moved) { ovl.classList.add('grabbing'); const dt = dx / (W - GUT - 8) * (drag.t1 - drag.t0); setView(drag.t0 - dt, drag.t1 - dt); }
   }
   S.hoverY = e.pointerType === 'mouse' ? e.offsetY : null;
+  if (e.pointerType === 'mouse') { const c = !drag && yzCrossAt(e.offsetX, e.offsetY) ? 'pointer' : ''; if (ovl.style.cursor !== c) ovl.style.cursor = c; }
   if (e.pointerType === 'mouse' || !drag) { S.hoverT = xToT(e.offsetX); requestOverlay(); linkSendHover(); }
 });
 function endPtr(e) {
@@ -13962,13 +13990,16 @@ function renderSeqInfo() {
   const s = S.seq, el = $('#p-seq');
   if (!s) { el.innerHTML = '<p class="note">No sequence loaded.</p>'; return; }
   const st = s.stats, v = s.version, d = s.defs;
-  const sig = s.sig.status === 'ok' ? '<span class="badge ok">md5 verified</span>' : s.sig.status === 'mismatch' ? '<span class="badge bad">md5 mismatch</span>' : s.sig.status === 'unsupported' ? `<span class="badge mut">${esc(s.sig.type)} not checked</span>` : '<span class="badge mut">not signed</span>';
+  const [sigCls, sigTxt] = s.sig.status === 'ok' ? ['ok', 'md5 verified'] : s.sig.status === 'mismatch' ? ['bad', 'md5 mismatch'] : s.sig.status === 'unsupported' ? ['mut', `${esc(s.sig.type)} not checked`] : ['mut', 'not signed'];
+  const sigHash = s.signature && s.signature.hash ? String(s.signature.hash).toLowerCase() : null; // clicking the badge shows the full hash and copies it (1.47.0)
+  const sig = sigHash ? `<button class="badge ${sigCls}" id="sigBtn" title="Show the full ${esc(s.signature.type || 'signature')} hash and copy it">${sigTxt}</button><div class="sighash" id="sigHash" hidden>${esc(sigHash)}${s.sig.status === 'mismatch' && s.sig.hash ? `<br><span class="muted">computed:</span> ${esc(s.sig.hash)}` : ''} <span class="muted" id="sigMsg"></span></div>` : `<span class="badge ${sigCls}">${sigTxt}</span>`;
+  const fdate = SRC && SRC.mod ? new Date(SRC.mod) : null;
   const uses = s.stats.uses;
   const guessed = s.verNum < 1005000;
   const fov = Array.isArray(d.FOV) ? d.FOV.map(x => fmt(x * 1e3, 4)).join(' × ') + ' mm' : null;
   el.innerHTML =
     `<h3>${esc(d.Name || S.name)}</h3>` +
-    kv([['Pulseq format', `${v.major}.${v.minor}.${v.revision} <a href="${PULSEQ_WEB}" target="_blank" rel="noopener" title="Pulseq website">ⓘ</a>`], ['Signature', sig], ['Duration', fmtT(s.totalDur)],
+    kv([['Pulseq format', `${v.major}.${v.minor}.${v.revision} <a href="${PULSEQ_WEB}" target="_blank" rel="noopener" title="Pulseq website">ⓘ</a>`], fdate ? ['Written', `<span title="When the file was written: its modification time on disk. Pulseq files store no creation date, and browsers do not report a file's creation time.">${fmtDate(fdate)}</span>`] : null, ['Signature', sig], ['Duration', fmtT(s.totalDur)],
       d.TotalDuration != null && Math.abs(d.TotalDuration - s.totalDur) > 1e-6 ? ['Declared duration', `<span style="color:var(--warn)">${fmtT(d.TotalDuration)}</span>`] : null,
       ['Blocks', s.nb.toLocaleString()], fov ? ['FOV', fov] : null,
       s.rot && s.rot.blocks ? ['Rotations', `${s.rot.blocks.toLocaleString()} blocks rotated (${s.rot.distinct} distinct, up to ${fmt(s.rot.maxAngle * 180 / Math.PI, 3)}°); gradients and k-space are shown rotated`] : null]) +
@@ -13988,8 +14019,7 @@ function renderSeqInfo() {
     `<h3>Rasters</h3>` +
     kv([['Gradient', us(s.raster.grad)], ['RF', us(s.raster.rf)], ['ADC', fmt(s.raster.adc * 1e9, 4) + ' ns'], ['Block', us(s.raster.block)]]) +
     `<h3>Settings</h3><p class="note">Lanes, units, shot and volume rules and k-space options are remembered in this browser.</p><button class="btn" id="resetSettings">Restore default settings</button>` +
-    `<p class="note" style="margin-top:14px">File format: Pulseq, Layton et al., Magn Reson Med 2017 (${PULSEQ_LINKS})</p>` +
-    `<p class="note">${esc(APP.name)} ${esc(APP.version)} · <a href="#" id="aboutLink">About, version history and how to cite</a></p>` +
+    `<p class="note" style="margin-top:14px">${esc(APP.name)} ${esc(APP.version)} · <a href="#" id="aboutLink">About, version history and how to cite</a></p>` +
     (s.warnings.length ? `<h3>Warnings <span class="tag">${s.warnings.length}</span></h3><ul class="warnlist">${s.warnings.slice(0, 50).map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : '');
 }
 function minMax(a) { let mn = Infinity, mx = -Infinity; for (const x of a) { if (x < mn) mn = x; if (x > mx) mx = x; } return [mn, mx]; } // no spread: arrays can hold ~1M values
@@ -14021,7 +14051,16 @@ function shotsHTML() {
       ['Duration, median', sh.length > 1 ? range(dur, fmtT) : fmtT(dur[0])],
       acq.length ? ['ADC samples / shot', range(acq.map(x => x.nSamples), v => v.toLocaleString())] : null]);
 }
+function fmtDate(d) { const p = v => String(v).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+async function copyText(t) { // the clipboard, with the old copy command where the Clipboard API is refused
+  try { await navigator.clipboard.writeText(t); return true; } catch (_) { }
+  try { const a = document.createElement('textarea'); a.value = t; a.style.cssText = 'position:fixed;opacity:0;left:0;top:0'; document.body.appendChild(a); a.select(); const ok = document.execCommand('copy'); a.remove(); return ok; } catch (_) { return false; }
+}
 document.addEventListener('click', e => {
+  if (e.target.id === 'sigBtn') {
+    const h = $('#sigHash'); h.hidden = false;
+    copyText(S.seq.signature.hash.toLowerCase()).then(ok => { const m = $('#sigMsg'); if (m) m.textContent = ok ? '(copied)' : '(select it and press Ctrl/Cmd+C)'; });
+  }
   if (e.target.id === 'resetSettings') resetSettings();
   if (e.target.id === 'aboutLink') { e.preventDefault(); openAbout(); }
 });
@@ -14039,12 +14078,12 @@ function openAbout() {
     (A.licenseText ? `<details class="lic"><summary>Show the licence text</summary><pre>${esc(A.licenseText)}</pre></details>` : '') +
     `<h3>How to cite</h3><div class="cite" id="citeText">${esc(cite)}</div><div class="cite-row"><button class="btn" id="copyCite">Copy citation</button><span class="muted" id="copyMsg"></span></div>` +
     `<h3>Acknowledgements</h3><ul>
-      <li>The Pulseq file format and its conventions (event definitions, labels, k-space calculation): Layton KJ, Kroboth S, Jia F, et al. Pulseq: a rapid and hardware-independent pulse sequence prototyping framework. <i>Magn Reson Med</i> 2017;77(4):1544–1552. ${PULSEQ_LINKS}</li>
-      <li>PyPulseq was used to validate the viewer: the reference files of its test suite check the reading of files, the gradient waveforms and k-space, and its waveforms were compared with the stimulation input and used for the independent checks of the concomitant gradients, kc and the Maxwell index. Ravi KS, Geethanath S, Vaughan JT. PyPulseq: a Python package for MRI pulse sequence design. <i>J Open Source Softw</i> 2019;4(42):1725. <a href="https://doi.org/10.21105/joss.01725" target="_blank" rel="noopener">doi:10.21105/joss.01725</a> · <a href="https://github.com/imr-framework/pypulseq" target="_blank" rel="noopener">github.com/imr-framework/pypulseq</a></li>
-      <li>Concomitant gradients (lanes Gc, kc and k + kc) are computed as in Olsson V, Mortensen F, Ljungberg E, Testud F, Wirestam R, Molendowska M, Szczepankiewicz F. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. <i>Magn Reson Med</i> 2026;96(3):1178–1191. <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a>. The field model builds on Bernstein MA, Zhou XJ, Polzin JA, et al. Concomitant gradient terms in phase contrast MR: analysis and correction. <i>Magn Reson Med</i> 1998;39(2):300–308. <a href="https://doi.org/10.1002/mrm.1910390218" target="_blank" rel="noopener">doi:10.1002/mrm.1910390218</a></li>
+      <li>The Pulseq file format and its conventions (event definitions, labels, k-space calculation): Layton KJ, et al. Pulseq: a rapid and hardware-independent pulse sequence prototyping framework. <i>Magn Reson Med</i> 2017;77(4):1544–1552. ${PULSEQ_LINKS}</li>
+      <li>PyPulseq was used to validate the viewer: reference files of the suite verify reading files, gradient waveforms and k-space trajectory. Ravi KS, et al. PyPulseq: a Python package for MRI pulse sequence design. <i>J Open Source Softw</i> 2019;4(42):1725. <a href="https://doi.org/10.21105/joss.01725" target="_blank" rel="noopener">doi:10.21105/joss.01725</a> · <a href="https://github.com/imr-framework/pypulseq" target="_blank" rel="noopener">github.com/imr-framework/pypulseq</a></li>
+      <li>Concomitant gradients (lanes Gc, kc and k + kc) and the generalized Maxwell index μ are computed as in Olsson V, et al. Concomitant gradient effects across field strengths and gradient amplitudes: improved estimation of errors and correction of concomitant dephasing and diffusion weighting. <i>Magn Reson Med</i> 2026;96(3):1178–1191. <a href="https://doi.org/10.1002/mrm.70422" target="_blank" rel="noopener">doi:10.1002/mrm.70422</a></li>
       <li>Nerve stimulation (PNS, CNS) follows the SAFE model as implemented in safe_pns_prediction by F. Szczepankiewicz and T. Witzel (<a href="https://github.com/filip-szczepankiewicz/safe_pns_prediction" target="_blank" rel="noopener">github.com/filip-szczepankiewicz/safe_pns_prediction</a>), against which it was checked. Model: Hebrank FX, Gebhardt M. SAFE-Model: a new method for predicting peripheral nerve stimulations in MRI. <i>Proc Intl Soc Mag Reson Med</i> 2000;8:2007.</li>
     </ul>` +
-    `<h3>Recent changes</h3>` + A.changelog.map(c => `<p style="margin:8px 0 2px"><b>${esc(c.version)}</b> <span class="muted">${esc(c.date)}</span></p><ul>${c.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`).join('') +
+    `<h3>Recent changes</h3>` + A.changelog.slice(0, 5).map(c => `<p style="margin:8px 0 2px"><b>${esc(c.version)}</b> <span class="muted">${esc(c.date)}</span></p><ul>${c.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>`).join('') +
     `<p class="muted" style="margin-top:10px">The complete version history is in CHANGELOG.md${A.url ? ` in the <a href="${esc(A.url)}" target="_blank" rel="noopener">source code repository</a>` : ''}.</p>`;
   $('#copyCite').onclick = async () => { try { await navigator.clipboard.writeText(cite); $('#copyMsg').textContent = 'Copied'; } catch (_) { const r = document.createRange(); r.selectNodeContents($('#citeText')); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); $('#copyMsg').textContent = 'Selected, press Ctrl/Cmd+C'; } };
   if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
@@ -15371,8 +15410,8 @@ async function load(bytes, name, opts = {}) {
       setView(prev.t0, prev.t1); S.hist = prev.hist; $('#backBtn').disabled = !S.hist.length;
       if (prev.sel >= 0 && prev.sel < seq.nb) { S.sel = prev.sel; S.selKind = prev.selKind; S.selItems = []; S.selAnchor = -1; }
     } else { S.yZoom = {}; fitAll(); if (seq.shots.length) zoomToShot(0); }
+    SRC = opts.src || null; setReloadBtn(); setFnameTitle(); if (!prev) { fnote(''); addRecent(name, SRC); }
     renderSeqInfo(); renderDefs(); renderBlock(); requestK(); if (prev) requestImg();
-    SRC = opts.src || null; $('#reloadBtn').hidden = !(SRC && (SRC.handle || SRC.file)); if (!prev) fnote('');
     stimStart(true);
     if (!prev) ovl.focus({ preventScroll: true });
     linkApplying = false; if (S.linkMode !== 'off') linkPost({ type: 'hello', want: true });
@@ -15419,6 +15458,22 @@ async function reloadFile() {
   finally { reloading = false; $('#reloadBtn').classList.remove('spin'); }
 }
 $('#reloadBtn').onclick = reloadFile;
+function setReloadBtn() {
+  const b = $('#reloadBtn'), ok = !!(SRC && (SRC.handle || SRC.file));
+  b.disabled = !ok;
+  b.title = ok ? 'Reload the file from disk (R). Keeps zoom, selection and settings.' : S.seq ? (SRC && SRC.embedded ? 'A file opened from MATLAB (seqret.m) is part of the page and cannot be re-read: run seqret again, or open the file with Open .seq' : 'This file cannot be re-read from disk') : 'Reload the file from disk (R), once a file is open';
+}
+/* the file name in the header: hovering shows the full path where it is known, clicking copies it (1.47.0). A
+   page is never told the folder of a file it opens (Open, drop, recent files); seqret.m passes the path along
+   with an embedded file (data-path). */
+function setFnameTitle() {
+  const el = $('#fname'), path = SRC && SRC.path;
+  el.title = path ? `${path}\nClick to copy the path` : `${S.name}\nClick to copy the name (the browser does not give pages the folder of a file)`;
+}
+$('#fname').addEventListener('click', () => {
+  if (!S.seq) return; const t = (SRC && SRC.path) || S.name;
+  copyText(t).then(ok => { const msg = ok ? `Copied ${SRC && SRC.path ? 'path' : 'name'}` : 'Could not copy'; fnote(msg); setTimeout(() => { if ($('#fnote').textContent === msg) fnote(''); }, 2500); });
+});
 /* the folder of the last opened file (1.20.0): its handle is kept in the browser's IndexedDB, and the next Open .seq
    starts there (startIn). Only where the File System Access API exists (Chrome, Edge); other browsers' own file
    dialogs remember the folder, or not, by themselves. The handle gives no access to the file by itself. */
@@ -15449,6 +15504,51 @@ async function pickFile() { // File System Access picker where available (reload
   try { openFile(await h.getFile(), { handle: h }); } catch (e) { showError(`Could not read the file: ${e.message}`); }
 }
 $('#openBtn').onclick = $('#openBtn2').onclick = pickFile;
+/* ---------- recent files (1.47.0) ----------
+   The last 8 files opened in this browser, kept in IndexedDB with their File System Access handles where the
+   browser has them (Chrome, Edge): those reopen from disk (the browser may ask once to allow reading). Files
+   opened without a handle (other browsers, files from MATLAB) are listed by name; choosing one opens the file
+   dialog. The demo is not listed. */
+const RECENT_N = 8; let RECENT = [];
+async function addRecent(name, src) {
+  if (!src || src.demo || !window.indexedDB) return;
+  const e = { name, path: src.path || null, mod: src.mod || null, t: Date.now(), handle: src.handle || null };
+  const same = async r => {
+    if (r.name !== e.name) return false;
+    if (r.handle && e.handle) { try { return await r.handle.isSameEntry(e.handle); } catch (_) { return false; } }
+    if (r.path || e.path) return r.path === e.path;
+    return !r.handle && !e.handle;
+  };
+  const keep = []; for (const r of RECENT) if (!(await same(r))) keep.push(r);
+  RECENT = [e, ...keep].slice(0, RECENT_N); renderRecent();
+  try { await kvSet('recentSeq', RECENT); } catch (_) { try { await kvSet('recentSeq', RECENT.map(r => ({ ...r, handle: null }))); } catch (_) { } }
+}
+function renderRecent() {
+  const html = RECENT.map((r, i) => {
+    const sub = [r.path, r.mod ? fmtDate(new Date(r.mod)) : null].filter(Boolean).join(' · ');
+    const tip = r.handle ? `Open ${r.name} again${r.path ? ` (${r.path})` : ''}` : `${r.path || r.name}: this browser cannot reopen it by itself, choose it in the file dialog`;
+    return `<button class="ritem${r.handle ? '' : ' noreopen'}" data-recent="${i}" title="${esc(tip)}"><b>${esc(r.name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</button>`;
+  }).join('');
+  const clear = RECENT.length ? '<button class="btn link rclear" data-recent-clear="1">Clear list</button>' : '';
+  $('#recentList').innerHTML = html + clear; $('#recentEmpty').innerHTML = html;
+  $('#recentWrap').hidden = !RECENT.length; $('#openGrp').classList.toggle('hasrecent', RECENT.length > 0); $('#recentEmptyBox').hidden = !RECENT.length;
+}
+function closeRecentPop() { $('#recentPop').hidden = true; $('#recentBtn').setAttribute('aria-expanded', 'false'); }
+async function openRecent(i) {
+  const r = RECENT[i]; closeRecentPop(); if (!r) return;
+  if (!r.handle) { pickFile(); return; }
+  const fail = m => { if (S.seq) fnote(m, true); else showError(m); };
+  try {
+    if (r.handle.queryPermission && (await r.handle.queryPermission({ mode: 'read' })) !== 'granted' &&
+        (await r.handle.requestPermission({ mode: 'read' })) !== 'granted') { fail(`Reading ${r.name} was not allowed`); return; }
+    const f = await r.handle.getFile(); rememberHandle(r.handle); openFile(f, { handle: r.handle });
+  } catch (e) { fail(`Could not open ${r.name} (moved or deleted?): ${e.message}`); }
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-recent]'); if (b) { openRecent(+b.dataset.recent); return; }
+  if (e.target.closest('[data-recent-clear]')) { RECENT = []; renderRecent(); closeRecentPop(); kvSet('recentSeq', []).catch(() => { }); }
+});
+if (window.indexedDB) kvGet('recentSeq').then(v => { if (Array.isArray(v)) { RECENT = v.filter(r => r && typeof r.name === 'string').slice(0, RECENT_N); renderRecent(); } }, () => { });
 $('#fileIn').onchange = e => { const f = e.target.files[0]; openFile(f, { file: f }); e.target.value = ''; };
 $('#demoBtn').onclick = () => load(new TextEncoder().encode($('#demoSeq').textContent), 'seqret_default.seq', { src: { demo: true } });
 let dragDepth = 0;
@@ -15670,12 +15770,34 @@ function drawStimLane(L, t0, t1, x0, pw) {
   pctx.restore();
   if (yz !== 1 && !EXP) yZoomTag(L, x0);
 }
-/* the lane's y zoom factor, at the top left of its plot area */
+/* the lane's y zoom factor, at the top left of its plot area, with a red cross that resets it (1.47.0). The × and
+   the digits are centred on the tag's middle line from their drawn bounds, not from the font's baseline. */
+const YZ_HIT = {}; // lane key → [x, y, w, h] of the reset cross (CSS px), from the last drawing
 function yZoomTag(L, x0) {
-  const z = yZoomOf(L.key), t = 'y ×' + (z >= 10 ? Math.round(z) : +z.toFixed(z < 1 ? 2 : 1));
-  pctx.save(); pctx.font = `500 10.5px ${C.font}`; pctx.textAlign = 'left'; pctx.textBaseline = 'middle';
-  const w = pctx.measureText(t).width + 8; pctx.fillStyle = C.plot; pctx.globalAlpha = 0.85; pctx.fillRect(x0 + 4, L.y + 2, w, 15);
-  pctx.globalAlpha = 1; pctx.fillStyle = C.muted; pctx.fillText(t, x0 + 8, L.y + 9.5); pctx.restore();
+  const z = yZoomOf(L.key), n = String(z >= 10 ? Math.round(z) : +z.toFixed(z < 1 ? 2 : 1));
+  const f1 = `500 10.5px ${C.font}`, f2 = `500 14px ${C.font}`, h = 17, top = L.y + 2, cy = top + h / 2, xs = 13;
+  pctx.save(); pctx.textAlign = 'left'; pctx.textBaseline = 'alphabetic';
+  pctx.font = f1; const wy = pctx.measureText('y').width, mn = pctx.measureText(n), wn = mn.width;
+  pctx.font = f2; const mx = pctx.measureText('×'), wx = mx.width;
+  const w = 6 + wy + 2 + wx + 2 + wn + 4 + xs + 2;
+  pctx.fillStyle = C.plot; pctx.globalAlpha = 0.85; pctx.fillRect(x0 + 4, top, w, h); pctx.globalAlpha = 1;
+  const bl = cy + ((mn.actualBoundingBoxAscent || 7.5) - (mn.actualBoundingBoxDescent || 0)) / 2; // digits centred
+  let x = x0 + 10; pctx.fillStyle = C.muted;
+  pctx.font = f1; pctx.fillText('y', x, bl); x += wy + 2;
+  pctx.font = f2; pctx.fillText('×', x, cy + ((mx.actualBoundingBoxAscent || 7) - (mx.actualBoundingBoxDescent || 0)) / 2); x += wx + 2;
+  pctx.font = f1; pctx.fillText(n, x, bl); x += wn + 4;
+  const cx = x + xs / 2, r = 3.3; // the reset cross
+  pctx.strokeStyle = C.bad || '#B91C1C'; pctx.lineWidth = 1.6; pctx.lineCap = 'round'; pctx.beginPath();
+  pctx.moveTo(cx - r, cy - r); pctx.lineTo(cx + r, cy + r); pctx.moveTo(cx + r, cy - r); pctx.lineTo(cx - r, cy + r); pctx.stroke();
+  pctx.restore();
+  YZ_HIT[L.key] = [x - 1, top - 1, xs + 3, h + 2];
+}
+function yzCrossAt(x, y) { // the lane whose reset cross is under (x, y), or null
+  for (const k in YZ_HIT) {
+    if (!S.yZoom[k]) continue; const [a, b, w, h] = YZ_HIT[k];
+    if (x >= a && x <= a + w && y >= b && y <= b + h) { const L = laneAtY(y); if (L && L.key === k) return k; }
+  }
+  return null;
 }
 function stimAt(t) { // values of every trace at time t, or null
   if (!STIM) return null; const k = stimK(t); if (k < 0 || !stimReady(k) || k >= STIM.R.N) return null;
@@ -15832,7 +15954,7 @@ const ccCm = v => +(v * 100).toPrecision(10);
 function ccSync() { // dialog from S.cc
   const c = S.cc; $('#ccX').value = ccCm(c.r[0]); $('#ccY').value = ccCm(c.r[1]); $('#ccZ').value = ccCm(c.r[2]);
   $('#ccB0').value = c.B0; $('#ccA').value = c.a; $('#ccF').value = c.f; $('#ccPos').value = c.pos;
-  $('#ccRLab').textContent = c.pos === 'slice' ? 'Fixed r (no slice)' : 'Position r';
+  $('#ccRLab').textContent = c.pos === 'slice' ? 'Fixed r (no slice; x, y, z)' : 'Position r (x, y, z)';
   for (const id of ['ccX', 'ccY', 'ccZ', 'ccB0', 'ccA', 'ccF']) $('#' + id).classList.remove('bad');
   ccStatus();
 }
@@ -15855,7 +15977,7 @@ function ccRead() { // dialog to S.cc (only when every field is valid)
   let ok = true; for (const k in F) { const bad = !isFinite(F[k].v) || (k === 'B0' && !(F[k].v > 0)); F[k].el.classList.toggle('bad', bad); if (bad) ok = false; }
   if (!ok) { $('#ccNote').textContent = 'Enter a number in every field (B0 above 0).'; return; }
   S.cc = { r: [F.x.v / 100, F.y.v / 100, F.z.v / 100], B0: F.B0.v, a: F.a.v, f: F.f.v, pos: $('#ccPos').value === 'slice' ? 'slice' : 'fixed' };
-  $('#ccRLab').textContent = S.cc.pos === 'slice' ? 'Fixed r (no slice)' : 'Position r'; ccApply();
+  $('#ccRLab').textContent = S.cc.pos === 'slice' ? 'Fixed r (no slice; x, y, z)' : 'Position r (x, y, z)'; ccApply();
 }
 for (const id of ['ccX', 'ccY', 'ccZ', 'ccB0', 'ccA', 'ccF', 'ccPos']) $('#' + id).addEventListener('change', ccRead);
 $('#ccDefault').onclick = () => { S.cc = { r: CC_DEF.r.slice(), B0: CC_DEF.B0, a: CC_DEF.a, f: CC_DEF.f, pos: CC_DEF.pos }; ccSync(); ccApply(); };
@@ -15899,14 +16021,15 @@ readColors(); resize();
 // <script type="text/plain" id="autoSeq" data-name="..."> holds the file as base64, one chunk per line
 function autoLoad() {
   const a = document.getElementById('autoSeq'); if (!a) return;
-  const name = a.dataset.name || 'sequence.seq', lines = a.textContent.split(/\s+/).filter(Boolean); a.remove();
+  const name = a.dataset.name || 'sequence.seq', lines = a.textContent.split(/\s+/).filter(Boolean), ds = { ...a.dataset }; a.remove();
   setBusy(true, 0);
   setTimeout(() => {
     try {
       const parts = lines.map(l => atob(l)); let n = 0; for (const p of parts) n += p.length;
       const bytes = new Uint8Array(n); let o = 0;
       for (const p of parts) { for (let i = 0; i < p.length; i++) bytes[o + i] = p.charCodeAt(i); o += p.length; }
-      load(bytes, name, { src: { embedded: true } });
+      const mt = Date.parse(ds.mtime || ''); // data-path, data-mtime: written by seqret.m 1.47 and later
+      load(bytes, name, { src: { embedded: true, path: ds.path || null, mod: isFinite(mt) ? mt : null } });
     } catch (e) { setBusy(false); showError(`Could not read the embedded file ${name}: ${e.message}`); }
   }, 30);
 }

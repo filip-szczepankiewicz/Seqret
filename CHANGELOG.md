@@ -1,6 +1,16 @@
 # Seqret changelog
 
-All versions, newest first. The About dialog of the page shows the latest 8.
+All versions, newest first. The About dialog of the page shows the latest 5.
+
+## 1.47.0 (2026-11-12)
+
+- Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).
+- Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.
+- Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.
+- Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it. The file-format note at the bottom is removed (credited in About).
+- File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.
+- Shorter Concomitant gradients dialog, with the position boxes aligned with the others. "Pulseq viewer" removed next to the logo.
+- About: PyPulseq and Olsson et al. credits revised (μ added to the latter); the latest 5 versions are shown.
 
 ## 1.46.0 (2026-11-08)
 
