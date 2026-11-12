@@ -297,6 +297,7 @@ dialog#figDlg{border:1px solid var(--line);border-radius:12px;background:var(--s
 dialog#figDlg::backdrop,dialog#about::backdrop,dialog#safeDlg::backdrop,dialog#ccDlg::backdrop{background:rgba(10,15,20,.4)}
 dialog#ccDlg{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(600px,94vw);max-height:90vh}
 #ccBody{padding:0 20px 20px;overflow:auto;max-height:calc(90vh - 80px);font-size:13.5px}
+#kAct{justify-self:start}
 .ccgrid{display:grid;grid-template-columns:auto 1fr;gap:9px 12px;align-items:center;margin:12px 0}
 .ccgrid>span,.ccgrid>label{color:var(--muted)}
 .ccgrid input{width:84px;border:1px solid var(--line);background:var(--plot);color:var(--ink);border-radius:6px;padding:3px 6px;font:inherit;font-variant-numeric:tabular-nums;text-align:right}
@@ -550,7 +551,9 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
         <button class="btn icon optbtn sideopt" id="kOptBtn" aria-label="k-space options: path, save as PNG" aria-expanded="false" aria-controls="kOpts" title="k-space options: path, save as PNG"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h7M12 4h2M2 8h2M7 8h7M2 12h9M14 12h0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10.5" cy="4" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="5.5" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12.5" cy="12" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
       </div>
       <div class="popbody inline" id="kOpts" hidden>
-        <div class="pgrid"><span>Path</span><label><input type="checkbox" id="kTraj" checked> Show</label></div>
+        <div class="pgrid"><span>Path</span><label><input type="checkbox" id="kTraj" checked> Show</label>
+          <span>Trajectory</span><div class="seg" id="kAct" role="group" aria-label="Nominal or actual trajectory"><button data-v="nom" aria-pressed="true" title="The k-vector of the gradients in the file">Nominal</button><button data-v="act" aria-pressed="false" title="What spins see: the k-vector plus the concomitant shift kc (lane k + kc), with the settings under Concomitant gradients">Actual (k + kc)</button></div></div>
+        <p class="note" id="kActNote"></p>
         <p class="note">The arrows above the plot step through the kinds of readout (imaging, reference, navigator, noise, from the Pulseq flag labels), each coloured by acquisition order (dark to bright); the last view shows all readouts together, coloured by kind and imaging by image. k is reset at excitation pulses and mirrored at refocusing pulses, evaluated at the RF centre (as in Pulseq's calculateKspacePP). Drag the plot to rotate, scroll to zoom.</p>
         <div class="frow"><button class="btn small" id="kPng">Save k-space as PNG</button><button class="btn small" id="kFig">Save figure…</button></div>
       </div>
@@ -7910,7 +7913,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.47.0", "date": "2026-11-12", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.", "Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab: b-value, tensor and eigenvalues, integrated exactly over all gradients from the excitation to the echo. The simulation's b-value is now its trace.", "Checked against PyPulseq-based calculations on five sequences: within 1.5·10⁻⁷."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.47.0", "date": "2026-11-12", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "k-space: Nominal or Actual (k + kc) trajectory (k-space options). For files corrected for concomitant fields (MxwlCorrParams), the field they were corrected for can be taken over in one click.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.", "Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab: b-value, tensor and eigenvalues, integrated exactly over all gradients from the excitation to the echo. The simulation's b-value is now its trace.", "Checked against PyPulseq-based calculations on five sequences: within 1.5·10⁻⁷."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -9342,7 +9345,7 @@ function kInBlock(seq, i, rel, out, o, nq = rel.length) {
   }
 }
 /* ADC samples of events j0..j1-1 (thinned by whole events to at most maxPts samples) */
-function kSamples(seq, j0, j1, maxPts = Infinity, withT = false) {
+function kSamples(seq, j0, j1, maxPts = Infinity, withT = false, kib = kInBlock) { // kib: kInBlock (nominal) or ktInBlock (k + kc)
   const total = seq.adcOff[j1] - seq.adcOff[j0];
   const step = total > maxPts ? Math.ceil(total / maxPts) : 1;
   let n = 0; for (let j = j0; j < j1; j += step) n += seq.adcOff[j + 1] - seq.adcOff[j];
@@ -9354,7 +9357,7 @@ function kSamples(seq, j0, j1, maxPts = Infinity, withT = false) {
     const b = seq.adcBlocks[j], aid = seq.B.adc[b], d = seq.adc.get(aid);
     let rel = relCache.get(aid); if (!rel) { rel = new Float64Array(d.num); for (let q = 0; q < d.num; q++) rel[q] = d.delay + (q + 0.5) * d.dwell; relCache.set(aid, rel); }
     if (tmp[0].length < d.num) for (let a = 0; a < 3; a++) tmp[a] = new Float64Array(d.num);
-    kInBlock(seq, b, rel, tmp, 0);
+    kib(seq, b, rel, tmp, 0);
     for (let a = 0; a < 3; a++) for (let q = 0; q < d.num; q++) out[a][o + q] = tmp[a][q];
     type.fill(seq.adcType[j], o, o + d.num);
     if (T) for (let q = 0; q < d.num; q++) T[o + q] = seq.blockStart[b] + rel[q];
@@ -9436,12 +9439,13 @@ function adcEchoes(seq, shots) {
   return done(pos);
 }
 /* trajectory through blocks b0..b1: gradient vertices (+3 subdivisions); only block starts when too many */
-function kPath(seq, b0, b1, maxPts = 6e5) {
+function kPath(seq, b0, b1, maxPts = 6e5, act = false) { // act: k + kc (seq.cc set up), otherwise the nominal k
+  const kib = act ? ktInBlock : kInBlock, kS = act ? seq.cc.ktStart : seq.kStart;
   const B = seq.B, nbk = b1 - b0 + 1;
   let est = 0; for (let i = b0; i <= b1 && est <= maxPts; i++) for (const c of ['pgx', 'pgy', 'pgz']) if (B[c][i]) est += geoG(seq, B[c][i]).n * 4;
   if (est > maxPts) {
     const step = Math.max(1, Math.ceil(nbk / maxPts)), n = Math.floor(nbk / step) + 1, k = [new Float32Array(n), new Float32Array(n), new Float32Array(n)];
-    let o = 0; for (let i = b0; i <= b1 && o < n; i += step, o++) for (let a = 0; a < 3; a++) k[a][o] = seq.kStart[a][i];
+    let o = 0; for (let i = b0; i <= b1 && o < n; i += step, o++) for (let a = 0; a < 3; a++) k[a][o] = kS[a][i];
     return { n: o, k, coarse: true };
   }
   const K = [new GBuf(Float32Array), new GBuf(Float32Array), new GBuf(Float32Array)];
@@ -9453,7 +9457,7 @@ function kPath(seq, b0, b1, maxPts = 6e5) {
     const rel = [];
     for (let q = 0; q < u.length; q++) { if (q && u[q] - u[q - 1] < 1e-10) continue; if (rel.length) { const p = rel[rel.length - 1], d = u[q] - p; for (let s = 1; s < 4; s++) rel.push(p + d * s / 4); } rel.push(u[q]); }
     const R = Float64Array.from(rel), o3 = [new Float64Array(R.length), new Float64Array(R.length), new Float64Array(R.length)];
-    kInBlock(seq, i, R, o3, 0);
+    kib(seq, i, R, o3, 0);
     for (let q = 0; q < R.length; q++) for (let a = 0; a < 3; a++) K[a].push(o3[a][q]);
   }
   const k = K.map(b => b.done());
@@ -11880,7 +11884,7 @@ const S = {
   stimNorm: true, combineG: true, rfMode: 'mag', linkMode: 'off',
   echo: { se: true, gf: true, gl: true, zoom: true }, // echo markers (Display › Echoes)
   sim: { eddy: 'off', slicePos: true, show3d: true, orient: 'ax', phantom: 'head', B0: 3, t1: true, t2: true, fatShift: true, diffusion: true, bubble: false, noise: false, fill: true, crop: true, view: 'mag' }, labelsPref: true, volPref: 'auto', shotMode: 'exc', volMode: 'auto', vols: [], selKind: null, hist: [],
-  kRange: 'shot', kProj: 'xy', kTraj: true, kR: null, kZoom: 1, kPan: [0, 0], kGroup: 'img'
+  kRange: 'shot', kProj: 'xy', kTraj: true, kActual: false, kR: null, kZoom: 1, kPan: [0, 0], kGroup: 'img'
 };
 const LANES = [
   { key: 'adc', label: 'ADC', w: 0.42, col: 'adc' },
@@ -13272,10 +13276,10 @@ function stampEchoesK(B, P, pb0, pb1, grp) {
   const s = S.seq, bs = s.blockStart, shots = echoShots(); if (!shots.length) return '';
   let [k0, k1] = shotRange(shots, bs[pb0], bs[pb1 + 1]); if (k1 < k0) return '';
   const capped = k1 - k0 + 1 > 400; if (capped) k1 = k0 + 399;
-  const key = [k0, k1, grp ? grp.id : '', E.se, E.gf, E.gl, s.nb].join(',');
+  const act = S.kActual && s.cc, key = [k0, k1, grp ? grp.id : '', E.se, E.gf, E.gl, s.nb, act ? s.cc.key : ''].join(',');
   if (!kEchoCache || kEchoCache.key !== key || kEchoCache.seq !== s) { // the echoes' k-vectors, per kind
     const rel = new Float64Array(1), out = [new Float64Array(1), new Float64Array(1), new Float64Array(1)], L = { se: [], gf: [], gl: [] };
-    const kAt = (t, arr) => { const b = blockAtTime(s, t); rel[0] = t - bs[b]; kInBlock(s, b, rel, out, 0, 1); arr.push(out[0][0], out[1][0], out[2][0]); };
+    const kAt = (t, arr) => { const b = blockAtTime(s, t); rel[0] = t - bs[b]; (act ? ktInBlock : kInBlock)(s, b, rel, out, 0, 1); arr.push(out[0][0], out[1][0], out[2][0]); };
     for (let k = k0; k <= k1; k++) {
       const r = shotEchoes(s, shots, k);
       if (E.se) for (const t of r.se) kAt(t, L.se);
@@ -14318,6 +14322,33 @@ function segSet(id, key, cb) {
   const el = $(id); el.querySelectorAll('button').forEach(b => b.onclick = () => { el.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); cb(b.dataset.v); });
 }
 segSet('#kRange', 'kRange', v => { S.kRange = v; requestK(); });
+segSet('#kAct', 'kActual', v => { S.kActual = v === 'act'; kInvalidate(); requestK(); kActNote(); scheduleSave(); });
+/* nominal or actual k-space (1.47.0). Actual: the k-vector plus kc, the concomitant k-space shift at the position of
+   Concomitant gradients › Position (the slice centre of each shot, or the fixed r), as lane k + kc. A sequence whose
+   gradients were pre-corrected for concomitant fields plays a distorted nominal trajectory whose actual one is close to
+   the one intended. MxwlCorrParams in [DEFINITIONS] ("B0=0.01 T, a=0.5, f=0 T/m, ...") names the field the
+   correction was made for; its values can be taken over (with the slice centres, where such corrections apply). */
+function mxwlCorrParams(seq) {
+  const v = seq && seq.defs && seq.defs.MxwlCorrParams; if (v == null) return null;
+  const t = Array.isArray(v) ? v.join(' ') : String(v), num = re => { const m = t.match(re); return m ? Number(m[1]) : NaN; };
+  const P = { B0: num(/B0\s*=\s*([-+0-9.eE]+)/), a: num(/(?:^|[\s,])a\s*=\s*([-+0-9.eE]+)/), f: num(/(?:^|[\s,])f\s*=\s*([-+0-9.eE]+)/), text: t };
+  return isFinite(P.B0) && P.B0 > 0 ? P : null;
+}
+function kActNote() {
+  const el = $('#kActNote'), c = S.cc, P = mxwlCorrParams(S.seq);
+  const g = v => +(+v).toPrecision(4), cur = `B0 ${g(c.B0)} T, a ${g(c.a)}, f ${g(c.f)} T/m, ${c.pos === 'slice' ? 'slice centre of each shot' : `r = (${c.r.map(v => g(v * 100)).join(', ')}) cm`}`;
+  const same = P && Math.abs(P.B0 - c.B0) <= 1e-9 * P.B0 && (!isFinite(P.a) || Math.abs(P.a - c.a) < 1e-9) && (!isFinite(P.f) || Math.abs(P.f - c.f) < 1e-12) && c.pos === 'slice';
+  el.innerHTML = (S.kActual ? `Actual: k + kc with ${esc(cur)} (<a href="#" id="kCcLink">change</a>).` : 'Nominal: the k-vector of the gradients in the file.') +
+    (P ? ` This file was corrected for concomitant fields (${esc(P.text)}).${same ? '' : ` <button class="btn link" id="kUseCorr">Use these values with the slice centres</button>`}` : '');
+}
+document.addEventListener('click', e => {
+  if (e.target.id === 'kCcLink') { e.preventDefault(); openCcDialog(); }
+  if (e.target.id === 'kUseCorr') {
+    const P = mxwlCorrParams(S.seq); if (!P) return;
+    S.cc = { r: S.cc.r.slice(), B0: P.B0, a: isFinite(P.a) ? P.a : S.cc.a, f: isFinite(P.f) ? P.f : S.cc.f, pos: 'slice' };
+    S.kActual = true; segPress('#kAct', 'act'); ccSync(); ccApply();
+  }
+});
 segSet('#kProj', 'kProj', v => { S.kProj = v; S.kR = v === '3d' ? rot3d() : PROJ[v]; S.kZoom = 1; S.kPan = [0, 0]; requestK(); });
 $('#kTraj').onchange = e => { S.kTraj = e.target.checked; requestK(); };
 let kPending = false;
@@ -14404,10 +14435,10 @@ function kSubgroups(smp) {
   return { sub, list };
 }
 /* the trajectory of a group's runs of blocks (kGroupInfo), one piece per run: starts = index of each piece's first point */
-function kPathRuns(s, runs) {
-  if (runs.length === 1) { const p = kPath(s, runs[0][0], runs[0][1], K_MAX_PATH); p.starts = [0]; return p; }
+function kPathRuns(s, runs, act = false) {
+  if (runs.length === 1) { const p = kPath(s, runs[0][0], runs[0][1], K_MAX_PATH, act); p.starts = [0]; return p; }
   let nbT = 0; for (const r of runs) nbT += r[1] - r[0] + 1;
-  const parts = runs.map(r => kPath(s, r[0], r[1], Math.max(64, K_MAX_PATH * (r[1] - r[0] + 1) / nbT)));
+  const parts = runs.map(r => kPath(s, r[0], r[1], Math.max(64, K_MAX_PATH * (r[1] - r[0] + 1) / nbT), act));
   let n = 0; const starts = []; for (const p of parts) { starts.push(n); n += p.n; }
   const k = [0, 1, 2].map(a => { const o = new Float64Array(n); parts.forEach((p, q) => o.set(p.k[a].subarray(0, p.n), starts[q])); return o; });
   return { n, k, starts, coarse: parts.some(p => p.coarse) };
@@ -14487,21 +14518,22 @@ function drawK() {
   const grp0 = gs.find(g => g.id === S.kGroup) || null, gIdx = grp0 ? gs.indexOf(grp0) : -1, allMode = !!(grp0 && grp0.all), grp = allMode ? null : grp0;
   { const nav = $('#kNav'); nav.hidden = !gs.length;
     if (!nav.hidden) { $('#kNavTxt').textContent = `${grp0.label} · ${gIdx + 1} / ${gs.length}`; $('#kNavPrev').disabled = gIdx <= 0; $('#kNavNext').disabled = gIdx >= gs.length - 1; } }
-  const dk = j0 + ',' + j1 + ',' + pb0 + ',' + pb1 + ',' + (grp0 ? grp0.id : '');
+  const act = S.kActual; if (act) ccEnsure();
+  const dk = j0 + ',' + j1 + ',' + pb0 + ',' + pb1 + ',' + (grp0 ? grp0.id : '') + (act ? '|act|' + s.cc.key : '');
   if (!kData || kData.key !== dk) {
     const total = grp0 ? grp0.n : s.adcOff[j1] - s.adcOff[j0];
     if (total > 2e5 && !kData_busy) { // let the page paint a message before a large computation
       kData_busy = true; $('#kInfo').textContent = `Computing k-space for ${total.toLocaleString()} ADC samples…`;
       setTimeout(() => { kKey = null; drawK(); kData_busy = false; }, 30); return;
     }
-    let smp = kSamples(s, grp ? grp.jf : j0, grp ? grp.jl + 1 : j1, K_MAX_PTS);
+    let smp = kSamples(s, grp ? grp.jf : j0, grp ? grp.jl + 1 : j1, K_MAX_PTS, false, act ? ktInBlock : kInBlock);
     if (grp && gs0.length > 1) { // keep the shown kind only (with its ADC-event map, for hovering)
       let n2 = 0; const keep = []; for (let e = 0; e < smp.ej.length; e++) if (grp.fj(smp.ej[e])) { keep.push(e); n2 += smp.eo[e + 1] - smp.eo[e]; }
       const k2 = [new Float32Array(n2), new Float32Array(n2), new Float32Array(n2)], t2 = new Uint8Array(n2), ej = new Int32Array(keep.length), eo = new Int32Array(keep.length + 1); let o = 0;
       keep.forEach((e, q) => { const a = smp.eo[e], b = smp.eo[e + 1]; for (let c = 0; c < 3; c++) k2[c].set(smp.k[c].subarray(a, b), o); t2.set(smp.type.subarray(a, b), o); ej[q] = smp.ej[e]; eo[q] = o; o += b - a; });
       eo[keep.length] = o; smp = { n: n2, k: k2, type: t2, t: null, thinned: smp.thinned, ej, eo };
     }
-    const path = grp ? kPathRuns(s, grp.runs) : kPath(s, pb0, pb1, K_MAX_PATH);
+    const path = grp ? kPathRuns(s, grp.runs, act) : kPath(s, pb0, pb1, K_MAX_PATH, act);
     let mm = 0; const arr = smp.n ? smp.k : path.k, nn = smp.n || path.n;
     for (let a = 0; a < 3; a++) { const c = arr[a]; for (let i = 0; i < nn; i++) { const v = c[i] < 0 ? -c[i] : c[i]; if (v > mm) mm = v; } }
     kData = { key: dk, smp, path, m: mm > 0 ? mm : 1, total };
@@ -14630,7 +14662,7 @@ function drawK() {
   let kLines = ''; if (n && s.shots.length) { const k = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt((S.t0 + S.t1) / 2), im = k >= 0 ? shotImage(k) : null;
     const ec = grp && /^img\d+$/.test(grp.id) ? +grp.id.slice(3) - 1 : 0; // an echo's group: that echo's image
     if (im) { const l = imageLines(im.vol, im.ref, ec); if (l) kLines = `Image of shot ${im.ref + 1}${S.vols.length ? ` (volume ${volOfBlock(s.shots[im.ref].b0) + 1})` : ''}${gs0.some(g => g.id === 'img2') ? `, echo ${ec + 1}` : ''}: ${linesText(l).replace(/^Phase encoding: /, '')}`; } }
-  $('#kInfo').innerHTML = esc(kTxt) + (kLines ? '<br>' + esc(kLines) : '') + (echoNote ? '<br>' + esc(echoNote) : '');
+  $('#kInfo').innerHTML = (act ? '<b>Actual (k + kc)</b> · ' : '') + esc(kTxt) + (kLines ? '<br>' + esc(kLines) : '') + (echoNote ? '<br>' + esc(echoNote) : '');
   kLast = performance.now();
 }
 /* hovered sample: the nearest drawn sample within 8 px (or the dot radius) of the pointer gets a ring and a short
@@ -15411,7 +15443,7 @@ async function load(bytes, name, opts = {}) {
       if (prev.sel >= 0 && prev.sel < seq.nb) { S.sel = prev.sel; S.selKind = prev.selKind; S.selItems = []; S.selAnchor = -1; }
     } else { S.yZoom = {}; fitAll(); if (seq.shots.length) zoomToShot(0); }
     SRC = opts.src || null; setReloadBtn(); setFnameTitle(); if (!prev) { fnote(''); addRecent(name, SRC); }
-    renderSeqInfo(); renderDefs(); renderBlock(); requestK(); if (prev) requestImg();
+    renderSeqInfo(); renderDefs(); renderBlock(); kActNote(); requestK(); if (prev) requestImg();
     stimStart(true);
     if (!prev) ovl.focus({ preventScroll: true });
     linkApplying = false; if (S.linkMode !== 'off') linkPost({ type: 'hello', want: true });
@@ -15565,7 +15597,7 @@ window.addEventListener('drop', e => {
 });
 
 /* ---------- settings kept between sessions (browser local storage) ---------- */
-const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'pauseHatch', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kTraj', 'cc', 'echo'];
+const SETTINGS_KEY = 'seqret-settings', PREF_KEYS = ['sim', 'diagRes', 'lineMode', 'sideHidden', 'gUnit', 'rfUnit', 'rfMode', 'autoY', 'pauseHatch', 'combineG', 'stimNorm', 'shotMode', 'volPref', 'labelsPref', 'kRange', 'kProj', 'kTraj', 'kActual', 'cc', 'echo'];
 const DEFAULTS = JSON.parse(JSON.stringify({ vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) }));
 function saveSettings() {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ v: 1, app: APP.version, vis: S.vis, ...Object.fromEntries(PREF_KEYS.map(k => [k, S[k]])) })); } catch (_) { }
@@ -15581,7 +15613,7 @@ function applySettings(o) {
   if (ok('lineMode', ['exact', 'columns'])) S.lineMode = o.lineMode;
   if (typeof o.sideHidden === 'boolean') setSide(o.sideHidden);
   if (ok('diagRes', ['auto', 'ultra', 'high', 'standard', 'fast', 'sharp'])) S.diagRes = o.diagRes === 'sharp' ? 'high' : o.diagRes; // 'sharp' (1.17.0) was the default; takes effect at the next resize()
-  for (const k of ['autoY', 'pauseHatch', 'combineG', 'labelsPref', 'kTraj', 'stimNorm']) if (typeof o[k] === 'boolean') S[k] = o[k];
+  for (const k of ['autoY', 'pauseHatch', 'combineG', 'labelsPref', 'kTraj', 'kActual', 'stimNorm']) if (typeof o[k] === 'boolean') S[k] = o[k];
   if (ok('shotMode', ['exc', 'prep', 'off'])) S.shotMode = o.shotMode;
   if (typeof o.volPref === 'string' && /^(auto|off|label:.+)$/.test(o.volPref)) S.volPref = S.volMode = o.volPref;
   if (ok('kRange', ['view', 'shot', 'vol'])) S.kRange = o.kRange; // "all" was removed in 1.0.2
@@ -15601,7 +15633,7 @@ function applySettings(o) {
   // reflect in the controls
   $('#gUnit').value = S.gUnit; $('#rfUnit').value = S.rfUnit; $('#rfMode').value = S.rfMode; $('#diagRes').value = S.diagRes; $('#lineMode').value = S.lineMode; $('#autoY').checked = S.autoY; $('#pauseHatch').checked = S.pauseHatch; $('#combG').checked = S.combineG;
   $('#shotSel').value = S.shotMode; $('#kTraj').checked = S.kTraj;
-  segPress('#kRange', S.kRange); segPress('#kProj', S.kProj);
+  segPress('#kRange', S.kRange); segPress('#kProj', S.kProj); segPress('#kAct', S.kActual ? 'act' : 'nom'); kActNote();
   buildChips();
 }
 function resetSettings() {
@@ -15969,6 +16001,7 @@ function ccStatus() {
 function ccApply() {
   if (S.seq) ccEnsure();
   request(); if (S.seq) { renderSeqInfo(); renderBlock(); }
+  if (S.kActual) { kInvalidate(); requestK(); } kActNote();
   scheduleSave(); ccStatus();
 }
 function ccRead() { // dialog to S.cc (only when every field is valid)
