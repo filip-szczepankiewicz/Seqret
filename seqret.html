@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.48.0 (2026-11-12) - Pulseq sequence viewer
+  Seqret 1.48.1 (2026-11-15) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.48.0">
-<meta name="description" content="Seqret 1.48.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
+<meta name="version" content="1.48.1">
+<meta name="description" content="Seqret 1.48.1: Pulseq sequence viewer (Pulseq .seq and .bin files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -437,7 +437,7 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.48.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.48.1</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -7934,7 +7934,7 @@ num_samples 25
 Type md5
 Hash dd584aeb4f998951dc6dc46e475930da
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.48.0", "date": "2026-11-12", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.48.0", "date": "2026-11-12", "notes": ["Several files at once: dropping two or more .seq or .bin files (or choosing several with Open .seq) asks whether to open each in its own Seqret tab, linked by time, shot or volume, or only the first. This tab opens the first file; the others get new tabs that are handed their file directly.", "If the browser blocks the extra tabs (most allow one per click), the dialog offers a button that opens the next file, one per click, or pop-ups can be allowed for the page."]}, {"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "k-space: Nominal or Actual (k + kc) trajectory (k-space options). For files corrected for concomitant fields (MxwlCorrParams), the field they were corrected for can be taken over in one click.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.", "Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}, {"version": "1.39.0", "date": "2026-10-31", "notes": ["b-tensor per shot in the Selection tab: b-value, tensor and eigenvalues, integrated exactly over all gradients from the excitation to the echo. The simulation's b-value is now its trace.", "Checked against PyPulseq-based calculations on five sequences: within 1.5·10⁻⁷."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.48.1", "date": "2026-11-15", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.48.1", "date": "2026-11-15", "notes": ["Fixed: in files older than Pulseq 1.4, a shape whose stored length equals its number of samples was read as uncompressed. Those files always store shapes compressed, so it is now decompressed like any other, as MATLAB Pulseq and PyPulseq do (0.2, 0.3, −0.1, −0.4 is read as 0.2, 0.5, 0.4, 0). Files in format 1.4 and newer are read as before.", "Sharper diagram, overview, k-space and image: each canvas now has the size it is shown at. Before, it was 2 px larger each way (the frame's border was counted) and the browser scaled it down, which blurred lines drawn on whole pixels and put the pointer up to 2 px off at the right and lower edges.", "Less work per frame while panning and zooming: reading the pointer's position no longer makes the browser lay the page out, and the readout, the navigation fields and the legend are written only when they change. Zooming with the pointer at rest (test browser, demo file, 240 frames): 241 page layouts → 6, and about a fifth less time on the main thread. With the pointer moving the readout changes every frame, and the gain is small.", "Many lanes on: the name of a low lane no longer runs into its scale numbers; the scale is then shown under the name as one range (±max or 0–max, with the unit). Values at the cursor are placed side by side where a stack would not fit in the lane."]}, {"version": "1.48.0", "date": "2026-11-12", "notes": ["Several files at once: dropping two or more .seq or .bin files (or choosing several with Open .seq) asks whether to open each in its own Seqret tab, linked by time, shot or volume, or only the first. This tab opens the first file; the others get new tabs that are handed their file directly.", "If the browser blocks the extra tabs (most allow one per click), the dialog offers a button that opens the next file, one per click, or pop-ups can be allowed for the page."]}, {"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "k-space: Nominal or Actual (k + kc) trajectory (k-space options). For files corrected for concomitant fields (MxwlCorrParams), the field they were corrected for can be taken over in one click.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}, {"version": "1.41.0", "date": "2026-10-31", "notes": ["Echo markers (Display › Echoes): spin echoes, gradient echoes at k = 0 and other gradient echoes, in the diagram and on the k-space trajectory. Hovering gives the timing.", "Checked against PyPulseq-based calculations on four sequences: the same echoes, times within 0.04 ns."]}, {"version": "1.40.0", "date": "2026-10-31", "notes": ["Hovering a row of the labels lane shades that row across the whole diagram, from its name in the margin to the right edge, so a label is easy to pair with its values (and the values the cursor shows for it). It follows the mouse in the margin too, and is off while panning.", "In the side tabs, hovering a name or a value shades the whole row from name to value (all name–value lists, e.g. the label counters in the Selection tab). The spacing between rows and columns is unchanged; it is now padding, so the shaded row is one band."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -7942,8 +7942,13 @@ Hash dd584aeb4f998951dc6dc46e475930da
    k-space) is computed from those on demand. */
 const GAMMA = 42.57638474e6; // Hz/T (1H)
 
-function decompressShape(packed, numSamples) {
-  if (packed.length === numSamples) return Float32Array.from(packed);
+/* force (1.48.1): files older than 1.4 always store shapes compressed, so there a stored length equal to num_samples
+   is a coincidence (a derivative without repeated values: short shapes, noisy waveforms), not the mark of an
+   uncompressed shape. Such a shape is decompressed like any other, as MATLAB Pulseq and PyPulseq do when they read
+   these files (forceConvertUncompressed in their readShapes). Before, it was taken as it stood: 0.2, 0.3, −0.1, −0.4
+   stayed that, where Pulseq reads 0.2, 0.5, 0.4, 0. */
+function decompressShape(packed, numSamples, force = false) {
+  if (!force && packed.length === numSamples) return Float32Array.from(packed);
   const w = new Float64Array(numSamples);
   let cp = 0, cu = 0; const L = packed.length;
   while (cp < L - 1) {
@@ -7969,7 +7974,9 @@ function parseSeq(input, progress) {
   let C = Array.from({ length: 8 }, (_, k) => k === 1 ? new Float64Array(cap) : new Uint32Array(cap));
   const grow = () => { cap *= 2; C = C.map(a => { const b = new a.constructor(cap); b.set(a); return b; }); };
   let section = '', curShape = null, curExt = null, pos = 0, nextProg = 0;
-  const flushShape = () => { if (curShape) { seq.shapes.set(curShape.id, decompressShape(curShape.data, curShape.num == null ? curShape.data.length : curShape.num)); curShape = null; } };
+  const flushShape = () => { // (the version is known here: [VERSION] is the first section of a file)
+    if (curShape) { const V = seq.version; seq.shapes.set(curShape.id, decompressShape(curShape.data, curShape.num == null ? curShape.data.length : curShape.num, curShape.num != null && V.major === 1 && V.minor < 4)); curShape = null; }
+  };
   const lineStr = (a, b) => b - a > 8192 ? new TextDecoder().decode(bytes.subarray(a, b)) : String.fromCharCode.apply(null, bytes.subarray(a, b));
   while (pos < N) {
     let e = bytes.indexOf(10, pos); if (e < 0) e = N;
@@ -11991,6 +11998,16 @@ function blockAt(t) { const s = S.seq; if (!s) return -1; return blockAtTime(s, 
 const plot = $('#plot'), ovl = $('#ovl'), ov = $('#ov'), kc = $('#kc'), ic = $('#ic'), i3 = $('#i3');
 const pctx = plot.getContext('2d'), octx = ovl.getContext('2d'), vctx = ov.getContext('2d'), kctx = kc.getContext('2d'), ictx = ic.getContext('2d'), i3ctx = i3.getContext('2d');
 let IW = 0, I3W = 0, I3H = 0;
+/* position of a pointer or wheel event over the diagram, from the canvas's rectangle kept between events (1.48.1).
+   e.offsetX and e.offsetY make the browser lay the page out again whenever anything in it has changed since the last
+   frame, and a frame writes the readout and the navigation fields, so every wheel and move event while panning and
+   zooming paid for a layout. The rectangle is read again after a resize or a scroll, when the pointer enters or
+   presses, and at the latest after half a second. */
+let ovlBox = null, ovlBoxT = 0;
+function ovlRect() { const now = performance.now(); if (!ovlBox || now - ovlBoxT > 500) { ovlBox = ovl.getBoundingClientRect(); ovlBoxT = now; } return ovlBox; }
+const ovlStale = () => { ovlBox = null; };
+const pX = e => e.clientX - ovlRect().left, pY = e => e.clientY - ovlRect().top;
+window.addEventListener('scroll', ovlStale, true); window.addEventListener('resize', ovlStale); ovl.addEventListener('pointerenter', ovlStale);
 let W = 0, H = 0, OW = 0, OH = 0, KW = 0, dpr = 1;
 /* pixel density of the diagram and the overview (pdpr): the screen's (dpr) when sharp; at most 1 when fast (Display ›
    Diagram resolution), which on a high-density screen draws a quarter of the pixels at 2× and lets the browser scale
@@ -12028,14 +12045,19 @@ function sizeCanvas(cv, ctx, w, h, d = dpr) { // only touch the canvas when its 
 function resize() {
   dpr = window.devicePixelRatio || 1;
   pdpr = plotDensity(); { const q = BENCH.quality || S.diagRes; odpr = PNG_FULL || q !== 'fast' ? dpr : Math.min(1, dpr); }
-  const r = $('#plotwrap').getBoundingClientRect(); W = r.width; H = r.height;
+  /* 1.48.1: each canvas is given the size of its own box. Before, it was that of the frame around it, which includes
+     the frame's 1 px border on every side, so the canvas held 2 CSS px more each way than it is shown at and the
+     browser scaled it down (the diagram by 0.2 %, the overview's 52 rows into 50), which blurred lines drawn on whole
+     pixels and put the pointer up to 2 px off at the right and lower edges. */
+  ovlBox = null;
+  const r = plot.getBoundingClientRect(); W = r.width; H = r.height;
   sizeCanvas(plot, pctx, W, H, pdpr); sizeCanvas(ovl, octx, W, H);
-  const o = ov.parentElement.getBoundingClientRect(); OW = o.width; OH = o.height;
+  const o = ov.getBoundingClientRect(); OW = o.width; OH = o.height;
   sizeCanvas(ov, vctx, OW, OH, odpr);
-  const kk = kc.parentElement.getBoundingClientRect(); KW = kk.width;
+  const kk = kc.getBoundingClientRect(); KW = kk.width;
   if (KW > 0) sizeCanvas(kc, kctx, KW, KW);
-  const ii = ic.parentElement.getBoundingClientRect(); if (ii.width > 0 && Math.abs(ii.width - IW) > 0.5) { IW = ii.width; sizeCanvas(ic, ictx, IW, IW); drawImg(); }
-  const j3 = i3.parentElement.getBoundingClientRect(); if (j3.width > 0 && (Math.abs(j3.width - I3W) > 0.5 || Math.abs(j3.height - I3H) > 0.5)) { I3W = j3.width; I3H = j3.height; sizeCanvas(i3, i3ctx, I3W, I3H); drawSlice3D(); }
+  const ii = ic.getBoundingClientRect(); if (ii.width > 0 && Math.abs(ii.width - IW) > 0.5) { IW = ii.width; sizeCanvas(ic, ictx, IW, IW); drawImg(); }
+  const j3 = i3.getBoundingClientRect(); if (j3.width > 0 && (Math.abs(j3.width - I3W) > 0.5 || Math.abs(j3.height - I3H) > 0.5)) { I3W = j3.width; I3H = j3.height; sizeCanvas(i3, i3ctx, I3W, I3H); drawSlice3D(); }
   ovCache = null; kInvalidate(); request(); requestK();
 }
 new ResizeObserver(resize).observe($('#plotwrap'));
@@ -12562,6 +12584,15 @@ function solidTrace(ctx, pts, yOf, color) {
   rr.flush();
 }
 
+/* width of a text in the diagram's font (600 at 12 px, 400 at 10.5 px), kept per text: used where a lane decides how
+   to lay out its margin (1.48.1) */
+const TEXT_W = new Map();
+function textW(px, txt) {
+  const k = px + C.font + txt; let w = TEXT_W.get(k);
+  if (w === undefined) { const f = pctx.font; pctx.font = `${px === 12 ? 600 : 400} ${px}px ${C.font}`; w = pctx.measureText(txt).width; pctx.font = f; if (TEXT_W.size > 2000) TEXT_W.clear(); TEXT_W.set(k, w); }
+  return w;
+}
+
 /* ---------- time axis ticks ---------- */
 function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p; }
 function timeUnit(span) { return span >= 2 ? [1, 's'] : span >= 2e-3 ? [1e3, 'ms'] : [1e6, 'µs']; }
@@ -12694,7 +12725,18 @@ function render() {
     pctx.fillStyle = color; pctx.fillRect(8, L.y + 2, 3, L.h - 4);
     pctx.fillStyle = C.ink; pctx.textAlign = 'left'; pctx.font = `600 12px ${C.font}`;
     const twoLine = L.key !== 'adc' && (L.h > 58 || (EXP && L.h > 30)); // a figure's lanes are lower: the unit still fits below the name
-    pctx.fillText(L.label, 16, L.y + L.h / 2 - (twoLine ? 7 : 0));
+    /* a low lane whose name and scale numbers do not fit side by side (1.48.1; with many lanes on, "k-vector" ran into
+       "30844" and "RF phase" into "π"): the name on an upper line and the scale under it as one range (±max, or 0–max,
+       with the unit where it fits), or the name alone where the lane is too low for two lines */
+    let compact = 0, rangeTxt = '';
+    if (!EXP && L.key !== 'adc' && !twoLine && L.h < 38) {
+      const top = L.kind === 'phase' ? 'π' : fmt(m * f, 3), room = x0 - 6 - 16;
+      if (textW(12, L.label) + 5 + textW(10.5, L.kind === 'pos' ? top : '−' + top) > room) {
+        compact = L.h >= 25 ? 1 : 2; rangeTxt = (L.kind === 'pos' ? '0–' : '±') + top;
+        const u = L.kind === 'phase' ? '' : ' ' + laneUnit(L.key); if (u.trim() && textW(10.5, rangeTxt + u) <= room) rangeTxt += u;
+      }
+    }
+    pctx.fillText(L.label, 16, L.y + L.h / 2 - (twoLine ? 7 : compact === 1 ? 6.5 : 0));
     pctx.font = `400 10.5px ${C.font}`; pctx.fillStyle = C.muted;
     if (L.key !== 'adc') {
       const unit = laneUnit(L.key), top = L.kind === 'phase' ? 'π' : fmt(m * f, 3);
@@ -12716,6 +12758,7 @@ function render() {
         for (const [v] of ticks) { const y = yOf(v); pctx.moveTo(ax, y); pctx.lineTo(ax - 4, y); }
         pctx.stroke(); pctx.lineWidth = 1; pctx.textBaseline = 'middle';
         for (const [v, t] of ticks) pctx.fillText(t, x0 - 7, yOf(v));
+      } else if (compact) { if (compact === 1) { pctx.textAlign = 'left'; pctx.fillText(rangeTxt, 16, L.y + L.h / 2 + 6.5); }
       } else {
       pctx.fillText(top, x0 - 6, L.y + 7);
       if (L.kind !== 'pos') pctx.fillText(L.kind === 'phase' ? '−π' : '−' + fmt(m * f, 3), x0 - 6, L.y + L.h - 7);
@@ -13155,7 +13198,8 @@ function drawADC(L, X, t0, t1, pw, x0) {
 function updateLegend() {
   const el = $('#legend'), s = S.seq;
   const cnt = s ? s.adcTypeCounts : null, show = !!(cnt && cnt.slice(1).some(Boolean) && (S.vis.adc || S.vis.labels));
-  el.hidden = !show; if (!show) return;
+  if (el.hidden !== !show) el.hidden = !show; if (!show) return;
+  if (el._seq === s) return; el._seq = s; // (the counts belong to the file: made once per file, 1.48.1)
   const html = cnt.map((n, i) => n ? `<span class="v"><i style="--c:var(--c-${TYPE_COL[i]})"></i>${TYPE_NAME[i]} <span class="muted">${n.toLocaleString()}</span></span>` : '').join('');
   if (el.dataset.html !== html) { el.innerHTML = '<span class="muted">ADC events:</span>' + html; el.dataset.html = html; }
 }
@@ -13432,44 +13476,51 @@ function drawOverlay() {
     if (L.stim) { // values of the stimulation traces at the cursor
       const m = STIM ? STIM.idx[L.stim] : undefined; if (m === undefined) continue;
       const v = stimAtCached(t); if (!v) continue;
-      [['gx', 0, 'x'], ['gy', 1, 'y'], ['gz', 2, 'z']].concat(S.stimNorm ? [['muted', 3, '‖·‖']] : []).forEach(([col, j, lab], i) => {
-        const txt = `${stimNum(v[m * 4 + j])} % ${lab}`, ty = L.y + 10 + i * 14, tw = octx.measureText(txt).width, tx = right ? x + 6 : x - 6 - tw;
-        octx.fillStyle = C.plot; octx.globalAlpha = 0.85; octx.fillRect(tx - 3, ty - 7, tw + 6, 14); octx.globalAlpha = 1;
-        octx.fillStyle = C[col]; octx.textAlign = 'left'; octx.fillText(txt, tx, ty);
-      });
+      cursorTags([['gx', 0, 'x'], ['gy', 1, 'y'], ['gz', 2, 'z']].concat(S.stimNorm ? [['muted', 3, '‖·‖']] : []).map(([col, j, lab]) => [`${stimNum(v[m * 4 + j])} % ${lab}`, C[col]]), L, x, right);
       continue;
     }
-    const chans = laneChannels(L), f = laneFactor(L.key);
-    let i = 0;
+    const chans = laneChannels(L), f = laneFactor(L.key), tags = [];
     for (const [col, c] of chans) {
       const v = channelValue(S.seq, c, t);
       const txt = v !== v ? '' : (L.kind === 'phase' ? fmt(v, 3) + ' rad' : fmt(v * f, 3) + (chans.length > 1 ? ` ${c === 'rfRe' ? 're' : c === 'rfIm' ? 'im' : col.toUpperCase()[1]}` : ''));
-      if (!txt) continue;
-      const ty = L.y + 10 + i * 14; i++;
-      const tw = octx.measureText(txt).width;
-      const tx = right ? x + 6 : x - 6 - tw;
-      octx.fillStyle = C.plot; octx.globalAlpha = 0.85; octx.fillRect(tx - 3, ty - 7, tw + 6, 14); octx.globalAlpha = 1;
-      octx.fillStyle = C[col]; octx.textAlign = 'left'; octx.fillText(txt, tx, ty);
+      if (txt) tags.push([txt, C[col]]);
     }
+    cursorTags(tags, L, x, right);
   }
   const tl = fmtT(t), tw = octx.measureText(tl).width;
   octx.fillStyle = C.ink; octx.fillRect(x - tw / 2 - 5, H - AXH + 3, tw + 10, 17);
   octx.fillStyle = C.plot; octx.textAlign = 'center'; octx.fillText(tl, x, H - AXH + 12);
   drawEchoTip(x); // last: over the lanes' values at the cursor
 }
+/* a lane's values at the cursor, [text, colour] each: one under the other where the lane is high enough for them, as
+   before; otherwise side by side on one line across the lane's middle (1.48.1: in a low lane the stack ran on into
+   the lanes below, over their values) */
+function cursorTags(tags, L, x, right) {
+  const n = tags.length; if (!n) return;
+  octx.textAlign = 'left';
+  const box = (tx, ty, tw) => { octx.fillStyle = C.plot; octx.globalAlpha = 0.85; octx.fillRect(tx - 3, ty - 7, tw + 6, 14); octx.globalAlpha = 1; };
+  if (n * 14 + 3 <= L.h + 2) {
+    for (let i = 0; i < n; i++) { const ty = L.y + 10 + i * 14, tw = octx.measureText(tags[i][0]).width, tx = right ? x + 6 : x - 6 - tw; box(tx, ty, tw); octx.fillStyle = tags[i][1]; octx.fillText(tags[i][0], tx, ty); }
+    return;
+  }
+  const gap = 9, ws = tags.map(g => octx.measureText(g[0]).width), tw = ws.reduce((a, b) => a + b, 0) + gap * (n - 1), ty = L.y + L.h / 2;
+  let tx = right ? x + 6 : x - 6 - tw; box(tx, ty, tw);
+  for (let i = 0; i < n; i++) { octx.fillStyle = tags[i][1]; octx.fillText(tags[i][0], tx, ty); tx += ws[i] + gap; }
+}
 const HINT = '<span class="hint">Drag to zoom into a range · right-drag or scroll sideways to pan · scroll to zoom · <kbd>Ctrl</kbd>+scroll or a pinch over a lane’s name zooms it in y · <kbd>Backspace</kbd> goes back · click a block to inspect it · ← → step through the selected block, shot or volume</span>';
+let readoutHTML = null; // what the readout holds (1.48.1: written only when it changes; every frame calls this)
 function updateReadout() {
   const el = $('#readout');
   if (!S.seq || S.hoverT == null) {
-    if (!el.dataset.hint) { el.innerHTML = HINT; el.dataset.hint = '1'; }
+    if (!el.dataset.hint) { el.innerHTML = HINT; el.dataset.hint = '1'; readoutHTML = null; }
     return;
   }
-  el.dataset.hint = '';
+  if (el.dataset.hint) el.dataset.hint = '';
   const s = S.seq, t = S.hoverT, b = blockAt(t);
   const g = k => fmt(channelValue(s, k, t) * gF(), 3);
   const adcOn = adcAt(t) >= 0;
   const sk = shotsOn() ? shotAt(t) : -1;
-  el.innerHTML = `<span>t <b>${fmtT(t)}</b></span><span>block <b>${s.B.id[b]}</b> <span class="muted">${esc(describeBlock(b))}</span> <span class="muted">(${fmtT(t - s.blockStart[b])} in)</span></span>` +
+  const html = `<span>t <b>${fmtT(t)}</b></span><span>block <b>${s.B.id[b]}</b> <span class="muted">${esc(describeBlock(b))}</span> <span class="muted">(${fmtT(t - s.blockStart[b])} in)</span></span>` +
     (volsOn() ? `<span>volume <b>${volAt(t) + 1}</b><span class="muted"> / ${S.vols.length}</span></span>` : '') +
     (sk >= 0 ? `<span>shot <b>${sk + 1}</b><span class="muted"> / ${s.shots.length}</span></span>` : '') +
     (S.rfMode === 'complex' ? `<span class="v"><i style="--c:var(--c-rf)"></i>RF <b>${fmt(channelValue(s, 'rfRe', t) * rF(), 3)}</b> re, <b>${fmt(channelValue(s, 'rfIm', t) * rF(), 3)}</b> im ${rU()}</span>`
@@ -13482,6 +13533,7 @@ function updateReadout() {
     (S.vis.kc ? `<span class="v"><i style="--c:var(--ink)"></i>kc <b>${['qx', 'qy', 'qz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') +
     (S.vis.kt ? `<span class="v" title="Total dephasing vector: the k-vector plus kc at the same position"><i style="--c:var(--ink)"></i>k + kc <b>${['tx', 'ty', 'tz'].map(k => fmt(channelValue(s, k, t) * mF(), 3)).join(', ')}</b> <span class="muted">${mU()}</span></span>` : '') +
     (S.vis.mu ? (muEnsure(), `<span class="v" title="Generalized Maxwell index (γ/B0)|∫g⊗g h dt|, from the last excitation"><i style="--c:var(--ink)"></i>μ <b>${fmt(channelValue(s, 'mu', t), 3)}</b> <span class="muted">1/m²</span></span>`) : '') + stimReadout(t);
+  if (html !== readoutHTML) { el.innerHTML = html; readoutHTML = html; } // (zooming at the cursor and drag-panning keep the time under it)
 }
 
 /* ---------- view control ---------- */
@@ -13535,20 +13587,28 @@ function navCurrent(kind) {
   if (kind === 'shot') return !s.shots.length ? -1 : S.sel >= 0 ? shotOfBlock(S.sel) : shotAt(c);
   return !S.vols.length ? -1 : S.sel >= 0 ? volOfBlock(S.sel) : volAt(c);
 }
+/* 1.48.1: every frame calls this, so the elements are looked up once and a field is written only when its value
+   changes (before: three counts formatted and a dozen fields set per frame, each a reason for the next layout) */
+const NAV_EL = {};
 function updateNav() {
-  const s = S.seq, nav = $('#nav');
-  nav.hidden = !s;
+  const s = S.seq, nav = NAV_EL.nav || (NAV_EL.nav = $('#nav'));
+  if (nav.hidden !== !s) nav.hidden = !s;
   if (!s) return;
   const total = { block: s.nb, shot: shotsOn() ? s.shots.length : 0, vol: volsOn() ? S.vols.length : 0 };
   for (const k of ['block', 'shot', 'vol']) {
-    const g = $('#nav-' + k), n = total[k];
-    g.hidden = !n; if (!n) continue;
-    const i = navCurrent(k), inp = g.querySelector('input');
-    g.classList.toggle('active', S.sel >= 0 && S.selKind === k);
-    if (document.activeElement !== inp) { inp.value = i + 1; inp.max = n; inp.style.width = (String(n).length + 2.2) + 'ch'; }
-    g.querySelector('.of').textContent = '/ ' + n.toLocaleString();
-    g.querySelector('.prev').disabled = S.sel >= 0 && S.selKind === k && i <= 0;
-    g.querySelector('.next').disabled = S.sel >= 0 && S.selKind === k && i >= n - 1;
+    let E = NAV_EL[k]; if (!E) { const g = $('#nav-' + k); E = NAV_EL[k] = { g, inp: g.querySelector('input'), of: g.querySelector('.of'), prev: g.querySelector('.prev'), next: g.querySelector('.next'), nIn: -1, nOf: -1, act: null }; }
+    const g = E.g, n = total[k];
+    if (g.hidden !== !n) g.hidden = !n; if (!n) continue;
+    const i = navCurrent(k), inp = E.inp, act = S.sel >= 0 && S.selKind === k;
+    if (E.act !== act) { g.classList.toggle('active', act); E.act = act; }
+    if (document.activeElement !== inp) {
+      const v = String(i + 1); if (inp.value !== v) inp.value = v;
+      if (E.nIn !== n) { inp.max = n; inp.style.width = (String(n).length + 2.2) + 'ch'; E.nIn = n; }
+    }
+    if (E.nOf !== n) { E.of.textContent = '/ ' + n.toLocaleString(); E.nOf = n; }
+    const dp = act && i <= 0, dn = act && i >= n - 1;
+    if (E.prev.disabled !== dp) E.prev.disabled = dp;
+    if (E.next.disabled !== dn) E.next.disabled = dn;
   }
 }
 function navGo(kind, idx) {
@@ -13580,31 +13640,31 @@ function selectBlock(b, opts = {}) {
 /* ---------- plot interaction ---------- */
 const ptrs = new Map(); let drag = null;
 ovl.addEventListener('pointerdown', e => {
-  if (!S.seq) return;
-  if (e.button === 0 && !ptrs.size) { const k = yzCrossAt(e.offsetX, e.offsetY); if (k) { delete S.yZoom[k]; ovl.style.cursor = ''; e.preventDefault(); request(); return; } } // the y-zoom tag's reset cross
-  ovl.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+  if (!S.seq) return; ovlStale();
+  if (e.button === 0 && !ptrs.size) { const k = yzCrossAt(pX(e), pY(e)); if (k) { delete S.yZoom[k]; ovl.style.cursor = ''; e.preventDefault(); request(); return; } } // the y-zoom tag's reset cross
+  ovl.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: pX(e), y: pY(e) });
   if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; drag = { pinch: true, d0: Math.abs(a.x - b.x) || 1, t0: S.t0, t1: S.t1, cx: xToT((a.x + b.x) / 2) }; return; }
   if (e.button === 1 || e.button === 2) e.preventDefault();
   // mouse: left-drag selects a range to zoom into; right-drag (or Shift/middle-drag) pans. Touch and pen: drag pans.
   const pan = e.pointerType !== 'mouse' || e.shiftKey || e.button === 1 || e.button === 2;
-  drag = { x: e.offsetX, y: e.offsetY, t0: S.t0, t1: S.t1, moved: false, box: !pan, button: e.button };
+  drag = { x: pX(e), y: pY(e), t0: S.t0, t1: S.t1, moved: false, box: !pan, button: e.button };
 });
 ovl.addEventListener('pointermove', e => {
   if (!S.seq) return;
-  if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+  if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: pX(e), y: pY(e) });
   if (drag && drag.pinch && ptrs.size === 2) {
     const [a, b] = [...ptrs.values()]; const d = Math.abs(a.x - b.x) || 1, f = drag.d0 / d;
     const c = drag.cx; setView(c - (c - drag.t0) * f, c + (drag.t1 - c) * f); return;
   }
   if (drag && !drag.pinch) {
-    const dx = e.offsetX - drag.x;
-    if (Math.abs(dx) > 3 || Math.abs(e.offsetY - drag.y) > 3) drag.moved = true;
-    if (drag.box) { if (drag.moved) { boxSel = { a: Math.max(GUT, drag.x), b: Math.min(W - 8, Math.max(GUT, e.offsetX)) }; requestOverlay(); } }
+    const dx = pX(e) - drag.x;
+    if (Math.abs(dx) > 3 || Math.abs(pY(e) - drag.y) > 3) drag.moved = true;
+    if (drag.box) { if (drag.moved) { boxSel = { a: Math.max(GUT, drag.x), b: Math.min(W - 8, Math.max(GUT, pX(e))) }; requestOverlay(); } }
     else if (drag.moved) { ovl.classList.add('grabbing'); const dt = dx / (W - GUT - 8) * (drag.t1 - drag.t0); setView(drag.t0 - dt, drag.t1 - dt); }
   }
-  S.hoverY = e.pointerType === 'mouse' ? e.offsetY : null;
-  if (e.pointerType === 'mouse') { const c = !drag && yzCrossAt(e.offsetX, e.offsetY) ? 'pointer' : ''; if (ovl.style.cursor !== c) ovl.style.cursor = c; }
-  if (e.pointerType === 'mouse' || !drag) { S.hoverT = xToT(e.offsetX); requestOverlay(); linkSendHover(); }
+  S.hoverY = e.pointerType === 'mouse' ? pY(e) : null;
+  if (e.pointerType === 'mouse') { const c = !drag && yzCrossAt(pX(e), pY(e)) ? 'pointer' : ''; if (ovl.style.cursor !== c) ovl.style.cursor = c; }
+  if (e.pointerType === 'mouse' || !drag) { S.hoverT = xToT(pX(e)); requestOverlay(); linkSendHover(); }
 });
 function endPtr(e) {
   ptrs.delete(e.pointerId); ovl.classList.remove('grabbing');
@@ -13613,9 +13673,9 @@ function endPtr(e) {
   if (drag.box && boxSel) {
     const a = Math.min(boxSel.a, boxSel.b), b = Math.max(boxSel.a, boxSel.b); boxSel = null;
     if (b - a > 6) { pushHist(); setView(xToT(a), xToT(b)); } else requestOverlay();
-  } else if (!drag.moved && e.type === 'pointerup' && e.offsetX > GUT && !drag.button) {
-    const t = xToT(e.offsetX); S.hoverT = t;
-    const y = e.offsetY;
+  } else if (!drag.moved && e.type === 'pointerup' && pX(e) > GUT && !drag.button) {
+    const t = xToT(pX(e)); S.hoverT = t;
+    const y = pY(e);
     if (volsOn() && y >= volY() - 2 && y < volY() + SHOTH + 2) clickItem('vol', volAt(t), e); // double-click zooms (below)
     else if (shotsOn() && y >= shotY() - 2 && y < shotY() + SHOTH + 2) clickItem('shot', shotAt(t), e);
     else if (y >= topH() - 4) selectBlock(blockAt(t), { tab: true });
@@ -13626,11 +13686,11 @@ function endPtr(e) {
 ovl.addEventListener('pointerup', endPtr); ovl.addEventListener('pointercancel', endPtr);
 ovl.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { S.hoverY = null; requestOverlay(); } if (e.pointerType === 'mouse' && !drag) { S.hoverT = null; requestOverlay(); linkSendHover(); } });
 ovl.addEventListener('dblclick', e => {
-  if (S.seq && e.offsetX <= GUT) { // double-click on a lane's name: reset its y zoom
-    const L = laneAtY(e.offsetY); if (L && S.yZoom[L.key]) { delete S.yZoom[L.key]; request(); } return;
+  if (S.seq && pX(e) <= GUT) { // double-click on a lane's name: reset its y zoom
+    const L = laneAtY(pY(e)); if (L && S.yZoom[L.key]) { delete S.yZoom[L.key]; request(); } return;
   }
-  if (!S.seq || e.offsetX <= GUT || e.ctrlKey || e.metaKey || e.shiftKey) return;
-  const t = xToT(e.offsetX), y = e.offsetY;
+  if (!S.seq || pX(e) <= GUT || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  const t = xToT(pX(e)), y = pY(e);
   if (volsOn() && y >= volY() - 2 && y < volY() + SHOTH + 2) zoomToVol(volAt(t));
   else if (shotsOn() && y >= shotY() - 2 && y < shotY() + SHOTH + 2) zoomToShot(shotAt(t));
   else if (y >= topH() - 4) { const b = blockAt(t); selectBlock(b); pushHist(); zoomToBlock(b); }
@@ -13657,10 +13717,10 @@ ovl.addEventListener('wheel', e => {
   const dx = e.deltaMode === 1 ? e.deltaX * 16 : e.deltaX, dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
   // y zoom of the lane under the mouse: Ctrl + wheel with the key held, or a touchpad pinch (wheel with ctrlKey, no key)
   // over the lane's name in the left margin, which zooms faster like a pinch over the plot does in time
-  if (e.ctrlKey && (ctrlHeld || e.offsetX <= GUT)) { if (dy) yZoomBy(e.offsetY, Math.exp(-dy * (ctrlHeld ? 0.0022 : 0.012))); return; }
+  if (e.ctrlKey && (ctrlHeld || pX(e) <= GUT)) { if (dy) yZoomBy(pY(e), Math.exp(-dy * (ctrlHeld ? 0.0022 : 0.012))); return; }
   if (e.shiftKey || Math.abs(dx) > Math.abs(dy)) { const d = (e.shiftKey ? dy || dx : dx) / pw * (S.t1 - S.t0); setView(S.t0 + d, S.t1 + d); }
-  else zoomAt(xToT(e.offsetX), Math.exp(dy * (e.ctrlKey ? 0.012 : 0.0022)));
-  S.hoverT = xToT(e.offsetX);
+  else zoomAt(xToT(pX(e)), Math.exp(dy * (e.ctrlKey ? 0.012 : 0.0022)));
+  S.hoverT = xToT(pX(e));
 }, { passive: false });
 
 /* Safari (macOS) sends a touchpad pinch as gesture events with a running scale instead of Ctrl + wheel, and otherwise
@@ -13680,9 +13740,9 @@ ov.addEventListener('pointerdown', e => {
   if (!S.seq) return; ov.setPointerCapture(e.pointerId);
   const T = S.seq.totalDur, t = e.offsetX / OW * T;
   if (t < S.t0 || t > S.t1) { const sp = S.t1 - S.t0; setView(t - sp / 2, t + sp / 2); }
-  ovDrag = { x: e.offsetX, t0: S.t0, t1: S.t1 };
+  ovDrag = { x: e.clientX, t0: S.t0, t1: S.t1 };
 });
-ov.addEventListener('pointermove', e => { if (!ovDrag) return; const dt = (e.offsetX - ovDrag.x) / OW * S.seq.totalDur; setView(ovDrag.t0 + dt, ovDrag.t1 + dt); });
+ov.addEventListener('pointermove', e => { if (!ovDrag) return; const dt = (e.clientX - ovDrag.x) / OW * S.seq.totalDur; setView(ovDrag.t0 + dt, ovDrag.t1 + dt); });
 ov.addEventListener('pointerup', () => ovDrag = null); ov.addEventListener('pointercancel', () => ovDrag = null);
 ov.addEventListener('wheel', e => { if (!S.seq) return; e.preventDefault(); zoomAt((S.t0 + S.t1) / 2, Math.exp(e.deltaY * 0.0022)); }, { passive: false });
 
