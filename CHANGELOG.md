@@ -2,6 +2,26 @@
 
 All versions, newest first. The About dialog of the page shows the latest 5.
 
+## 1.48.4 (2026-11-20)
+
+- Fixed: with the ROTATIONS extension, the slew could show spikes (up to about 370 T/m/s) in the diagram and in the peak slew of the Sequence tab. It happened where one gradient event ended inside a rotated block while another was ramping, such as an EPI blip that ends during a readout ramp. To catch steps at event edges, the rotated waveform got an extra vertex 1 ps after the end of every event, even one that was already 0 there; the gradient is stored as float32, and its rounding (about 0.016 Hz/m at 234 kHz/m) over 1 ps is 367 T/m/s. Edge vertices are now added only where an event is non-zero at its edge, so real steps are still drawn.
+- Checked on an EPI file with stacks rotated 0°, 60° and 120° about y (mdfwf-seepi): peak slew 158.7 / 142.3 / 157.4 T/m/s (x / y / z), the same as an independent calculation in the physical axes; before, 367 T/m/s on z. Peak gradients unchanged.
+
+## 1.48.3 (2026-11-20)
+
+- Start page with recent files: the list is shown in two columns of compact entries (smaller padding and text), and the box widens from 460 to 680 px to hold them; the drawing at the top is kept at 400 px wide. With 8 recent files the start page is 519 px tall instead of 784 px, so the drawing, the title and the whole list fit in the plot area at 1366 × 768 and larger. Before, the list pushed the drawing and the title out above the frame. Without recent files the start page is as before.
+- Recent files (start page and the list under the arrow next to Open .seq): the second line shows the date first, then the last two folders of the path (…\Pulseq\seq_0); the full path is still in the tooltip. Before, a long path was cut at the end and hid the date.
+- The start page is centred so that, where it is taller than the plot area (small windows), it scrolls from its top instead of losing the top above the frame. One column of recent files in a window narrower than 620 px.
+
+## 1.48.2 (2026-11-20)
+
+- Display panel in two columns: channels on the left (RF, gradients, concomitant, readout, stimulation), and echo markers, view, shots and volumes and saving on the right. The panel is about half as tall as before: 413 px instead of 756 px at 1500 × 900, so it fits under the toolbar on a laptop screen and all of it is seen at once. It is 860 px wide (at most the window's width less 16 px).
+- Within it: the RF unit and "as magnitude / real and imaginary" sit on the line of the RF chips, the gradient unit and "One axis" on the line of Gx, Gy, Gz, and "Settings…" and "Specifications…" next to their chips. Fit Y and Mark pauses share one row, Quality and Peaks the next, and "Only when zoomed in" follows the echo chips.
+- Echoes moved from Channels to their own section, "Echo markers": they mark the RF lane and k-space and are not lanes.
+- In a window narrower than 760 px the panel is one column again (624 px tall at 700 × 900).
+- Every floating panel (Display, recent files, ⋯) now stays within the window's height and scrolls inside when the window is too short. Before, its lower part ran off the bottom of the window.
+- Nothing else changed: the controls, their ids, tooltips and saved settings are the same as in 1.48.1.
+
 ## 1.48.1 (2026-11-15)
 
 - Fixed: in files older than Pulseq 1.4, a shape whose stored length equals its number of samples was read as uncompressed. Those files always store shapes compressed, so the equal length is a coincidence (a derivative without repeated values: short shapes, noisy waveforms) and the shape is now decompressed like any other, as MATLAB Pulseq and PyPulseq do when they read such files (forceConvertUncompressed in readShapes). Example: 0.2, 0.3, −0.1, −0.4 with num_samples 4 was kept as it stood and is now read as 0.2, 0.5, 0.4, 0, the same as PyPulseq 1.5.0's decompress_shape gives. Files in format 1.4 and newer are read as before; the demo's shapes, gradients, block times, k-space samples and statistics are bit-identical to 1.48.0.
