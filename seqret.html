@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.48.4 (2026-11-20) - Pulseq sequence viewer
+  Seqret 1.49.0 (2026-11-23) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.48.4">
-<meta name="description" content="Seqret 1.48.4: Pulseq sequence viewer (Pulseq .seq and .bin files)">
+<meta name="version" content="1.49.0">
+<meta name="description" content="Seqret 1.49.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -163,6 +163,9 @@ header{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:
 .linkinfo{display:inline-flex;align-items:center;gap:6px;font-size:12.5px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
 .dot.on{background:var(--ok)}
+.segbtn{padding:4px 10px;font-size:13px}
+.segbtn[hidden]{display:none}
+.segbtn[aria-pressed="true"]{background:var(--ink);color:var(--plot);border-color:var(--ink)}
 .stepper .of{color:var(--muted);margin-left:7px}
 .plotwrap{position:relative;flex:1;min-height:380px;background:var(--plot);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none}
 .plotwrap canvas{position:absolute;inset:0;width:100%;height:100%}
@@ -463,7 +466,7 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.48.4</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.49.0</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -497,8 +500,10 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
     <div class="toolbar">
       <div class="navbar" id="nav" hidden>
         <div class="stepper" id="nav-vol" role="group" aria-label="Volume"><span class="lab">Volume</span><button class="prev" aria-label="Previous volume">‹</button><input class="num" type="number" min="1" aria-label="Volume number"><button class="next" aria-label="Next volume">›</button><span class="of num"></span></div>
+        <div class="stepper" id="nav-img" role="group" aria-label="Segmented image" hidden><span class="lab" title="Images read in several shots (Group segments)">Image</span><button class="prev" aria-label="Previous image">‹</button><input class="num" type="number" min="1" aria-label="Image number"><button class="next" aria-label="Next image">›</button><span class="of num"></span></div>
         <div class="stepper" id="nav-shot" role="group" aria-label="Shot"><span class="lab">Shot</span><button class="prev" aria-label="Previous shot">‹</button><input class="num" type="number" min="1" aria-label="Shot number"><button class="next" aria-label="Next shot">›</button><span class="of num"></span></div>
         <div class="stepper" id="nav-block" role="group" aria-label="Block"><span class="lab">Block</span><button class="prev" aria-label="Previous block">‹</button><input class="num" type="number" min="1" aria-label="Block number"><button class="next" aria-label="Next block">›</button><span class="of num"></span></div>
+        <button class="btn segbtn" id="segBtn" aria-pressed="false" hidden>Group segments</button>
       </div>
       <div class="spacer"></div>
       <div class="tgroup zoomgrp">
@@ -771,7 +776,7 @@ nNoise 0
   3   0   0   0   0   0  0 10
   4  64   0   2   3   0  0 11
   5  68   0   4   0   0  1 15
-  6  68   0   5   0   0  1 18
+  6  68   0   5   0   0  1 17
   7  68   0   4   0   0  1 22
   8  64   0   2   3   0  0 11
   9   0   0   0   0   0  0 29
@@ -802,7 +807,7 @@ nNoise 0
  34  68   0   4  13   0  1 49
  35  68   0   5  13   0  1 50
  36  68   0   4  13   0  1 51
- 37  68   0   5  13   0  1 18
+ 37  68   0   5  13   0  1 17
  38  68   0   4  13   0  1 52
  39  68   0   5  13   0  1 53
  40  68   0   4  13   0  1 54
@@ -827,7 +832,7 @@ nNoise 0
  59   0   0   0   0   0  0 10
  60  64   0   2   3   0  0 11
  61  68   0   4   0   0  2 15
- 62  68   0   5   0   0  2 18
+ 62  68   0   5   0   0  2 17
  63  68   0   4   0   0  2 22
  64  64   0   2   3   0  0 11
  65   0   0   0   0   0  0 29
@@ -858,7 +863,7 @@ nNoise 0
  90  68   0   4  13   0  2 49
  91  68   0   5  13   0  2 50
  92  68   0   4  13   0  2 51
- 93  68   0   5  13   0  2 18
+ 93  68   0   5  13   0  2 17
  94  68   0   4  13   0  2 52
  95  68   0   5  13   0  2 53
  96  68   0   4  13   0  2 54
@@ -883,7 +888,7 @@ nNoise 0
 115   0   0   0   0   0  0 10
 116  64   0   2   3   0  0 11
 117  68   0   4   0   0  3 15
-118  68   0   5   0   0  3 18
+118  68   0   5   0   0  3 17
 119  68   0   4   0   0  3 22
 120  64   0   2   3   0  0 11
 121   0   0   0   0   0  0 29
@@ -914,7 +919,7 @@ nNoise 0
 146  68   0   4  13   0  3 49
 147  68   0   5  13   0  3 50
 148  68   0   4  13   0  3 51
-149  68   0   5  13   0  3 18
+149  68   0   5  13   0  3 17
 150  68   0   4  13   0  3 52
 151  68   0   5  13   0  3 53
 152  68   0   4  13   0  3 54
@@ -939,7 +944,7 @@ nNoise 0
 171   0   0   0   0   0  0 10
 172  64   0   2   3   0  0 11
 173  68   0   4   0   0  1 15
-174  68   0   5   0   0  1 18
+174  68   0   5   0   0  1 17
 175  68   0   4   0   0  1 22
 176  64   0   2   3   0  0 11
 177   0   0   0   0   0  0 29
@@ -968,7 +973,7 @@ nNoise 0
 200  68   0   4  21   0  1 84
 201  68   0   5  21   0  1 48
 202  68   0   4  21   0  1 85
-203  68   0   5  21   0  1 18
+203  68   0   5  21   0  1 17
 204  68   0   4  21   0  1 86
 205  68   0   5  21   0  1 55
 206  68   0   4  21   0  1 87
@@ -1003,7 +1008,7 @@ nNoise 0
 235   0   0   0   0   0  0 10
 236  64   0   2   3   0  0 11
 237  68   0   4   0   0  2 15
-238  68   0   5   0   0  2 18
+238  68   0   5   0   0  2 17
 239  68   0   4   0   0  2 22
 240  64   0   2   3   0  0 11
 241   0   0   0   0   0  0 29
@@ -1032,7 +1037,7 @@ nNoise 0
 264  68   0   4  21   0  2 84
 265  68   0   5  21   0  2 48
 266  68   0   4  21   0  2 85
-267  68   0   5  21   0  2 18
+267  68   0   5  21   0  2 17
 268  68   0   4  21   0  2 86
 269  68   0   5  21   0  2 55
 270  68   0   4  21   0  2 87
@@ -1067,7 +1072,7 @@ nNoise 0
 299   0   0   0   0   0  0 10
 300  64   0   2   3   0  0 11
 301  68   0   4   0   0  3 15
-302  68   0   5   0   0  3 18
+302  68   0   5   0   0  3 17
 303  68   0   4   0   0  3 22
 304  64   0   2   3   0  0 11
 305   0   0   0   0   0  0 29
@@ -1096,7 +1101,7 @@ nNoise 0
 328  68   0   4  21   0  3 84
 329  68   0   5  21   0  3 48
 330  68   0   4  21   0  3 85
-331  68   0   5  21   0  3 18
+331  68   0   5  21   0  3 17
 332  68   0   4  21   0  3 86
 333  68   0   5  21   0  3 55
 334  68   0   4  21   0  3 87
@@ -1131,7 +1136,7 @@ nNoise 0
 363   0   0   0   0   0  0 10
 364  64   0   2   3   0  0 11
 365  68   0   4   0   0  1 15
-366  68   0   5   0   0  1 18
+366  68   0   5   0   0  1 17
 367  68   0   4   0   0  1 22
 368  64   0   2   3   0  0 11
 369   0   0   0   0   0  0 29
@@ -1160,7 +1165,7 @@ nNoise 0
 392  68   0   4  21   0  1 84
 393  68   0   5  21   0  1 48
 394  68   0   4  21   0  1 85
-395  68   0   5  21   0  1 18
+395  68   0   5  21   0  1 17
 396  68   0   4  21   0  1 86
 397  68   0   5  21   0  1 55
 398  68   0   4  21   0  1 87
@@ -1195,7 +1200,7 @@ nNoise 0
 427   0   0   0   0   0  0 10
 428  64   0   2   3   0  0 11
 429  68   0   4   0   0  2 15
-430  68   0   5   0   0  2 18
+430  68   0   5   0   0  2 17
 431  68   0   4   0   0  2 22
 432  64   0   2   3   0  0 11
 433   0   0   0   0   0  0 29
@@ -1224,7 +1229,7 @@ nNoise 0
 456  68   0   4  21   0  2 84
 457  68   0   5  21   0  2 48
 458  68   0   4  21   0  2 85
-459  68   0   5  21   0  2 18
+459  68   0   5  21   0  2 17
 460  68   0   4  21   0  2 86
 461  68   0   5  21   0  2 55
 462  68   0   4  21   0  2 87
@@ -1259,7 +1264,7 @@ nNoise 0
 491   0   0   0   0   0  0 10
 492  64   0   2   3   0  0 11
 493  68   0   4   0   0  3 15
-494  68   0   5   0   0  3 18
+494  68   0   5   0   0  3 17
 495  68   0   4   0   0  3 22
 496  64   0   2   3   0  0 11
 497   0   0   0   0   0  0 29
@@ -1288,7 +1293,7 @@ nNoise 0
 520  68   0   4  21   0  3 84
 521  68   0   5  21   0  3 48
 522  68   0   4  21   0  3 85
-523  68   0   5  21   0  3 18
+523  68   0   5  21   0  3 17
 524  68   0   4  21   0  3 86
 525  68   0   5  21   0  3 55
 526  68   0   4  21   0  3 87
@@ -1323,7 +1328,7 @@ nNoise 0
 555   0   0   0   0   0  0 10
 556  64   0   2   3   0  0 11
 557  68   0   4   0   0  1 15
-558  68   0   5   0   0  1 18
+558  68   0   5   0   0  1 17
 559  68   0   4   0   0  1 22
 560  64   0   2   3   0  0 11
 561   0   0   0   0   0  0 29
@@ -1352,7 +1357,7 @@ nNoise 0
 584  68   0   4  21   0  1 84
 585  68   0   5  21   0  1 48
 586  68   0   4  21   0  1 85
-587  68   0   5  21   0  1 18
+587  68   0   5  21   0  1 17
 588  68   0   4  21   0  1 86
 589  68   0   5  21   0  1 55
 590  68   0   4  21   0  1 87
@@ -1387,7 +1392,7 @@ nNoise 0
 619   0   0   0   0   0  0 10
 620  64   0   2   3   0  0 11
 621  68   0   4   0   0  2 15
-622  68   0   5   0   0  2 18
+622  68   0   5   0   0  2 17
 623  68   0   4   0   0  2 22
 624  64   0   2   3   0  0 11
 625   0   0   0   0   0  0 29
@@ -1416,7 +1421,7 @@ nNoise 0
 648  68   0   4  21   0  2 84
 649  68   0   5  21   0  2 48
 650  68   0   4  21   0  2 85
-651  68   0   5  21   0  2 18
+651  68   0   5  21   0  2 17
 652  68   0   4  21   0  2 86
 653  68   0   5  21   0  2 55
 654  68   0   4  21   0  2 87
@@ -1451,7 +1456,7 @@ nNoise 0
 683   0   0   0   0   0  0 10
 684  64   0   2   3   0  0 11
 685  68   0   4   0   0  3 15
-686  68   0   5   0   0  3 18
+686  68   0   5   0   0  3 17
 687  68   0   4   0   0  3 22
 688  64   0   2   3   0  0 11
 689   0   0   0   0   0  0 29
@@ -1480,7 +1485,7 @@ nNoise 0
 712  68   0   4  21   0  3 84
 713  68   0   5  21   0  3 48
 714  68   0   4  21   0  3 85
-715  68   0   5  21   0  3 18
+715  68   0   5  21   0  3 17
 716  68   0   4  21   0  3 86
 717  68   0   5  21   0  3 55
 718  68   0   4  21   0  3 87
@@ -1583,61 +1588,56 @@ nNoise 0
 11 4 1 0
 12 1 8 0
 13 1 9 12
-14 1 10 13
-15 1 11 14
+15 1 11 13
 16 1 11 12
 17 1 12 16
-18 1 13 17
 19 1 9 0
-20 1 10 19
-21 1 11 20
+21 1 11 19
 22 1 14 21
 23 1 6 6
 24 1 7 23
 25 1 8 24
 26 1 12 25
-27 1 13 26
-28 1 15 27
+28 1 15 26
 29 1 16 28
 30 1 7 6
 31 1 8 30
 32 1 15 31
 33 1 17 32
 34 1 12 12
-35 1 13 34
-36 1 18 35
-37 1 19 14
-38 1 20 35
-39 1 21 14
-40 1 22 35
-41 1 23 14
-42 1 24 35
-43 1 25 14
-44 1 26 35
-45 1 27 14
-46 1 28 35
-47 1 29 14
-48 1 30 35
-49 1 31 14
-50 1 32 35
-51 1 33 14
-52 1 34 14
-53 1 35 35
-54 1 36 14
-55 1 37 35
-56 1 38 14
-57 1 39 35
-58 1 40 14
-59 1 41 35
-60 1 42 14
-61 1 43 35
-62 1 44 14
-63 1 45 35
-64 1 46 14
-65 1 47 35
-66 1 48 14
-67 1 49 35
-68 1 50 14
+36 1 18 34
+37 1 19 13
+38 1 20 34
+39 1 21 13
+40 1 22 34
+41 1 23 13
+42 1 24 34
+43 1 25 13
+44 1 26 34
+45 1 27 13
+46 1 28 34
+47 1 29 13
+48 1 30 34
+49 1 31 13
+50 1 32 34
+51 1 33 13
+52 1 34 13
+53 1 35 34
+54 1 36 13
+55 1 37 34
+56 1 38 13
+57 1 39 34
+58 1 40 13
+59 1 41 34
+60 1 42 13
+61 1 43 34
+62 1 44 13
+63 1 45 34
+64 1 46 13
+65 1 47 34
+66 1 48 13
+67 1 49 34
+68 1 50 13
 69 1 2 0
 70 1 3 69
 71 1 51 70
@@ -1645,39 +1645,39 @@ nNoise 0
 73 1 3 1
 74 1 53 73
 75 1 15 25
-76 1 54 35
-77 1 55 14
-78 1 56 35
-79 1 57 14
-80 1 58 35
-81 1 59 14
-82 1 20 14
-83 1 24 14
-84 1 28 14
-85 1 32 14
-86 1 35 14
-87 1 39 14
-88 1 43 14
-89 1 47 14
-90 1 60 14
-91 1 61 35
-92 1 62 14
-93 1 63 35
-94 1 64 14
-95 1 65 35
-96 1 66 14
-97 1 67 35
-98 1 68 14
-99 1 69 35
-100 1 70 14
-101 1 71 35
-102 1 72 14
-103 1 73 35
-104 1 74 14
-105 1 75 35
-106 1 76 14
-107 1 77 35
-108 1 78 14
+76 1 54 34
+77 1 55 13
+78 1 56 34
+79 1 57 13
+80 1 58 34
+81 1 59 13
+82 1 20 13
+83 1 24 13
+84 1 28 13
+85 1 32 13
+86 1 35 13
+87 1 39 13
+88 1 43 13
+89 1 47 13
+90 1 60 13
+91 1 61 34
+92 1 62 13
+93 1 63 34
+94 1 64 13
+95 1 65 34
+96 1 66 13
+97 1 67 34
+98 1 68 13
+99 1 69 34
+100 1 70 13
+101 1 71 34
+102 1 72 13
+103 1 73 34
+104 1 74 13
+105 1 75 34
+106 1 76 13
+107 1 77 34
+108 1 78 13
 109 1 3 0
 110 1 51 109
 111 1 53 110
@@ -1707,10 +1707,8 @@ extension LABELSET 1
 7 0 IMA
 8 0 AVG
 9 1 REV
-10 1 SEG
 11 54 LIN
 12 0 REV
-13 0 SEG
 14 1 AVG
 15 0 NAV
 16 0 LIN
@@ -7961,9 +7959,9 @@ num_samples 25
 # preceding [SIGNATURE] BELONGS to the signature (and needs to be sripped away
 # for recalculating/verification)
 Type md5
-Hash dd584aeb4f998951dc6dc46e475930da
+Hash 3d7221fd121475d66f23c2e50db652d1
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.48.4", "date": "2026-11-20", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.48.4", "date": "2026-11-20", "notes": ["Fixed: with the ROTATIONS extension, slew spikes (up to ~370 T/m/s) in the diagram and the peak slew of the Sequence tab where one gradient event ended inside a block while another was ramping, e.g. an EPI blip ending during a readout ramp in a rotated stack. An extra vertex 1 ps after the end of an event that was already 0 turned the rounding of the stored gradient into slew. Edge points are now added only where an event steps from a non-zero value.", "Checked on a rotated-stack EPI file (0°, 60°, 120° about y): peak slew 158.7 / 142.3 / 157.4 T/m/s, matching an independent calculation (before 367 T/m/s on z); peak gradients unchanged."]}, {"version": "1.48.3", "date": "2026-11-20", "notes": ["Start page with recent files: the list is in two columns of compact entries, so the drawing, the title and all 8 files fit in the plot area of a laptop screen (1366 × 768). Before, the list pushed the drawing out above the frame.", "Recent files show the date first and the last two folders of the path (the full path is in the tooltip), so a long path no longer hides the date.", "A start page taller than the plot area now scrolls from its top instead of losing its top."]}, {"version": "1.48.2", "date": "2026-11-20", "notes": ["Display panel in two columns: channels on the left; echo markers, view, shots and volumes and saving on the right. About half as tall as before (413 px instead of 756 px), so it fits under the toolbar on a laptop screen. Quality and Peaks share a row, and the units sit next to their channels. One column again in a narrow window.", "Floating panels never reach below the window: in a short window they scroll inside."]}, {"version": "1.48.1", "date": "2026-11-15", "notes": ["Fixed: in files older than Pulseq 1.4, a shape whose stored length equals its number of samples was read as uncompressed. Those files always store shapes compressed, so it is now decompressed like any other, as MATLAB Pulseq and PyPulseq do (0.2, 0.3, −0.1, −0.4 is read as 0.2, 0.5, 0.4, 0). Files in format 1.4 and newer are read as before.", "Sharper diagram, overview, k-space and image: each canvas now has the size it is shown at. Before, it was 2 px larger each way (the frame's border was counted) and the browser scaled it down, which blurred lines drawn on whole pixels and put the pointer up to 2 px off at the right and lower edges.", "Less work per frame while panning and zooming: reading the pointer's position no longer makes the browser lay the page out, and the readout, the navigation fields and the legend are written only when they change. Zooming with the pointer at rest (test browser, demo file, 240 frames): 241 page layouts → 6, and about a fifth less time on the main thread. With the pointer moving the readout changes every frame, and the gain is small.", "Many lanes on: the name of a low lane no longer runs into its scale numbers; the scale is then shown under the name as one range (±max or 0–max, with the unit). Values at the cursor are placed side by side where a stack would not fit in the lane."]}, {"version": "1.48.0", "date": "2026-11-12", "notes": ["Several files at once: dropping two or more .seq or .bin files (or choosing several with Open .seq) asks whether to open each in its own Seqret tab, linked by time, shot or volume, or only the first. This tab opens the first file; the others get new tabs that are handed their file directly.", "If the browser blocks the extra tabs (most allow one per click), the dialog offers a button that opens the next file, one per click, or pop-ups can be allowed for the page."]}, {"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "k-space: Nominal or Actual (k + kc) trajectory (k-space options). For files corrected for concomitant fields (MxwlCorrParams), the field they were corrected for can be taken over in one click.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.49.0", "date": "2026-11-23", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.49.0", "date": "2026-11-23", "notes": ["Group segments (experimental, in the toolbar for files whose SEG label takes two or more values): shows only the shots that make one segmented image, side by side, each from its start to its last event. The time between them (other slices' shots and the TR fill) is left out and marked by a narrow box with the time left out; hovering it says what was left out.", "Images are found from the labels only: shots with readouts in the same volume with the same SLC, REP, AVG, SET and PHS, and at least two SEG values. Files that change SEG within a shot are not grouped.", "An Image stepper moves between images, keeping the zoom; the shot stepper goes through the images' shots in turn. Cursor, readout (with image and SEG), clicks, overview, Fit Y and saved figures follow the grouped view.", "Built-in demo: reversed EPI lines are now marked with REV only (it also set SEG, so SEG changed within every shot); signature recomputed, waveforms unchanged.", "Without Group segments the diagram is drawn as before (pixel-identical in the test)."]}, {"version": "1.48.4", "date": "2026-11-20", "notes": ["Fixed: with the ROTATIONS extension, slew spikes (up to ~370 T/m/s) in the diagram and the peak slew of the Sequence tab where one gradient event ended inside a block while another was ramping, e.g. an EPI blip ending during a readout ramp in a rotated stack. An extra vertex 1 ps after the end of an event that was already 0 turned the rounding of the stored gradient into slew. Edge points are now added only where an event steps from a non-zero value.", "Checked on a rotated-stack EPI file (0°, 60°, 120° about y): peak slew 158.7 / 142.3 / 157.4 T/m/s, matching an independent calculation (before 367 T/m/s on z); peak gradients unchanged."]}, {"version": "1.48.3", "date": "2026-11-20", "notes": ["Start page with recent files: the list is in two columns of compact entries, so the drawing, the title and all 8 files fit in the plot area of a laptop screen (1366 × 768). Before, the list pushed the drawing out above the frame.", "Recent files show the date first and the last two folders of the path (the full path is in the tooltip), so a long path no longer hides the date.", "A start page taller than the plot area now scrolls from its top instead of losing its top."]}, {"version": "1.48.2", "date": "2026-11-20", "notes": ["Display panel in two columns: channels on the left; echo markers, view, shots and volumes and saving on the right. About half as tall as before (413 px instead of 756 px), so it fits under the toolbar on a laptop screen. Quality and Peaks share a row, and the units sit next to their channels. One column again in a narrow window.", "Floating panels never reach below the window: in a short window they scroll inside."]}, {"version": "1.48.1", "date": "2026-11-15", "notes": ["Fixed: in files older than Pulseq 1.4, a shape whose stored length equals its number of samples was read as uncompressed. Those files always store shapes compressed, so it is now decompressed like any other, as MATLAB Pulseq and PyPulseq do (0.2, 0.3, −0.1, −0.4 is read as 0.2, 0.5, 0.4, 0). Files in format 1.4 and newer are read as before.", "Sharper diagram, overview, k-space and image: each canvas now has the size it is shown at. Before, it was 2 px larger each way (the frame's border was counted) and the browser scaled it down, which blurred lines drawn on whole pixels and put the pointer up to 2 px off at the right and lower edges.", "Less work per frame while panning and zooming: reading the pointer's position no longer makes the browser lay the page out, and the readout, the navigation fields and the legend are written only when they change. Zooming with the pointer at rest (test browser, demo file, 240 frames): 241 page layouts → 6, and about a fifth less time on the main thread. With the pointer moving the readout changes every frame, and the gain is small.", "Many lanes on: the name of a low lane no longer runs into its scale numbers; the scale is then shown under the name as one range (±max or 0–max, with the unit). Values at the cursor are placed side by side where a stack would not fit in the lane."]}, {"version": "1.48.0", "date": "2026-11-12", "notes": ["Several files at once: dropping two or more .seq or .bin files (or choosing several with Open .seq) asks whether to open each in its own Seqret tab, linked by time, shot or volume, or only the first. This tab opens the first file; the others get new tabs that are handed their file directly.", "If the browser blocks the extra tabs (most allow one per click), the dialog offers a button that opens the next file, one per click, or pop-ups can be allowed for the page."]}, {"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "k-space: Nominal or Actual (k + kc) trajectory (k-space options). For files corrected for concomitant fields (MxwlCorrParams), the field they were corrected for can be taken over in one click.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -11936,7 +11934,7 @@ void main() {
 'use strict';
 const $ = s => document.querySelector(s);
 const S = {
-  seq: null, name: '', t0: 0, t1: 1, sel: -1, selItems: [], selAnchor: -1, imgIdx: 0, hoverT: null, yZoom: {}, autoY: false, pauseHatch: true,
+  seq: null, name: '', t0: 0, t1: 1, sel: -1, selItems: [], selAnchor: -1, imgIdx: 0, hoverT: null, hoverGap: null, segOn: false, segFocus: 0, yZoom: {}, autoY: false, pauseHatch: true,
   gUnit: 'mT', rfUnit: 'uT', tab: 'seq', diagRes: 'auto', lineMode: 'exact', sideHidden: false,
   vis: { labels: true, adc: false, rfMag: true, rfPh: false, gx: true, gy: true, gz: true, slew: false, m0: false, gc: false, kc: false, kt: false, mu: false, pns: false, cns: false },
   cc: { r: [0.05, 0.06, 0.07], B0: 3, a: 0.5, f: 0, pos: 'fixed' }, // concomitant gradients: position (m), B0 (T), asymmetry, non-Maxwell term (T/m), position mode ('fixed' r or 'slice' centre of each shot)
@@ -12632,15 +12630,276 @@ function timeUnit(span) { return span >= 2 ? [1, 's'] : span >= 2e-3 ? [1e3, 'ms
 let pending = false, pendingOv = false;
 function request() { if (!pending) { pending = true; requestAnimationFrame(() => { pending = false; benchT(render); }); } }
 function requestOverlay() { if (!pendingOv) { pendingOv = true; requestAnimationFrame(() => { pendingOv = false; benchT(() => { drawOverlay(); updateReadout(); }); }); } }
+/* ---------- Group segments (1.49.0, experimental) ----------
+   Segmented imaging: one image read in several shots, each filling part of k-space (segmented EPI, segmented TSE,
+   ...). With Group segments on, the diagram shows only the shots of one image, side by side, each from its start to
+   the end of its last event; the time between them (other images' shots, and each shot's TR fill) is left out and
+   marked by a narrow box saying how much. Which shots belong together is read from the labels only: shots with
+   readouts in the same volume and with the same SLC, REP, AVG, SET and PHS at their first readout make one image when
+   SEG takes at least two values among them. A file that sets SEG to other values within a shot (some reconstructions
+   mark reversed EPI lines that way) is not grouped.
+   The view then runs on view time: the shown stretches of the image's shots joined end to end (S.t0, S.t1 and the
+   view history are in view time); hovering, clicking, the readout, linking and every list of shots stay in real time.
+   tToV, vToT, xToV, xToT and tToX convert. Without Group segments view time is real time. */
+const SEG_KEYS = ['SLC', 'REP', 'AVG', 'SET', 'PHS'];
+let SEGC = null, VMAP = null, RPANEL = 0; // RPANEL: the panel being drawn (things drawn once are drawn in panel 0)
+function segGroups() {
+  const s = S.seq; if (!s) return null;
+  const shots = s.shots, vols = S.vols;
+  if (!SEGC || SEGC.seq !== s || SEGC.shots !== shots || SEGC.vols !== vols) { SEGC = { seq: s, shots, vols, res: computeSegGroups(s, shots, vols) }; VMAP = null; }
+  return SEGC.res;
+}
+function computeSegGroups(s, shots, vols) {
+  const R = { groups: [], of: new Int32Array(shots.length).fill(-1), err: '' };
+  const lab = n => s.labels.find(x => x.name === n), seg = lab('SEG');
+  if (!seg) { R.err = 'This file has no SEG label.'; return R; }
+  if (!shots.length) { R.err = 'Shots are hidden (Display › Shots and volumes).'; return R; }
+  const idx = (tr, b) => { let lo = 0, hi = tr.b.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (tr.b[m] <= b) lo = m; else hi = m - 1; } return lo; };
+  const val = (tr, b) => { if (!tr || !tr.b.length) return 0; const i = idx(tr, b); return tr.b[i] <= b ? tr.v[i] : 0; };
+  const keys = SEG_KEYS.map(lab), AB = s.adcBlocks, B = s.B, bs = s.blockStart;
+  const trg = new Uint8Array(s.nb); for (const t of s.triggers) trg[t.block] = 1;
+  const map = new Map(); let nChange = 0;
+  for (let k = 0; k < shots.length; k++) {
+    const sh = shots[k]; if (!sh.nADC) continue; // no readout (dummy scans): not part of an image
+    const ba = AB[sh.j0], bz = AB[sh.j1 - 1], v = val(seg, ba);
+    let i = idx(seg, ba); if (seg.b[i] <= ba) i++;
+    for (; i < seg.b.length && seg.b[i] <= bz; i++) if (seg.v[i] !== v) { nChange++; break; }
+    const vol = vols.length ? volOfBlock(sh.b0) : -1, key = vol + ':' + keys.map(tr => val(tr, ba)).join(':');
+    let g = map.get(key); if (!g) map.set(key, g = { shots: [], segs: new Set(), slc: val(keys[0], ba), vol });
+    g.shots.push(k); g.segs.add(v);
+  }
+  if (nChange) { R.err = `SEG changes within ${nChange.toLocaleString()} shot${nChange > 1 ? 's' : ''}, so it does not number the shots of an image.`; return R; }
+  for (const g of map.values()) {
+    if (g.segs.size < 2) continue;
+    g.iv = []; g.gapShots = []; g.ivShot = []; let prevK = -1;
+    for (const k of g.shots) { // from the shot's start to the end of its last event (RF, gradient, ADC or trigger)
+      const sh = shots[k]; let b = sh.b1;
+      while (b > sh.b0 && !B.rf[b] && !B.pgx[b] && !B.pgy[b] && !B.pgz[b] && !B.adc[b] && !trg[b]) b--;
+      const a = sh.t0, e = bs[b + 1], L = g.iv[g.iv.length - 1];
+      if (L && a <= L[1] + 1e-12) L[1] = Math.max(L[1], e); // follows straight on: nothing left out
+      else { g.iv.push([a, e]); g.ivShot.push(k); if (L) g.gapShots.push(k - prevK - 1); }
+      prevK = k;
+    }
+    R.groups.push(g);
+  }
+  R.groups.sort((a, b) => a.shots[0] - b.shots[0]);
+  R.groups.forEach((g, i) => { for (const k of g.shots) R.of[k] = i; });
+  if (!R.groups.length) R.err = 'No image has shots with two or more SEG values.';
+  return R;
+}
+function segView() { // the focused image's stretches, or null without Group segments
+  if (!S.segOn || !S.seq) return null;
+  const R = segGroups(); if (!R || !R.groups.length) return null;
+  const gi = Math.max(0, Math.min(R.groups.length - 1, S.segFocus | 0)), g = R.groups[gi];
+  if (!VMAP || VMAP.g !== g) {
+    const n = g.iv.length, cum = new Float64Array(n + 1);
+    for (let i = 0; i < n; i++) cum[i + 1] = cum[i] + g.iv[i][1] - g.iv[i][0];
+    VMAP = { g, gi, iv: g.iv, cum, D: cum[n], n };
+  }
+  return VMAP;
+}
+function segGapPx(V, pw) { return V.n < 2 ? 0 : Math.max(10, Math.min(26, Math.floor(0.25 * pw / (V.n - 1)))); }
+/* the panels of the view [t0, t1] (view time) over pixels x0 … x0 + pw: real time span and pixels of each; the boxes
+   between them. The first and last panels run on past the image's first and last shot into the margins. */
+function viewPanels(t0, t1, x0, pw) {
+  const V = segView(); if (!V) return { P: [{ t0, t1, x0, pw }], gaps: [], V: null, sc: pw / (t1 - t0) };
+  const sc = pw / (t1 - t0), G = segGapPx(V, pw), P = [], gaps = [], xe = x0 + pw, n = V.n, d = pdpr || 1; let ng = 0;
+  for (let i = 0; i < n; i++) {
+    const ca = i ? V.cum[i] : -Infinity, cb = i < n - 1 ? V.cum[i + 1] : Infinity;
+    if (i && ca > t0) ng++;
+    if (cb <= t0) continue;
+    /* each panel starts and ends on a device pixel, its time moved by under half a pixel to match: the waveforms'
+       pixel columns are then aligned as in a normal view (off by a fraction of a pixel, every column was drawn
+       anti-aliased, about 5 times the drawing time) */
+    const xr = x0 + (Math.max(ca, t0) - t0) * sc + G * ng, xs = Math.round(xr * d) / d;
+    if (xs >= xe) break;
+    if (i && ca > t0) gaps.push({ j: i, x: xs - G, w: G });
+    const ra = V.iv[i][0] + (Math.max(ca, t0) - V.cum[i]) - (xr - xs) / sc;
+    let rb = i < n - 1 ? V.iv[i][1] : Infinity, xb = Math.round((xs + (rb - ra) * sc) * d) / d;
+    if (xb > xe) xb = xe;
+    rb = ra + (xb - xs) / sc;
+    if (xb > xs) P.push({ t0: ra, t1: rb, x0: xs, pw: xb - xs, i });
+  }
+  return { P, gaps, V, sc, G };
+}
+function vLayout() { return viewPanels(S.t0, S.t1, GUT, W - GUT - 8); }
+function xToV(x) { // view time at x (over a box: the place of the left-out time)
+  const L = vLayout(); if (!L.V) return S.t0 + (x - GUT) / L.sc;
+  let v = S.t0 + (x - GUT) / L.sc;
+  for (const g of L.gaps) { if (x >= g.x + g.w) v -= g.w / L.sc; else if (x >= g.x) return L.V.cum[g.j]; }
+  return v;
+}
+function xToT(x) { // real time at x; null over a box of left-out time
+  const L = vLayout(); if (!L.V) return S.t0 + (x - GUT) / L.sc;
+  for (const p of L.P) if (x >= p.x0 && x <= p.x0 + p.pw) return p.t0 + (x - p.x0) / L.sc;
+  return null;
+}
+function tToX(t) { // x of real time t; null where it is left out
+  const L = vLayout(); if (!L.V) return GUT + (t - S.t0) * L.sc;
+  for (const p of L.P) if (t >= p.t0 && t <= p.t1) return p.x0 + (t - p.t0) * L.sc;
+  return null;
+}
+function segGapAt(x) { const L = vLayout(); if (!L.V) return null; for (const g of L.gaps) if (x >= g.x && x < g.x + g.w) return g; return null; }
+function tToV(t) { // view time of real time t (left-out time: the edge of the next shown stretch)
+  const V = segView(); if (!V) return t;
+  const iv = V.iv, n = V.n;
+  if (t <= iv[0][1]) return t - iv[0][0];
+  for (let i = 1; i < n; i++) { if (t < iv[i][0]) return V.cum[i]; if (t <= iv[i][1]) return V.cum[i] + t - iv[i][0]; }
+  return V.cum[n - 1] + t - iv[n - 1][0];
+}
+function vToT(v) { const V = segView(); if (!V) return v; const i = Math.max(0, Math.min(V.n - 1, ub(V.cum, v) - 1)); return V.iv[i][0] + v - V.cum[i]; }
+function vcT() { return vToT((S.t0 + S.t1) / 2); } // real time at the view's centre
+function viewDur() { const V = segView(); return V ? V.D : S.seq ? S.seq.totalDur : 1; }
+/* the boxes of left-out time: a band with dashed edges and the time, written upwards where it fits */
+function drawSegGaps(L) {
+  const bot = H - AXH, V = L.V, top = 0;
+  for (const g of L.gaps) {
+    const dt = V.iv[g.j][0] - V.iv[g.j - 1][1];
+    pctx.fillStyle = C.ink; pctx.globalAlpha = 0.07; pctx.fillRect(g.x, top, g.w, bot - top); pctx.globalAlpha = 0.45;
+    pctx.strokeStyle = C.ink; pctx.lineWidth = 1; pctx.setLineDash([3, 3]); pctx.beginPath();
+    for (const x of [Math.round(g.x) + 0.5, Math.round(g.x + g.w) - 0.5]) { pctx.moveTo(x, top); pctx.lineTo(x, bot + 4); }
+    pctx.stroke(); pctx.setLineDash([]); pctx.globalAlpha = 1;
+    if (g.w >= 12) {
+      const txt = '−' + fmtT(dt); pctx.save(); pctx.translate(g.x + g.w / 2, (top + bot) / 2); pctx.rotate(-Math.PI / 2);
+      pctx.font = `600 10.5px ${C.font}`; pctx.textAlign = 'center'; pctx.textBaseline = 'middle';
+      const tw = pctx.measureText(txt).width; pctx.fillStyle = C.plot; pctx.fillRect(-tw / 2 - 4, -6.5, tw + 8, 13);
+      pctx.fillStyle = C.ink; pctx.fillText(txt, 0, 0.5); pctx.restore();
+    }
+  }
+}
+function segGapText(g) {
+  const V = segView(); if (!V) return '';
+  const dt = V.iv[g.j][0] - V.iv[g.j - 1][1], ns = V.g.gapShots[g.j - 1];
+  return `${fmtT(dt)} left out: ${ns ? (ns > 1 ? `${ns.toLocaleString()} other shots and ` : '1 other shot and ') : ''}the TR fill after shot ${V.g.ivShot[g.j - 1] + 1}`;
+}
+/* fit the focused image in the view, with the boxes between its shots */
+function segFit() {
+  const V = segView(); if (!V) return;
+  const pw = W - GUT - 8, gx = segGapPx(V, pw) * (V.n - 1), sc = Math.max(pw * 0.984 - gx, pw * 0.2) / V.D, m = (pw - V.D * sc - gx) / 2;
+  setView(-m / sc, (pw - m) / sc);
+}
+function segToggle(on) {
+  if (!S.seq) return;
+  if (on) {
+    const R = segGroups();
+    if (!R.groups.length) { S.segOn = false; segUI(); segMsg(R.err); return; }
+    const k = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt(vcT()); // the image of the selected shot or of the one in the middle
+    let gi = k >= 0 ? R.of[k] : -1;
+    if (gi < 0) { gi = R.groups.findIndex(g => g.shots[g.shots.length - 1] >= k); if (gi < 0) gi = 0; }
+    S.segFocus = gi; S.segOn = true; VMAP = null;
+  } else {
+    const V = segView(); S.segOn = false; VMAP = null;
+    if (V) { const a = V.iv[0][0], b = V.iv[V.n - 1][1], d = b - a; setView(a - d * 0.03, b + d * 0.03); } // the image's shots, in real time
+  }
+  S.hist = []; $('#backBtn').disabled = true; S.hoverT = null; S.hoverGap = null;
+  if (S.segOn) segFit();
+  segUI(); request(); requestK(); requestImg(); if (!S.segOn) linkSendView();
+}
+/* focus image gi; the view is kept where the image has as many shown stretches as the one before (zoomed into the
+   second segment, the next image opens on its second segment), otherwise the image is fitted */
+function segFocusTo(gi, fit) {
+  const R = segGroups(); if (!R || !R.groups.length) return;
+  gi = Math.max(0, Math.min(R.groups.length - 1, gi)); const V0 = segView();
+  S.segFocus = gi; VMAP = null; const V = segView();
+  if (fit || !V0 || V0.n !== V.n) segFit(); else setView(S.t0, S.t1);
+  request(); requestK(); requestImg();
+}
+function segMsg(t) { if (t) fnote(`Group segments: ${t}`); }
+const SEG_TITLE = 'Experimental: show only the shots that make one segmented image (same slice and other labels, different SEG), side by side, leaving out the time between them. Uses the SLC, SEG, REP, AVG, SET and PHS labels.';
+function segUI() {
+  const b = $('#segBtn'); if (!b) return;
+  const has = !!(S.seq && S.seq.labels.some(x => x.name === 'SEG' && x.max > x.min)); // SEG takes two or more values
+  b.hidden = !has; b.setAttribute('aria-pressed', !!S.segOn); if (!has) return;
+  const R = segGroups(); b.disabled = !R.groups.length; // e.g. SEG used for reversed EPI lines: the reason in the tooltip
+  b.title = R.groups.length ? SEG_TITLE + ` (${R.groups.length.toLocaleString()} image${R.groups.length > 1 ? 's' : ''} found)` : `Group segments: ${R.err}`;
+}
+/* a lane's pyramids, made when the lane is first shown */
+function lanePrep(L) {
+  const s = S.seq;
+  if (L.key === 'm0') m0Pyramids(s);
+  if (L.key === 'gc') { ccEnsure(); for (const k of ['cx', 'cy', 'cz']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k); }
+  if (L.key === 'kc') { ccEnsure(); kintPyramids(KP_KC, s); }
+  if (L.key === 'kt') { ccEnsure(); kintPyramids(KP_KT, s); }
+  if (L.key === 'mu') { muEnsure(); kintPyramids(KP_MU, s); }
+  if (L.key === 'rfMag' && S.rfMode === 'complex') for (const k of ['rfRe', 'rfIm']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k);
+}
+/* a lane's scale (before its y zoom): with Fit Y, the largest value over all panels (Group segments: one scale for
+   the shots of the image) */
+function laneM(L, P) {
+  const chans = laneChannels(L), KPL = { m0: KP_M0, kc: KP_KC, kt: KP_KT, mu: KP_MU }[L.key];
+  let m;
+  if (KPL) { if (S.autoY) { m = 0; for (const p of P) m = Math.max(m, kViewMax(KPL, p.t0, p.t1)); } else m = kSeqMax(KPL); }
+  else m = laneMax(L);
+  if (S.autoY && L.key !== 'rfPh' && L.key !== 'adc' && !KPL) { let mv = 0; for (const p of P) for (const [, c] of chans) mv = Math.max(mv, chanRange(c, p.t0, p.t1)); if (mv > 0) m = mv; }
+  return m > 0 ? m : 1;
+}
+/* Group segments: shot and volume steps. Shots step through the images' shots in turn (the shots of the focused image,
+   then those of the next image); a shot that is in no image, or a volume without one, turns Group segments off. The
+   new shot's start lands where the current one's start was on screen. */
+function segOffV(k) { const V = segView(); if (!V) return null; const t = S.seq.shots[k].t0; for (let i = 0; i < V.n; i++) if (t >= V.iv[i][0] - 1e-12 && t <= V.iv[i][1]) return V.cum[i] + t - V.iv[i][0]; return null; }
+function segGoto(kind, k) {
+  const s = S.seq, R = segGroups(), V = segView();
+  if (kind === 'shot') {
+    k = Math.max(0, Math.min(s.shots.length - 1, k));
+    const gi = R.of[k]; if (gi < 0) { segToggle(false); gotoItem(kind, k); return; }
+    const cur = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt(vcT()), o0 = cur >= 0 && R.of[cur] === V.gi ? segOffV(cur) : null;
+    if (gi !== V.gi) segFocusTo(gi);
+    selectBlock(s.shots[k].b0, { kind: 'shot' });
+    const o1 = segOffV(k), sp = S.t1 - S.t0;
+    if (o0 != null && o1 != null) setView(S.t0 + o1 - o0, S.t1 + o1 - o0); else if (o1 != null) setView(o1 - sp * 0.1, o1 + sp * 0.9);
+    return;
+  }
+  k = Math.max(0, Math.min(S.vols.length - 1, k)); // a volume: the image in it with the same slice, or its first
+  const inV = R.groups.map((g, i) => i).filter(i => R.groups[i].vol === k);
+  if (!inV.length) { segToggle(false); gotoItem(kind, k); return; }
+  const gi = inV.find(i => R.groups[i].slc === V.g.slc) ?? inV[0];
+  segFocusTo(gi); selectBlock(S.vols[k].b0, { kind: 'vol' });
+}
+function segShotList() { const R = segGroups(); if (!R.list) { R.list = []; for (const g of R.groups) for (const k of g.shots) R.list.push(k); } return R.list; }
+function segStepShot(cur, dir) {
+  const R = segGroups(), V = segView(), list = segShotList();
+  const i = list.indexOf(cur), gs = V.g.shots;
+  if (i < 0 || R.of[cur] !== V.gi) { segGoto('shot', dir > 0 ? gs[0] : gs[gs.length - 1]); return; } // from outside the image: its first (last) shot
+  const n = list[i + dir]; if (n !== undefined) segGoto('shot', n);
+}
+function segGapTip(g) {
+  const txt = segGapText(g); if (!txt) return;
+  octx.font = `600 11px ${C.font}`; octx.textBaseline = 'middle';
+  const tw = octx.measureText(txt).width, cx = g.x + g.w / 2, right = cx + 10 + tw < W - 8, tx = right ? cx + 10 : cx - 10 - tw, ty = topH() + 12;
+  octx.fillStyle = C.plot; octx.globalAlpha = 0.94; octx.fillRect(tx - 4, ty - 8, tw + 8, 16); octx.globalAlpha = 1;
+  octx.fillStyle = C.ink; octx.textAlign = 'left'; octx.fillText(txt, tx, ty);
+}
 function render() {
   if (!C.ink) readColors();
   pctx.clearRect(0, 0, W, H);
   if (BENCH.skip.draw && S.seq) { if (!BENCH.skip.ov) drawOverview(); drawOverlay(); if (!BENCH.skip.dom) { updateReadout(); updateNav(); updateLegend(); } return; }
   if (!S.seq || W <= 0) { octx.clearRect(0, 0, W, H); vctx.clearRect(0, 0, OW, OH); return; }
   const renderT0 = performance.now();
-  const s = S.seq, t0 = S.t0, t1 = S.t1, pw = W - GUT - 8, x0 = GUT;
+  const s = S.seq, PW = W - GUT - 8;
+  /* Group segments (1.49.0): the view is a row of panels, one per shot of the segmented image in view, each drawn as a
+     normal diagram of its own time span (same scale), with a narrow box for the time left out between them. Without
+     it, one panel: the view itself. */
+  const LAY = viewPanels(S.t0, S.t1, GUT, PW), nP = LAY.P.length;
+  const lanes = lanesGeom(); traceR = chooseTraceR(S.t0, S.t1, PW);
+  const noSel = EXP && !EXP.sel, dLane = DIAG.on ? {} : null;
+  const LM = new Map(); // each lane's scale, shared by the panels
+  for (const L of lanes) if (L.key !== 'labels' && !L.stim) { lanePrep(L); LM.set(L.key, laneM(L, LAY.P)); }
+  for (let pi = 0; pi < nP; pi++) {
+    const p = LAY.P[pi], ca = pi ? p.x0 : 0, cb = pi < nP - 1 ? p.x0 + p.pw : W;
+    RPANEL = pi;
+    if (nP > 1) { pctx.save(); pctx.beginPath(); pctx.rect(ca, 0, cb - ca, H); pctx.clip(); }
+    drawPanel(pi, p.t0, p.t1, p.x0, p.pw);
+    if (nP > 1) pctx.restore();
+  }
+  RPANEL = 0;
+  if (LAY.V) drawSegGaps(LAY);
+  if (EXP) return; // a figure: nothing else
+  { const dt = performance.now() - renderT0; if (!BENCH.run && DIAG.on) diagShow(dt, dLane); }
+  if (!BENCH.skip.ov) drawOverview(); drawOverlay(); if (!BENCH.skip.dom) { updateReadout(); updateNav(); updateLegend(); }
+  if (S.tab === 'img' && S.sel < 0 && !S.sideHidden) requestImg();
+  if (S.tab === 'k' && S.kRange !== 'all' && !S.sideHidden) { if (S.kRange === 'view') requestKLazy(); else requestK(); }
+  function drawPanel(pi, t0, t1, x0, pw) {
   const X = t => x0 + (t - t0) / (t1 - t0) * pw;
-  const lanes = lanesGeom(); traceR = chooseTraceR(t0, t1, pw);
   const nb = s.nb;
   const b0 = Math.max(0, ub(s.blockStart, t0, nb) - 1), b1 = Math.min(nb - 1, lb(s.blockStart, t1, nb));
   const nVis = b1 - b0 + 1;
@@ -12700,34 +12959,23 @@ function render() {
     }
   }
   pctx.restore();
-  const noSel = EXP && !EXP.sel;
   if (volsOn()) drawStrip(S.vols, vi0, vi1, volY(), 'Volumes', 'vol', noSel ? new Set() : S.selKind === 'vol' ? selSet() : new Set([volOfBlock(S.sel)]), S.selKind === 'vol', v => !v.nSamples, X, x0, pw);
   if (shotsOn()) drawStrip(s.shots, si0, si1, shotY(), 'Shots', 'shot', noSel || S.selKind === 'vol' ? new Set() : S.selKind === 'shot' ? selSet() : new Set([shotOfBlock(S.sel)]), S.selKind === 'shot', v => !v.nADC, X, x0, pw);
 
   // lanes
   pctx.font = `500 11.5px ${C.font}`; pctx.textBaseline = 'middle';
-  const dLane = DIAG.on ? {} : null;
   for (const L of lanes) {
     const dT = dLane ? performance.now() : 0;
     try {
     if (L.key === 'labels') { RY0 = -1e6; RY1 = 1e6; if (!BENCH.skip.labels) drawLabelsLane(L, X, t0, t1, x0, pw); continue; }
     if (L.stim) { drawStimLane(L, t0, t1, x0, pw); continue; }
-    if (L.key === 'm0') m0Pyramids(s);
-    if (L.key === 'gc') { ccEnsure(); for (const k of ['cx', 'cy', 'cz']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k); }
-    if (L.key === 'kc') { ccEnsure(); kintPyramids(KP_KC, s); }
-    if (L.key === 'kt') { ccEnsure(); kintPyramids(KP_KT, s); }
-    if (L.key === 'mu') { muEnsure(); kintPyramids(KP_MU, s); }
-    if (L.key === 'rfMag' && S.rfMode === 'complex') for (const k of ['rfRe', 'rfIm']) if (!s.pyr[k]) s.pyr[k] = buildPyramid(s, k);
     laneBody(L);
-    if (!EXP && L === lanes.find(l => l.key === 'rfMag' || l.key === 'rfPh')) drawEchoMarks(L, X, t0, t1, x0, pw);
-    } finally { if (dLane) dLane[L.label] = performance.now() - dT; }
+    if (!EXP && L === lanes.find(l => l.key === 'rfMag' || l.key === 'rfPh')) drawEchoMarks(L, X, t0, t1, x0, pw, pi > 0);
+    } finally { if (dLane) dLane[L.label] = (pi ? dLane[L.label] : 0) + performance.now() - dT; }
   }
   function laneBody(L) {
     const chans = laneChannels(L), f = laneFactor(L.key);
-    const KPL = { m0: KP_M0, kc: KP_KC, kt: KP_KT, mu: KP_MU }[L.key];
-    let m = KPL ? (S.autoY ? kViewMax(KPL, t0, t1) : kSeqMax(KPL)) : laneMax(L);
-    if (S.autoY && L.key !== 'rfPh' && L.key !== 'adc' && L.key !== 'm0' && L.key !== 'kc' && L.key !== 'kt' && L.key !== 'mu') { let mv = 0; for (const [, c] of chans) mv = Math.max(mv, chanRange(c, t0, t1)); if (mv > 0) m = mv; }
-    if (!(m > 0)) m = 1;
+    let m = LM.get(L.key);
     const yz = yZoomOf(L.key); m /= yz;
     const pad = 4;
     /* a figure: the scale goes up to the next multiple of half a power of ten above the largest value (58.3 mT/m:
@@ -12814,17 +13062,19 @@ function render() {
   }
   // time axis (the unit in the gutter; in a figure with a narrow gutter, after the last tick value)
   if (!EXP || EXP.axis) {
-  const span = t1 - t0, [uf, un] = timeUnit(span);
-  const step = niceStep(span / Math.max(2, pw / 95)), narrow = GUT < 40;
+  const span = nP > 1 ? S.t1 - S.t0 : t1 - t0, [uf, un] = timeUnit(span); // Group segments: one unit and step for all panels
+  const step = niceStep(span / Math.max(2, (nP > 1 ? PW : pw) / 95)), narrow = GUT < 40;
   pctx.strokeStyle = EXP ? C.muted : C.line; if (EXP) pctx.lineWidth = Math.max(0.5, EXP.lwCss * 0.6); pctx.beginPath(); pctx.moveTo(x0, bot + 0.5); pctx.lineTo(x0 + pw, bot + 0.5); pctx.stroke();
   pctx.fillStyle = C.muted; pctx.textAlign = 'center'; pctx.font = `400 11px ${C.font}`;
   const dec = Math.max(0, -Math.floor(Math.log10(step * uf) + 1e-9));
   for (let t = Math.ceil(t0 / step) * step; t <= t1; t += step) {
     const x = X(t); pctx.beginPath(); pctx.moveTo(x, bot); pctx.lineTo(x, bot + 4); pctx.stroke();
     if (narrow && !EXP && x > x0 + pw - 40) continue;
+    if (nP > 1 && (x < x0 + 14 || x > x0 + pw - 14)) continue; // Group segments: not into the boxes between panels
     pctx.fillText((t * uf).toFixed(dec), x, bot + 15);
   }
-  if (EXP) pctx.fillText(`Time (${un})`, x0 + pw / 2, bot + 31); // a figure: an axis title
+  if (pi) { /* the unit once, in the gutter (first panel) */ }
+  else if (EXP) pctx.fillText(`Time (${un})`, GUT + PW / 2, bot + 31); // a figure: an axis title
   else if (narrow) { pctx.textAlign = 'right'; pctx.fillText(un, x0 + pw, bot + 15); } else { pctx.textAlign = 'left'; pctx.fillText(un, 14, bot + 15); }
   }
   // block numbers
@@ -12835,11 +13085,7 @@ function render() {
       if (xb - xa > 26) pctx.fillText(s.B.id[b], (xa + xb) / 2, bot - 8);
     }
   }
-  if (EXP) return; // a figure: nothing else
-  { const dt = performance.now() - renderT0; if (!BENCH.run && DIAG.on) diagShow(dt, dLane); }
-  if (!BENCH.skip.ov) drawOverview(); drawOverlay(); if (!BENCH.skip.dom) { updateReadout(); updateNav(); updateLegend(); }
-  if (S.tab === 'img' && S.sel < 0 && !S.sideHidden) requestImg();
-  if (S.tab === 'k' && S.kRange !== 'all' && !S.sideHidden) { if (S.kRange === 'view') requestKLazy(); else requestK(); }
+  } // drawPanel
 }
 /* scale of the k-vector, kc, k + kc and μ lanes: the largest |value| in the active stretches (moments differ by orders of
    magnitude between imaging, diffusion encoding and spoiling, and what happens after the last readout should not set the
@@ -13263,6 +13509,16 @@ function drawOverview() {
   vctx.clearRect(0, 0, OW, OH);
   vctx.drawImage(ovCache, 0, 0, OW, OH);
   const T = s.totalDur || 1;
+  const LV = segView() ? vLayout() : null;
+  if (LV) { // Group segments: the shown stretches (real time)
+    vctx.fillStyle = C.plot; vctx.globalAlpha = 0.62; let x = 0; const R = [];
+    for (const p of LV.P) { let a = Math.max(0, p.t0) / T * OW, b = Math.min(T, p.t1) / T * OW; if (b - a < 2) { const m = (a + b) / 2; a = m - 1; b = m + 1; } R.push([a, b]); }
+    for (const [a, b] of R) { if (a > x) vctx.fillRect(x, 0, a - x, OH); x = Math.max(x, b); }
+    if (x < OW) vctx.fillRect(x, 0, OW - x, OH); vctx.globalAlpha = 1;
+    vctx.strokeStyle = C.ink; vctx.lineWidth = 1.5; for (const [a, b] of R) vctx.strokeRect(a + 0.75, 0.75, Math.max(0.5, b - a - 1.5), OH - 1.5);
+    if (S.sel >= 0) { vctx.fillStyle = C.sel; const x2 = s.blockStart[S.sel] / T * OW; vctx.fillRect(x2 - 1, 0, 2, OH); }
+    return;
+  }
   let xa = S.t0 / T * OW, xb = S.t1 / T * OW;
   if (xb - xa < 3) { const m = (xa + xb) / 2; xa = m - 1.5; xb = m + 1.5; }
   vctx.fillStyle = C.plot; vctx.globalAlpha = 0.62;
@@ -13290,8 +13546,8 @@ function shotRange(shots, t0, t1) { // first and last shot overlapping [t0, t1]
   return [a, c - 1];
 }
 function echoesOn() { const E = S.echo; return E.se || E.gf || E.gl; }
-function drawEchoMarks(L, X, t0, t1, x0, pw) {
-  echoVis = [];
+function drawEchoMarks(L, X, t0, t1, x0, pw, keep) { // keep: a later panel (Group segments) adds to echoVis
+  if (!keep) echoVis = [];
   const E = S.echo; if (!echoesOn() || !S.seq) return;
   const shots = echoShots(); if (!shots.length) return;
   const [k0, k1] = shotRange(shots, t0, t1); if (k1 < k0) return;
@@ -13462,16 +13718,17 @@ function drawOverlay() {
     const a = Math.min(boxSel.a, boxSel.b), b = Math.max(boxSel.a, boxSel.b);
     octx.fillStyle = C.gx; octx.globalAlpha = 0.12; octx.fillRect(a, 0, b - a, H - AXH); octx.globalAlpha = 1;
     octx.strokeStyle = C.gx; octx.strokeRect(a + 0.5, 0.5, b - a, H - AXH - 1);
-    const lab = fmtT(xToT(b) - xToT(a)); octx.font = `600 11px ${C.font}`;
+    const lab = fmtT(xToV(b) - xToV(a)); octx.font = `600 11px ${C.font}`;
     const tw = octx.measureText(lab).width, lx = (a + b) / 2;
     octx.fillStyle = C.gx; octx.fillRect(lx - tw / 2 - 5, H - AXH + 3, tw + 10, 17);
     octx.fillStyle = C.plot; octx.textAlign = 'center'; octx.textBaseline = 'middle'; octx.fillText(lab, lx, H - AXH + 12);
     return;
   }
   labelRowBand();
+  if (S.hoverGap && S.hoverT == null) { segGapTip(S.hoverGap); return; }
   if (S.hoverT == null) return;
-  const t = S.hoverT, x = x0 + (t - S.t0) / (S.t1 - S.t0) * pw;
-  if (x < x0 || x > x0 + pw) return;
+  const t = S.hoverT, x = tToX(t);
+  if (x == null || x < x0 || x > x0 + pw) return;
   octx.strokeStyle = C.ink; octx.globalAlpha = 0.55; octx.lineWidth = 1;
   octx.beginPath(); octx.moveTo(Math.round(x) + 0.5, 0); octx.lineTo(Math.round(x) + 0.5, H - AXH); octx.stroke(); octx.globalAlpha = 1;
   octx.font = `600 11px ${C.font}`; octx.textBaseline = 'middle';
@@ -13553,7 +13810,7 @@ function updateReadout() {
   const sk = shotsOn() ? shotAt(t) : -1;
   const html = `<span>t <b>${fmtT(t)}</b></span><span>block <b>${s.B.id[b]}</b> <span class="muted">${esc(describeBlock(b))}</span> <span class="muted">(${fmtT(t - s.blockStart[b])} in)</span></span>` +
     (volsOn() ? `<span>volume <b>${volAt(t) + 1}</b><span class="muted"> / ${S.vols.length}</span></span>` : '') +
-    (sk >= 0 ? `<span>shot <b>${sk + 1}</b><span class="muted"> / ${s.shots.length}</span></span>` : '') +
+    (sk >= 0 ? `<span>shot <b>${sk + 1}</b><span class="muted"> / ${s.shots.length}</span></span>` : '') + segReadout(sk) +
     (S.rfMode === 'complex' ? `<span class="v"><i style="--c:var(--c-rf)"></i>RF <b>${fmt(channelValue(s, 'rfRe', t) * rF(), 3)}</b> re, <b>${fmt(channelValue(s, 'rfIm', t) * rF(), 3)}</b> im ${rU()}</span>`
       : `<span class="v"><i style="--c:var(--c-rf)"></i>RF <b>${fmt(channelValue(s, 'rfMag', t) * rF(), 3)}</b> ${rU()}</span>`) +
     ['gx', 'gy', 'gz'].map(k => `<span class="v"><i style="--c:var(--c-${k})"></i>${'G' + k[1]} <b>${g(k)}</b></span>`).join('') +
@@ -13569,25 +13826,27 @@ function updateReadout() {
 
 /* ---------- view control ---------- */
 function setView(t0, t1) {
-  const T = S.seq ? S.seq.totalDur : 1;
+  const V = segView(), T = viewDur(); // Group segments: view time (the image's shots joined), plus the boxes between them
+  const pw = W - GUT - 8, gx = V && V.n > 1 && pw > 0 ? Math.min(0.8 * pw, segGapPx(V, pw) * (V.n - 1)) : 0;
   // at least 0.1 ms across the plot (1.23.3): finer is below every raster time of interest, and at the former limit
   // of 0.2 µs a few drawing paths had to walk from far off-screen points to the view
-  const MIN_SPAN = 1e-4; let span = Math.min(Math.max(t1 - t0, MIN_SPAN), Math.max(T * 1.1 || 1, MIN_SPAN));
+  const MIN_SPAN = 1e-4; let span = Math.min(Math.max(t1 - t0, MIN_SPAN), Math.max(T * 1.1 || 1, MIN_SPAN) / (1 - gx / pw || 1));
   let c = (t0 + t1) / 2;
-  const lo = -0.05 * T + span / 2, hi = T * 1.05 - span / 2;
-  if (lo <= hi) c = Math.min(Math.max(c, lo), hi); else c = T / 2;
+  const Te = T + (gx ? span * gx / pw : 0), lo = -0.05 * Te + span / 2, hi = Te * 1.05 - span / 2;
+  if (lo <= hi) c = Math.min(Math.max(c, lo), hi); else c = Te / 2;
   S.t0 = c - span / 2; S.t1 = c + span / 2; noteViewChange(); request();
-  if (!linkApplying) linkSendView();
+  if (!linkApplying && !V) linkSendView();
 }
 function pushHist() { S.hist.push([S.t0, S.t1]); if (S.hist.length > 60) S.hist.shift(); $('#backBtn').disabled = false; }
 function back() { const v = S.hist.pop(); if (v) setView(v[0], v[1]); $('#backBtn').disabled = !S.hist.length; }
-function zoomToRange(t0, t1, hist = true) { const d = t1 - t0; if (hist) pushHist(); setView(t0 - d * 0.03, t1 + d * 0.03); }
+function zoomToRange(t0, t1, hist = true) { t0 = tToV(t0); t1 = tToV(t1); const d = t1 - t0; if (!(d > 0) && segView()) return; if (hist) pushHist(); setView(t0 - d * 0.03, t1 + d * 0.03); } // real times
 function zoomToShot(k, hist = true) { const sh = S.seq.shots[k]; if (sh) zoomToRange(sh.t0, sh.t1, hist); }
 function zoomToVol(k, hist = true) { const v = S.vols[k]; if (v) zoomToRange(v.t0, v.t1, hist); }
 /* Go to shot/volume k, keeping the zoom (the time span): the start of the new item lands where the start of the
    current one was on screen (left edges stay in place; setView keeps the view inside the sequence, so near the ends
    it can shift). */
 function gotoItem(kind, k) {
+  if (segView()) { segGoto(kind, k); return; }
   const list = kind === 'shot' ? S.seq.shots : S.vols; if (!list.length) return;
   k = Math.max(0, Math.min(list.length - 1, k));
   const cur = S.sel >= 0 ? (kind === 'shot' ? shotOfBlock(S.sel) : volOfBlock(S.sel)) : (kind === 'shot' ? shotAt : volAt)((S.t0 + S.t1) / 2);
@@ -13600,20 +13859,29 @@ function gotoItem(kind, k) {
 }
 function stepShot(dir) {
   if (!S.seq.shots.length) return;
-  const cur = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt((S.t0 + S.t1) / 2); gotoItem('shot', cur + dir);
+  const cur = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt(vcT());
+  if (segView()) { segStepShot(cur, dir); return; }
+  gotoItem('shot', cur + dir);
 }
 function stepVol(dir) {
   if (!S.vols.length) return;
-  const cur = S.sel >= 0 ? volOfBlock(S.sel) : volAt((S.t0 + S.t1) / 2); gotoItem('vol', cur + dir);
+  const cur = S.sel >= 0 ? volOfBlock(S.sel) : volAt(vcT()); gotoItem('vol', cur + dir);
 }
 /* toolbar steppers */
 function stepBlock(dir) {
   if (!S.seq) return;
-  const cur = S.sel >= 0 ? S.sel : blockAt((S.t0 + S.t1) / 2);
-  selectBlock(cur + dir, { ensureVisible: true, kind: 'block' });
+  const cur = S.sel >= 0 ? S.sel : blockAt(vcT());
+  let b = cur + dir; const V = segView();
+  if (V) { // Group segments: only blocks that are shown
+    const shown = b => { const t = S.seq.blockStart[b]; for (const r of V.iv) if (t >= r[0] && t < r[1]) return true; return false; };
+    while (b >= 0 && b < S.seq.nb && !shown(b)) b += dir;
+    if (b < 0 || b >= S.seq.nb) return;
+  }
+  selectBlock(b, { ensureVisible: true, kind: 'block' });
 }
 function navCurrent(kind) {
-  const s = S.seq, c = (S.t0 + S.t1) / 2;
+  const s = S.seq, c = vcT();
+  if (kind === 'img') { const V = segView(); return V ? V.gi : -1; }
   if (kind === 'block') return S.sel >= 0 ? S.sel : blockAt(c);
   if (kind === 'shot') return !s.shots.length ? -1 : S.sel >= 0 ? shotOfBlock(S.sel) : shotAt(c);
   return !S.vols.length ? -1 : S.sel >= 0 ? volOfBlock(S.sel) : volAt(c);
@@ -13625,19 +13893,20 @@ function updateNav() {
   const s = S.seq, nav = NAV_EL.nav || (NAV_EL.nav = $('#nav'));
   if (nav.hidden !== !s) nav.hidden = !s;
   if (!s) return;
-  const total = { block: s.nb, shot: shotsOn() ? s.shots.length : 0, vol: volsOn() ? S.vols.length : 0 };
-  for (const k of ['block', 'shot', 'vol']) {
+  const V = segView(), total = { block: s.nb, shot: shotsOn() ? s.shots.length : 0, vol: volsOn() ? S.vols.length : 0, img: V ? segGroups().groups.length : 0 };
+  for (const k of ['block', 'shot', 'vol', 'img']) {
     let E = NAV_EL[k]; if (!E) { const g = $('#nav-' + k); E = NAV_EL[k] = { g, inp: g.querySelector('input'), of: g.querySelector('.of'), prev: g.querySelector('.prev'), next: g.querySelector('.next'), nIn: -1, nOf: -1, act: null }; }
     const g = E.g, n = total[k];
     if (g.hidden !== !n) g.hidden = !n; if (!n) continue;
-    const i = navCurrent(k), inp = E.inp, act = S.sel >= 0 && S.selKind === k;
+    const i = navCurrent(k), inp = E.inp, act = k === 'img' || (S.sel >= 0 && S.selKind === k);
     if (E.act !== act) { g.classList.toggle('active', act); E.act = act; }
     if (document.activeElement !== inp) {
       const v = String(i + 1); if (inp.value !== v) inp.value = v;
       if (E.nIn !== n) { inp.max = n; inp.style.width = (String(n).length + 2.2) + 'ch'; E.nIn = n; }
     }
     if (E.nOf !== n) { E.of.textContent = '/ ' + n.toLocaleString(); E.nOf = n; }
-    const dp = act && i <= 0, dn = act && i >= n - 1;
+    let dp = act && i <= 0, dn = act && i >= n - 1;
+    if (k === 'shot' && act && V) { const L = segShotList(), q = L.indexOf(i); dp = q <= 0; dn = q < 0 || q >= L.length - 1; } // Group segments: the images' shots in turn
     if (E.prev.disabled !== dp) E.prev.disabled = dp;
     if (E.next.disabled !== dn) E.next.disabled = dn;
   }
@@ -13645,26 +13914,26 @@ function updateNav() {
 function navGo(kind, idx) {
   const s = S.seq; if (!s || !(idx >= 0)) return;
   if (kind === 'block') { idx = Math.min(idx, s.nb - 1); selectBlock(idx, { kind: 'block' }); pushHist(); zoomToBlock(idx); }
+  else if (kind === 'img') segFocusTo(idx);
   else gotoItem(kind, idx);
 }
-for (const k of ['block', 'shot', 'vol']) {
-  const g = $('#nav-' + k), step = k === 'block' ? stepBlock : k === 'shot' ? stepShot : stepVol;
+for (const k of ['block', 'shot', 'vol', 'img']) {
+  const g = $('#nav-' + k), step = k === 'block' ? stepBlock : k === 'shot' ? stepShot : k === 'img' ? (d => { const V = segView(); if (V) segFocusTo(V.gi + d); }) : stepVol;
   g.querySelector('.prev').onclick = () => step(-1);
   g.querySelector('.next').onclick = () => step(1);
   const inp = g.querySelector('input');
   inp.onchange = () => navGo(k, parseInt(inp.value, 10) - 1);
   inp.onkeydown = e => { if (e.key === 'Enter') { inp.blur(); } if (e.key === 'Escape') { inp.blur(); updateNav(); } };
 }
-function fitAll() { const T = S.seq.totalDur; setView(-0.008 * T, T * 1.008); }
+function fitAll() { if (segView()) { segFit(); return; } const T = S.seq.totalDur; setView(-0.008 * T, T * 1.008); }
 function zoomAt(t, f) { setView(t - (t - S.t0) * f, t + (S.t1 - t) * f); }
-function xToT(x) { return S.t0 + (x - GUT) / (W - GUT - 8) * (S.t1 - S.t0); }
-function zoomToBlock(b) { const s = S.seq, a = s.blockStart[b], d = s.blockStart[b + 1] - a; setView(a - d * 0.08, a + d * 1.08); }
+function zoomToBlock(b) { const s = S.seq, a = tToV(s.blockStart[b]), d = tToV(s.blockStart[b + 1]) - a; if (!(d > 0) && segView()) return; setView(a - d * 0.08, a + d * 1.08); }
 function selectBlock(b, opts = {}) {
   if (!S.seq) return;
   b = Math.max(0, Math.min(S.seq.nb - 1, b)); S.sel = b; S.selKind = opts.kind || 'block';
   if (S.selKind === 'shot' || S.selKind === 'vol') { const k = S.selKind === 'vol' ? volOfBlock(b) : shotOfBlock(b); S.selItems = opts.items || [k]; if (!opts.items) S.selAnchor = k; }
   else { S.selItems = []; S.selAnchor = -1; }
-  if (opts.ensureVisible) { const s = S.seq, a = s.blockStart[b], e = s.blockStart[b + 1]; if (a < S.t0 || e > S.t1) { const sp = S.t1 - S.t0; if (e - a > sp) zoomToBlock(b); else setView(a - (sp - (e - a)) / 2, a - (sp - (e - a)) / 2 + sp); } }
+  if (opts.ensureVisible) { const s = S.seq, a = tToV(s.blockStart[b]), e = tToV(s.blockStart[b + 1]); if (a < S.t0 || e > S.t1) { const sp = S.t1 - S.t0; if (e - a > sp) zoomToBlock(b); else setView(a - (sp - (e - a)) / 2, a - (sp - (e - a)) / 2 + sp); } }
   renderBlock(); if (opts.tab && S.tab !== 'k' && S.tab !== 'img') setTab('blk'); request(); if (S.kRange === 'shot' || S.kRange === 'vol') requestK(); requestImg();
 }
 
@@ -13674,7 +13943,7 @@ ovl.addEventListener('pointerdown', e => {
   if (!S.seq) return; ovlStale();
   if (e.button === 0 && !ptrs.size) { const k = yzCrossAt(pX(e), pY(e)); if (k) { delete S.yZoom[k]; ovl.style.cursor = ''; e.preventDefault(); request(); return; } } // the y-zoom tag's reset cross
   ovl.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: pX(e), y: pY(e) });
-  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; drag = { pinch: true, d0: Math.abs(a.x - b.x) || 1, t0: S.t0, t1: S.t1, cx: xToT((a.x + b.x) / 2) }; return; }
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; drag = { pinch: true, d0: Math.abs(a.x - b.x) || 1, t0: S.t0, t1: S.t1, cx: xToV((a.x + b.x) / 2) }; return; }
   if (e.button === 1 || e.button === 2) e.preventDefault();
   // mouse: left-drag selects a range to zoom into; right-drag (or Shift/middle-drag) pans. Touch and pen: drag pans.
   const pan = e.pointerType !== 'mouse' || e.shiftKey || e.button === 1 || e.button === 2;
@@ -13695,7 +13964,7 @@ ovl.addEventListener('pointermove', e => {
   }
   S.hoverY = e.pointerType === 'mouse' ? pY(e) : null;
   if (e.pointerType === 'mouse') { const c = !drag && yzCrossAt(pX(e), pY(e)) ? 'pointer' : ''; if (ovl.style.cursor !== c) ovl.style.cursor = c; }
-  if (e.pointerType === 'mouse' || !drag) { S.hoverT = xToT(pX(e)); requestOverlay(); linkSendHover(); }
+  if (e.pointerType === 'mouse' || !drag) { hoverAt(pX(e)); requestOverlay(); linkSendHover(); }
 });
 function endPtr(e) {
   ptrs.delete(e.pointerId); ovl.classList.remove('grabbing');
@@ -13703,10 +13972,11 @@ function endPtr(e) {
   if (drag.pinch) { if (ptrs.size === 0) drag = null; return; }
   if (drag.box && boxSel) {
     const a = Math.min(boxSel.a, boxSel.b), b = Math.max(boxSel.a, boxSel.b); boxSel = null;
-    if (b - a > 6) { pushHist(); setView(xToT(a), xToT(b)); } else requestOverlay();
+    if (b - a > 6) { pushHist(); setView(xToV(a), xToV(b)); } else requestOverlay();
   } else if (!drag.moved && e.type === 'pointerup' && pX(e) > GUT && !drag.button) {
-    const t = xToT(pX(e)); S.hoverT = t;
+    const t = xToT(pX(e)); hoverAt(pX(e));
     const y = pY(e);
+    if (t == null) { boxSel = null; drag = null; return; } // a box of left-out time (Group segments)
     if (volsOn() && y >= volY() - 2 && y < volY() + SHOTH + 2) clickItem('vol', volAt(t), e); // double-click zooms (below)
     else if (shotsOn() && y >= shotY() - 2 && y < shotY() + SHOTH + 2) clickItem('shot', shotAt(t), e);
     else if (y >= topH() - 4) selectBlock(blockAt(t), { tab: true });
@@ -13715,13 +13985,13 @@ function endPtr(e) {
   drag = null;
 }
 ovl.addEventListener('pointerup', endPtr); ovl.addEventListener('pointercancel', endPtr);
-ovl.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { S.hoverY = null; requestOverlay(); } if (e.pointerType === 'mouse' && !drag) { S.hoverT = null; requestOverlay(); linkSendHover(); } });
+ovl.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { S.hoverY = null; requestOverlay(); } if (e.pointerType === 'mouse' && !drag) { S.hoverT = null; S.hoverGap = null; requestOverlay(); linkSendHover(); } });
 ovl.addEventListener('dblclick', e => {
   if (S.seq && pX(e) <= GUT) { // double-click on a lane's name: reset its y zoom
     const L = laneAtY(pY(e)); if (L && S.yZoom[L.key]) { delete S.yZoom[L.key]; request(); } return;
   }
   if (!S.seq || pX(e) <= GUT || e.ctrlKey || e.metaKey || e.shiftKey) return;
-  const t = xToT(pX(e)), y = pY(e);
+  const t = xToT(pX(e)), y = pY(e); if (t == null) return;
   if (volsOn() && y >= volY() - 2 && y < volY() + SHOTH + 2) zoomToVol(volAt(t));
   else if (shotsOn() && y >= shotY() - 2 && y < shotY() + SHOTH + 2) zoomToShot(shotAt(t));
   else if (y >= topH() - 4) { const b = blockAt(t); selectBlock(b); pushHist(); zoomToBlock(b); }
@@ -13734,6 +14004,14 @@ let ctrlHeld = false;
 document.addEventListener('keydown', e => { if (e.key === 'Control') ctrlHeld = true; }, true);
 document.addEventListener('keyup', e => { if (e.key === 'Control') ctrlHeld = false; }, true);
 window.addEventListener('blur', () => { ctrlHeld = false; });
+function segReadout(k) { // Group segments: the image and segment of the shot under the cursor
+  const V = segView(); if (!V || k < 0) return '';
+  const R = segGroups(), gi = R.of[k]; if (gi < 0) return '';
+  const tr = S.seq.labels.find(x => x.name === 'SEG'), sh = S.seq.shots[k], b = S.seq.adcBlocks[sh.j0];
+  let i = ub(tr.b, b) - 1, seg = i >= 0 ? tr.v[i] : 0;
+  return `<span>image <b>${gi + 1}</b><span class="muted"> / ${R.groups.length}</span> · SEG <b>${seg}</b></span>`;
+}
+function hoverAt(x) { const t = xToT(x); S.hoverT = t; S.hoverGap = t == null ? segGapAt(x) : null; }
 function laneAtY(y) { return lanesGeom().find(l => y >= l.y && y < l.y + l.h); }
 /* multiply the y zoom of the lane at y by f (false if there is no zoomable lane there) */
 function yZoomBy(y, f) {
@@ -13750,8 +14028,8 @@ ovl.addEventListener('wheel', e => {
   // over the lane's name in the left margin, which zooms faster like a pinch over the plot does in time
   if (e.ctrlKey && (ctrlHeld || pX(e) <= GUT)) { if (dy) yZoomBy(pY(e), Math.exp(-dy * (ctrlHeld ? 0.0022 : 0.012))); return; }
   if (e.shiftKey || Math.abs(dx) > Math.abs(dy)) { const d = (e.shiftKey ? dy || dx : dx) / pw * (S.t1 - S.t0); setView(S.t0 + d, S.t1 + d); }
-  else zoomAt(xToT(pX(e)), Math.exp(dy * (e.ctrlKey ? 0.012 : 0.0022)));
-  S.hoverT = xToT(pX(e));
+  else zoomAt(xToV(pX(e)), Math.exp(dy * (e.ctrlKey ? 0.012 : 0.0022)));
+  hoverAt(pX(e));
 }, { passive: false });
 
 /* Safari (macOS) sends a touchpad pinch as gesture events with a running scale instead of Ctrl + wheel, and otherwise
@@ -13761,7 +14039,7 @@ ovl.addEventListener('gesturestart', e => { if (!S.seq) return; e.preventDefault
 ovl.addEventListener('gesturechange', e => {
   if (!S.seq || !gest) return; e.preventDefault();
   const f = e.scale / gest.s; gest.s = e.scale; if (!(f > 0) || f === 1) return;
-  if (gest.x <= GUT) yZoomBy(gest.y, f); else zoomAt(xToT(gest.x), 1 / f);
+  if (gest.x <= GUT) yZoomBy(gest.y, f); else zoomAt(xToV(gest.x), 1 / f);
 });
 ovl.addEventListener('gestureend', e => { e.preventDefault(); gest = null; });
 
@@ -13770,10 +14048,11 @@ let ovDrag = null;
 ov.addEventListener('pointerdown', e => {
   if (!S.seq) return; ov.setPointerCapture(e.pointerId);
   const T = S.seq.totalDur, t = e.offsetX / OW * T;
+  if (segView()) { const v = tToV(t), sp = S.t1 - S.t0; setView(v - sp / 2, v + sp / 2); ovDrag = { seg: true }; return; } // Group segments: centre on the shown time nearest t
   if (t < S.t0 || t > S.t1) { const sp = S.t1 - S.t0; setView(t - sp / 2, t + sp / 2); }
   ovDrag = { x: e.clientX, t0: S.t0, t1: S.t1 };
 });
-ov.addEventListener('pointermove', e => { if (!ovDrag) return; const dt = (e.clientX - ovDrag.x) / OW * S.seq.totalDur; setView(ovDrag.t0 + dt, ovDrag.t1 + dt); });
+ov.addEventListener('pointermove', e => { if (!ovDrag) return; if (ovDrag.seg) { const v = tToV(e.offsetX / OW * S.seq.totalDur), sp = S.t1 - S.t0; setView(v - sp / 2, v + sp / 2); return; } const dt = (e.clientX - ovDrag.x) / OW * S.seq.totalDur; setView(ovDrag.t0 + dt, ovDrag.t1 + dt); });
 ov.addEventListener('pointerup', () => ovDrag = null); ov.addEventListener('pointercancel', () => ovDrag = null);
 ov.addEventListener('wheel', e => { if (!S.seq) return; e.preventDefault(); zoomAt((S.t0 + S.t1) / 2, Math.exp(e.deltaY * 0.0022)); }, { passive: false });
 
@@ -13784,7 +14063,7 @@ document.addEventListener('keydown', e => {
   switch (e.key) {
     case 'ArrowLeft': case 'ArrowRight': {
       const d = e.key === 'ArrowLeft' ? -1 : 1;
-      if (S.sel >= 0 && S.selKind === 'block') selectBlock(S.sel + d, { ensureVisible: true });
+      if (S.sel >= 0 && S.selKind === 'block') stepBlock(d);
       else if (S.sel >= 0 && S.selKind === 'shot') stepShot(d);
       else if (S.sel >= 0 && S.selKind === 'vol') stepVol(d);
       else setView(S.t0 + d * sp * 0.2, S.t1 + d * sp * 0.2);
@@ -13793,8 +14072,8 @@ document.addEventListener('keydown', e => {
     case '+': case '=': case 'ArrowUp': zoomAt(c, 0.7); break;
     case '-': case '_': case 'ArrowDown': zoomAt(c, 1 / 0.7); break;
     case 'f': case '0': case 'Home': fitAll(); break;
-    case ']': selectBlock((S.sel < 0 ? blockAt(S.t0) : S.sel + 1), { ensureVisible: true }); break;
-    case '[': selectBlock((S.sel < 0 ? blockAt(S.t0) : S.sel - 1), { ensureVisible: true }); break;
+    case ']': if (S.sel < 0) selectBlock(blockAt(vToT(S.t0)), { ensureVisible: true }); else stepBlock(1); break;
+    case '[': if (S.sel < 0) selectBlock(blockAt(vToT(S.t0)), { ensureVisible: true }); else stepBlock(-1); break;
     case 'Escape': S.sel = -1; S.selKind = null; S.selItems = []; S.selAnchor = -1; renderBlock(); request(); requestImg(); break;
     case ';': stepVol(-1); break;
     case "'": stepVol(1); break;
@@ -13856,8 +14135,11 @@ $('#lineMode').onchange = e => { S.lineMode = e.target.value; ovCache = null; re
 $('#fitBtn').onclick = () => { if (S.seq) { pushHist(); fitAll(); } };
 $('#backBtn').onclick = () => S.seq && back();
 $('#combG').onchange = e => { S.combineG = e.target.checked; request(); };
-$('#shotSel').onchange = e => { S.shotMode = e.target.value; if (S.seq) { applyShots(); applyVols(); renderSeqInfo(); renderBlock(); ovCache = null; request(); requestK(); } };
-$('#volSel').onchange = e => { S.volMode = S.volPref = e.target.value; if (S.seq) { applyVols(); renderSeqInfo(); renderBlock(); ovCache = null; request(); requestK(); } };
+$('#shotSel').onchange = e => { S.shotMode = e.target.value; if (S.seq) { applyShots(); applyVols(); segRegroup(); renderSeqInfo(); renderBlock(); ovCache = null; request(); requestK(); } };
+$('#volSel').onchange = e => { S.volMode = S.volPref = e.target.value; if (S.seq) { applyVols(); segRegroup(); renderSeqInfo(); renderBlock(); ovCache = null; request(); requestK(); } };
+/* shots or volumes changed: the images are found again; Group segments goes off where none is left */
+function segRegroup() { if (!S.segOn) { segUI(); return; } const R = segGroups(); if (!R.groups.length) { S.segOn = false; segUI(); segMsg(R.err); fitAll(); } else { S.segFocus = Math.min(S.segFocus, R.groups.length - 1); VMAP = null; S.hist = []; segFit(); } }
+$('#segBtn').onclick = () => segToggle(!S.segOn);
 function applyVols() {
   const s = S.seq; S.vols = []; S.volT0 = new Float64Array(0);
   if (S.volMode === 'off') return;
@@ -14612,11 +14894,11 @@ function drawK() {
   const s = S.seq, R = S.kR;
   let j0 = 0, j1 = s.adcBlocks.length, pb0 = 0, pb1 = s.nb - 1, what = '';
   if (S.kRange !== 'view' && S.kRange !== 'vol') S.kRange = 'shot';
-  if (S.kRange === 'view') { j0 = lb(s.adcT1, S.t0); j1 = ub(s.adcT0, S.t1); pb0 = blockAt(S.t0); pb1 = blockAt(S.t1); what = ' in the visible window'; }
+  if (S.kRange === 'view') { const va = vToT(S.t0), vb = vToT(S.t1); j0 = lb(s.adcT1, va); j1 = ub(s.adcT0, vb); pb0 = blockAt(va); pb1 = blockAt(vb); what = ' in the visible window'; }
   else if (S.kRange === 'vol' || S.kRange === 'shot') {
     const isV = S.kRange === 'vol', list = isV ? S.vols : s.shots;
     if (!list.length) { kctx.clearRect(0, 0, KW, KW); kKey = null; $('#kInfo').textContent = isV ? 'No volumes are marked. Choose a volume rule under Display, above the diagram.' : 'No shots: the sequence has no excitation pulses, or shot marking is off.'; return; }
-    const k = S.sel >= 0 ? (isV ? volOfBlock(S.sel) : shotOfBlock(S.sel)) : (isV ? volAt : shotAt)((S.t0 + S.t1) / 2), it = list[k];
+    const k = S.sel >= 0 ? (isV ? volOfBlock(S.sel) : shotOfBlock(S.sel)) : (isV ? volAt : shotAt)(vcT()), it = list[k];
     pb0 = it.b0; pb1 = it.b1; j0 = lb(s.adcBlocks, pb0); j1 = lb(s.adcBlocks, pb1 + 1);
     what = ` in ${isV ? 'volume' : 'shot'} ${k + 1} of ${list.length}`;
   }
@@ -14771,7 +15053,7 @@ function drawK() {
   if (EXP) return; // a figure: not the page's texts
   const kTxt = n ? `${kData.total.toLocaleString()} ${grp && gs0.length > 1 ? grp.label.split(' ')[0].toLowerCase() + ' ' : ''}ADC samples${what}${allMode ? ', all kinds, coloured by group (not by time)' : ''}${thinned ? ` (${Math.min(n, kFast ? 2e5 : K_MAX_PTS).toLocaleString()} shown)` : ''}${trajThin > 1 && !kFast ? `; trajectory: every ${trajThin === 2 ? 'second' : trajThin + 'th'} segment drawn` : ''}. Max |k| component ${fmt(m, 4)} m⁻¹ (≈ ${fmt(1e3 / (2 * m), 3)} mm resolution).` : 'No ADC samples in range.';
   // phase-encoding lines of the image of the selected shot (or the shot at the view centre)
-  let kLines = ''; if (n && s.shots.length) { const k = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt((S.t0 + S.t1) / 2), im = k >= 0 ? shotImage(k) : null;
+  let kLines = ''; if (n && s.shots.length) { const k = S.sel >= 0 ? shotOfBlock(S.sel) : shotAt(vcT()), im = k >= 0 ? shotImage(k) : null;
     const ec = grp && /^img\d+$/.test(grp.id) ? +grp.id.slice(3) - 1 : 0; // an echo's group: that echo's image
     if (im) { const l = imageLines(im.vol, im.ref, ec); if (l) kLines = `Image of shot ${im.ref + 1}${S.vols.length ? ` (volume ${volOfBlock(s.shots[im.ref].b0) + 1})` : ''}${gs0.some(g => g.id === 'img2') ? `, echo ${ec + 1}` : ''}: ${linesText(l).replace(/^Phase encoding: /, '')}`; } }
   $('#kInfo').innerHTML = (act ? '<b>Actual (k + kc)</b> · ' : '') + esc(kTxt) + (kLines ? '<br>' + esc(kLines) : '') + (echoNote ? '<br>' + esc(echoNote) : '');
@@ -14912,7 +15194,7 @@ function imgTarget() {
     const vol = it.vi >= 0 ? S.vols[it.vi] : { s0: it.ref, s1: it.ref };
     return { shots, vol, vi: it.vi, ref: it.ref, list: L };
   }
-  const c = (S.t0 + S.t1) / 2, blk = S.sel >= 0 ? S.sel : blockAt(c);
+  const c = vcT(), blk = S.sel >= 0 ? S.sel : blockAt(c);
   const shotIdx = b => { let lo = 0, hi = shots.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (shots[m].b0 <= b) lo = m; else hi = m - 1; } return lo; };
   let vol, vi = -1;
   if (S.vols.length) { vi = S.sel >= 0 ? volOfBlock(S.sel) : volAt(c); vol = S.vols[vi]; }
@@ -15403,7 +15685,7 @@ function linkBase(mode, k) {
   return list[Math.min(k, list.length - 1)].t0;
 }
 function linkSendView() {
-  if (S.linkMode === 'off' || !S.seq || linkViewPending) return;
+  if (S.linkMode === 'off' || !S.seq || linkViewPending || segView()) return; // Group segments: the view is not real time
   linkViewPending = true;
   requestAnimationFrame(() => {
     linkViewPending = false; if (!S.seq) return;
@@ -15428,6 +15710,7 @@ function onLink(d) {
   if (d.type === 'mode' && d.mode !== S.linkMode && d.mode !== 'off') { S.linkMode = d.mode; $('#linkSel').value = d.mode; }
   if (!S.seq) { updateLinkInfo(); return; }
   if (d.type === 'view') {
+    if (segView()) { updateLinkInfo(); return; }
     const b = d.k >= 0 ? linkBase(d.mode, d.k) : 0;
     linkApplying = true; setView(b + d.r0, b + d.r1); linkApplying = false;
   } else if (d.type === 'hover') {
@@ -15545,6 +15828,7 @@ async function load(bytes, name, opts = {}) {
     Object.assign(S, { seq, name, sel: -1, selKind: null, selItems: [], selAnchor: -1, imgIdx: 0, hoverT: null, hist: [] }); kInvalidate(); gMaxAll = 0; imgReset();
     S.vis.labels = (seq.labels.length > 0 || seq.triggers.length > 0) && S.labelsPref; buildChips();
     applyShots(); fillVolMenu(); applyVols(); $('#backBtn').disabled = true;
+    SEGC = null; VMAP = null; if (!prev) S.segOn = false; segUI();
     $('#fname').textContent = name;
     $('#fmeta').textContent = `v${seq.version.major}.${seq.version.minor}.${seq.version.revision}${seq.binary ? ' binary' : ''} · ${seq.nb.toLocaleString()} blocks · ${fmtT(seq.totalDur)}`;
     document.title = `${name} · Seqret`;
@@ -15841,7 +16125,7 @@ function resetSettings() {
   try { localStorage.removeItem(SETTINGS_KEY); } catch (_) { }
   applySettings(JSON.parse(JSON.stringify(DEFAULTS)));
   resize();
-  if (S.seq) { S.vis.labels = (S.seq.labels.length > 0 || S.seq.triggers.length > 0) && S.labelsPref; buildChips(); applyShots(); fillVolMenu(); applyVols(); kInvalidate(); ovCache = null; renderSeqInfo(); renderBlock(); request(); requestK(); }
+  if (S.seq) { S.vis.labels = (S.seq.labels.length > 0 || S.seq.triggers.length > 0) && S.labelsPref; buildChips(); applyShots(); fillVolMenu(); applyVols(); segRegroup(); kInvalidate(); ovCache = null; renderSeqInfo(); renderBlock(); request(); requestK(); }
 }
 try { const o = JSON.parse(lsGet('settings') || 'null'); if (o && typeof o === 'object') applySettings(o); } catch (_) { }
 // save shortly after any change made through the controls
@@ -16007,6 +16291,7 @@ function drawStimLane(L, t0, t1, x0, pw) {
    the digits are centred on the tag's middle line from their drawn bounds, not from the font's baseline. */
 const YZ_HIT = {}; // lane key → [x, y, w, h] of the reset cross (CSS px), from the last drawing
 function yZoomTag(L, x0) {
+  if (RPANEL) return; // Group segments: once, in the first panel
   const z = yZoomOf(L.key), n = String(z >= 10 ? Math.round(z) : +z.toFixed(z < 1 ? 2 : 1));
   const f1 = `500 10.5px ${C.font}`, f2 = `500 14px ${C.font}`, h = 17, top = L.y + 2, cy = top + h / 2, xs = 13;
   pctx.save(); pctx.textAlign = 'left'; pctx.textBaseline = 'alphabetic';
@@ -16085,7 +16370,7 @@ function stimSummaryHTML() {
 }
 document.addEventListener('click', e => {
   const o = e.target.closest('[data-safe-open]'); if (o) { openSafeDialog(); return; }
-  const b = e.target.closest('[data-stim-t]'); if (b && S.seq) { const t = +b.dataset.stimT, span = Math.min(S.t1 - S.t0, 0.01); pushHist(); setView(t - span / 2, t + span / 2); }
+  const b = e.target.closest('[data-stim-t]'); if (b && S.seq) { const t = tToV(+b.dataset.stimT), span = Math.min(S.t1 - S.t0, 0.01); pushHist(); setView(t - span / 2, t + span / 2); }
 });
 function updateStimStat() {
   const el = $('#stimStat'); if (!el) return;
