@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.49.0 (2026-11-23) - Pulseq sequence viewer
+  Seqret 1.49.1 (2026-11-23) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.49.0">
-<meta name="description" content="Seqret 1.49.0: Pulseq sequence viewer (Pulseq .seq and .bin files)">
+<meta name="version" content="1.49.1">
+<meta name="description" content="Seqret 1.49.1: Pulseq sequence viewer (Pulseq .seq and .bin files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -415,6 +415,7 @@ kbd{font:inherit;font-size:11.5px;border:1px solid var(--line);border-bottom-wid
 .recent .ritem b{font-weight:600;font-size:13.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .recent .ritem small{color:var(--muted);font-size:11.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .recent .ritem.noreopen b{font-weight:500;color:var(--muted)}
+.recent .ritem.missing b,.recent .ritem.missing small{color:var(--bad)}
 .recent .rclear{align-self:flex-end;margin-top:6px;font-size:12px}
 .empty .recentbox{margin-top:18px}
 .empty .recent{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 10px}
@@ -466,7 +467,7 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.49.0</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.49.1</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -7961,7 +7962,7 @@ num_samples 25
 Type md5
 Hash 3d7221fd121475d66f23c2e50db652d1
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.49.0", "date": "2026-11-23", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.49.0", "date": "2026-11-23", "notes": ["Group segments (experimental, in the toolbar for files whose SEG label takes two or more values): shows only the shots that make one segmented image, side by side, each from its start to its last event. The time between them (other slices' shots and the TR fill) is left out and marked by a narrow box with the time left out; hovering it says what was left out.", "Images are found from the labels only: shots with readouts in the same volume with the same SLC, REP, AVG, SET and PHS, and at least two SEG values. Files that change SEG within a shot are not grouped.", "An Image stepper moves between images, keeping the zoom; the shot stepper goes through the images' shots in turn. Cursor, readout (with image and SEG), clicks, overview, Fit Y and saved figures follow the grouped view.", "Built-in demo: reversed EPI lines are now marked with REV only (it also set SEG, so SEG changed within every shot); signature recomputed, waveforms unchanged.", "Without Group segments the diagram is drawn as before (pixel-identical in the test)."]}, {"version": "1.48.4", "date": "2026-11-20", "notes": ["Fixed: with the ROTATIONS extension, slew spikes (up to ~370 T/m/s) in the diagram and the peak slew of the Sequence tab where one gradient event ended inside a block while another was ramping, e.g. an EPI blip ending during a readout ramp in a rotated stack. An extra vertex 1 ps after the end of an event that was already 0 turned the rounding of the stored gradient into slew. Edge points are now added only where an event steps from a non-zero value.", "Checked on a rotated-stack EPI file (0°, 60°, 120° about y): peak slew 158.7 / 142.3 / 157.4 T/m/s, matching an independent calculation (before 367 T/m/s on z); peak gradients unchanged."]}, {"version": "1.48.3", "date": "2026-11-20", "notes": ["Start page with recent files: the list is in two columns of compact entries, so the drawing, the title and all 8 files fit in the plot area of a laptop screen (1366 × 768). Before, the list pushed the drawing out above the frame.", "Recent files show the date first and the last two folders of the path (the full path is in the tooltip), so a long path no longer hides the date.", "A start page taller than the plot area now scrolls from its top instead of losing its top."]}, {"version": "1.48.2", "date": "2026-11-20", "notes": ["Display panel in two columns: channels on the left; echo markers, view, shots and volumes and saving on the right. About half as tall as before (413 px instead of 756 px), so it fits under the toolbar on a laptop screen. Quality and Peaks share a row, and the units sit next to their channels. One column again in a narrow window.", "Floating panels never reach below the window: in a short window they scroll inside."]}, {"version": "1.48.1", "date": "2026-11-15", "notes": ["Fixed: in files older than Pulseq 1.4, a shape whose stored length equals its number of samples was read as uncompressed. Those files always store shapes compressed, so it is now decompressed like any other, as MATLAB Pulseq and PyPulseq do (0.2, 0.3, −0.1, −0.4 is read as 0.2, 0.5, 0.4, 0). Files in format 1.4 and newer are read as before.", "Sharper diagram, overview, k-space and image: each canvas now has the size it is shown at. Before, it was 2 px larger each way (the frame's border was counted) and the browser scaled it down, which blurred lines drawn on whole pixels and put the pointer up to 2 px off at the right and lower edges.", "Less work per frame while panning and zooming: reading the pointer's position no longer makes the browser lay the page out, and the readout, the navigation fields and the legend are written only when they change. Zooming with the pointer at rest (test browser, demo file, 240 frames): 241 page layouts → 6, and about a fifth less time on the main thread. With the pointer moving the readout changes every frame, and the gain is small.", "Many lanes on: the name of a low lane no longer runs into its scale numbers; the scale is then shown under the name as one range (±max or 0–max, with the unit). Values at the cursor are placed side by side where a stack would not fit in the lane."]}, {"version": "1.48.0", "date": "2026-11-12", "notes": ["Several files at once: dropping two or more .seq or .bin files (or choosing several with Open .seq) asks whether to open each in its own Seqret tab, linked by time, shot or volume, or only the first. This tab opens the first file; the others get new tabs that are handed their file directly.", "If the browser blocks the extra tabs (most allow one per click), the dialog offers a button that opens the next file, one per click, or pop-ups can be allowed for the page."]}, {"version": "1.47.0", "date": "2026-11-12", "notes": ["Diagram: a lane's y-zoom tag has a larger, centred × and a red cross that resets the zoom (double-clicking the lane's name still works).", "Recent files: the last 8 opened files are listed on the start page and under the arrow next to Open .seq; in Chrome and Edge they reopen directly from disk.", "Reload button (with label) next to Open .seq, greyed out when the file cannot be re-read.", "Sequence tab: when the file was written; clicking the md5 badge shows the full hash and copies it.", "File name in the header: hovering shows the full path (for files opened from MATLAB with seqret.m) and clicking copies it.", "k-space: Nominal or Actual (k + kc) trajectory (k-space options). For files corrected for concomitant fields (MxwlCorrParams), the field they were corrected for can be taken over in one click.", "Shorter Concomitant gradients dialog, with the position boxes aligned with the others; about box shows the latest 5 versions."]}, {"version": "1.46.0", "date": "2026-11-08", "notes": ["Faster k-space plot: the trajectory is drawn into a pixel buffer, and long trajectories are thinned while the plot moves (the info line says when it is also thinned at rest). Redraw at rest: million-block file 18.5 s → 70 ms, 20,000-shot ZTE 6.4 s → 21 ms, EPI 0.96 → 0.13 s. Trajectory lines are now 1 device pixel wide, without anti-aliasing; saved figures still use vector lines.", "Faster image simulation: each shot's excitation is found once and kept, instead of re-reading the gradients in every search for the TR. ZTE (20,000 shots) 22 s → 0.8 s, with identical shot information.", "Faster non-Cartesian reconstruction on the CPU: the exact inverse Fourier sum is computed as a matrix product. Spiral 6.2 → 4.3 s; same image within 2·10⁻¹⁴ of its peak."]}, {"version": "1.45.0", "date": "2026-11-08", "notes": ["Faster drawing of zoomed-out diagrams: a dense pixel column is two rectangles instead of four (no band edges), and shot and volume boundaries are rectangles. Frame-rate test on a laptop: 118 fps, against 54 fps with the drawing of 1.44. Same values; bands have no darker edges and shot boundaries are solid and fainter.", "Faster k-vector, kc and k + kc lanes: the integral of a block without RF is kept per combination of events instead of per block. 8,806-block file: 0.8 → 0.03 s per frame.", "Min/max summaries with a factor 4 between levels (before 16): fewer steps per pixel column, identical drawing."]}, {"version": "1.44.0", "date": "2026-11-08", "notes": ["Diagram quality auto (new default): drawn as fast while the view moves and as high when it stops.", "Frame-rate test: the verdict names Seqret only when its work is also at least half the frame.", "Mark pauses: the hatch covers every lane; the k-vector, kc, k + kc and μ lanes have the same background as the others (veil removed).", "Y zoom per lane with Ctrl + scroll (×0.25 to ×10,000); double-click the lane's name to reset.", "Touchpad pinch zooms time, or y over a lane's name; Safari's pinch now zooms the diagram instead of the page.", "Fixed: the k-vector, kc, k + kc and μ lanes rescaled with every pan and zoom with Fit Y off. Fit Y no longer stops at the first 400 active stretches in view."]}, {"version": "1.43.0", "date": "2026-11-08", "notes": ["Concomitant gradients at the slice centre of each shot (Concomitant › Settings… › Position), or at a fixed r as before. The Gc and kc lanes, cursor readout and tabs follow.", "New lane k + kc: the k-vector plus kc.", "Checked against an independent calculation on four sequences: kc within 1.6·10⁻⁷ of its largest value; unchanged with the fixed position."]}, {"version": "1.42.2", "date": "2026-11-08", "notes": ["Fixed: with the ROTATIONS extension, a gradient continuing into the next block dropped to 0 at the joint, giving spikes in the diagram and a huge peak slew in the Sequence tab. Vertex times are now snapped to 0.1 ns.", "Sequence tab: each gradient peak links to the first block that reaches it.", "Selection tab: shot and volume cards list the peak gradient and slew per axis."]}, {"version": "1.42.1", "date": "2026-11-07", "notes": ["Rotated slice stacks: an image uses only shots with the same excitation frequency and slice orientation. Before, rotated stacks that reuse frequencies were merged into one image (all 11 in the rotated-stacks test). The same applies to image lists, k-space colours, the 3D view and the TR.", "The FOV definition is read in the sequence's logical axes, so oblique readouts get their prescribed FOV and Crop to FOV works.", "Checked: demo and 3D slab images bit-identical; browser tests pass."]}, {"version": "1.42.0", "date": "2026-11-07", "notes": ["Opens Pulseq binary files (.bin, format 1.5.2).", "Arbitrary gradients: corners on raster edges are restored as MATLAB Pulseq does (before off by slew·Δt/4 at each corner).", "Labels: LABELSET is applied before LABELINC, as the specification says.", "Files in format 1.4 and older: start and end of arbitrary gradients found as MATLAB Pulseq does.", "Checked against MATLAB Pulseq 1.5.2: gradients within 2.6·10⁻⁷ of the peak and k within 6·10⁻⁸ (before 1.2·10⁻² and 2.6·10⁻⁴)."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.49.1", "date": "2026-11-23", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.49.1", "date": "2026-11-23", "notes": ["Fixed: a gradient running on across a zero-duration block (e.g. EPI blips split at the readout blocks, with a label-only block between) was drawn dropping to 0 at the joint, with a slew spike. Zero-duration blocks now play nothing in the diagram.", "Recent files: a file that was moved, renamed or deleted stays in the list, in red (not found), on the start page and under the arrow next to Open .seq; choosing it tries again."]}, {"version": "1.49.0", "date": "2026-11-23", "notes": ["Group segments (experimental, in the toolbar for files whose SEG label takes two or more values): shows only the shots that make one segmented image, side by side, each from its start to its last event. The time between them (other slices' shots and the TR fill) is left out and marked by a narrow box with the time left out; hovering it says what was left out.", "Images are found from the labels only: shots with readouts in the same volume with the same SLC, REP, AVG, SET and PHS, and at least two SEG values. Files that change SEG within a shot are not grouped.", "An Image stepper moves between images, keeping the zoom; the shot stepper goes through the images' shots in turn. Cursor, readout (with image and SEG), clicks, overview, Fit Y and saved figures follow the grouped view.", "Built-in demo: reversed EPI lines are now marked with REV only (it also set SEG, so SEG changed within every shot); signature recomputed, waveforms unchanged.", "Without Group segments the diagram is drawn as before (pixel-identical in the test)."]}, {"version": "1.48.4", "date": "2026-11-20", "notes": ["Fixed: with the ROTATIONS extension, slew spikes (up to ~370 T/m/s) in the diagram and the peak slew of the Sequence tab where one gradient event ended inside a block while another was ramping, e.g. an EPI blip ending during a readout ramp in a rotated stack. An extra vertex 1 ps after the end of an event that was already 0 turned the rounding of the stored gradient into slew. Edge points are now added only where an event steps from a non-zero value.", "Checked on a rotated-stack EPI file (0°, 60°, 120° about y): peak slew 158.7 / 142.3 / 157.4 T/m/s, matching an independent calculation (before 367 T/m/s on z); peak gradients unchanged."]}, {"version": "1.48.3", "date": "2026-11-20", "notes": ["Start page with recent files: the list is in two columns of compact entries, so the drawing, the title and all 8 files fit in the plot area of a laptop screen (1366 × 768). Before, the list pushed the drawing out above the frame.", "Recent files show the date first and the last two folders of the path (the full path is in the tooltip), so a long path no longer hides the date.", "A start page taller than the plot area now scrolls from its top instead of losing its top."]}, {"version": "1.48.2", "date": "2026-11-20", "notes": ["Display panel in two columns: channels on the left; echo markers, view, shots and volumes and saving on the right. About half as tall as before (413 px instead of 756 px), so it fits under the toolbar on a laptop screen. Quality and Peaks share a row, and the units sit next to their channels. One column again in a narrow window.", "Floating panels never reach below the window: in a short window they scroll inside."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -8436,6 +8437,9 @@ const CHANNELS = {
 function blockSummary(seq, key, i, o) {
   if (key in KINT) return kintSummary(KINT[key][0], seq, i, KINT[key][1], o);
   const ch = CHANNELS[key], id = seq.B[ch.col][i], fn = ch.fn, kind = ch.p ? 'p' : 'g';
+  // a block of zero duration (labels, rotations only) plays nothing: before 1.49.1 it gave a 0 between two blocks, so a
+  // gradient that runs on across them (EPI blips split at the readout blocks) was drawn dropping to 0 at the joint
+  if (kind !== 'p' && !(seq.blockStart[i + 1] > seq.blockStart[i])) { o.n = 0; o.has = 0; o.brk = 0; return o; }
   if (!id) { o.n = 0; if (kind === 'p') { o.has = 0; o.brk = 0; } else { o.has = 1; o.mn = o.mx = o.first = o.last = 0; o.brk = 0; } return o; }
   const g = fn === geoSlew ? slewSum(seq, id) : fn(seq, id); o.n = g.n;
   if (kind === 'p') { o.has = 1; o.mn = g.min; o.mx = g.max; o.first = g.v[0]; o.last = g.n > 1 ? g.v[g.n - 2] : g.v[0]; o.brk = 1; return o; }
@@ -8449,6 +8453,7 @@ function blockSummary(seq, key, i, o) {
 function blockVertices(seq, key, i, push) {
   if (key in KINT) return kintVertices(KINT[key][0], seq, i, KINT[key][1], push);
   const ch = CHANNELS[key], id = seq.B[ch.col][i], fn = ch.fn, kind = ch.p ? 'p' : 'g', t0 = seq.blockStart[i], t1 = seq.blockStart[i + 1];
+  if (kind !== 'p' && !(t1 > t0)) return; // zero duration: no vertices (see blockSummary)
   if (!id) { if (kind !== 'p') { push(t0, 0); push(t1, 0); } return; }
   const g = fn(seq, id);
   if (kind === 'p') { for (let k = 0; k < g.n; k++) push(t0 + g.t[k], g.v[k]); return; }
@@ -9008,6 +9013,7 @@ function buildPyramid(seq, key) {
       if (L === 0) {
         for (let i = k * sz; i < (k + 1) * sz; i++) {
           const id = ids[i]; let bmn, bmx, bf, bl;
+          if (!isP && !(bs[i + 1] > bs[i])) continue; // zero duration: plays nothing (see blockSummary)
           if (!id) { if (isP) continue; bmn = bmx = bf = bl = 0; }
           else if (isP) { bmn = eMn[id]; bmx = eMx[id]; bf = eF[id]; bl = eL[id]; brk = 1; }
           else {
@@ -9061,6 +9067,7 @@ function rangeSummary(seq, key, bA, bB, o, tmp) {
     const E = seq.evt && seq.evt[key];
     if (E) { // one block from the per-event table: the same rule as blockSummary, without a call per block
       const id = E.ids[b]; let bmn, bmx, bf, bl;
+      if (!E.isP && !(seq.blockStart[b + 1] > seq.blockStart[b])) { b++; continue; } // zero duration (see blockSummary)
       if (!id) { if (E.isP) { b++; continue; } bmn = bmx = bf = bl = 0; }
       else if (E.isP) { bmn = E.mn[id]; bmx = E.mx[id]; bf = E.f[id]; bl = E.l[id]; brk = 1; }
       else {
@@ -15936,11 +15943,32 @@ $('#openBtn').onclick = $('#openBtn2').onclick = pickFile;
    The last 8 files opened in this browser, kept in IndexedDB with their File System Access handles where the
    browser has them (Chrome, Edge): those reopen from disk (the browser may ask once to allow reading). Files
    opened without a handle (other browsers, files from MATLAB) are listed by name; choosing one opens the file
-   dialog. The demo is not listed. */
+   dialog. The demo is not listed.
+   1.49.1: a file that can no longer be read (moved, renamed or deleted) stays in the list, in red, with the reason in
+   its tooltip (r.missing). It is marked when opening it fails, and checked without asking whenever the list is shown
+   (start page, the arrow next to Open .seq) for files the browser already allows reading; choosing a red entry
+   tries again, and a file that is back loses the mark. */
 const RECENT_N = 8; let RECENT = [];
+const recentSave = () => kvSet('recentSeq', RECENT).catch(() => kvSet('recentSeq', RECENT.map(r => ({ ...r, handle: null }))).catch(() => { }));
+const isGone = e => e && (e.name === 'NotFoundError' || e.name === 'NotReadableError');
+let recentChecking = null;
+function checkRecent() { // look for entries that are gone (or back), without asking for permission
+  if (recentChecking) return recentChecking;
+  return (recentChecking = (async () => {
+    let changed = false;
+    for (const r of RECENT) {
+      if (!r.handle) continue;
+      try {
+        if (r.handle.queryPermission && (await r.handle.queryPermission({ mode: 'read' })) !== 'granted') continue; // unknown without asking
+        await r.handle.getFile(); if (r.missing) { r.missing = false; changed = true; }
+      } catch (e) { if (isGone(e) && !r.missing) { r.missing = true; changed = true; } }
+    }
+    if (changed) { renderRecent(); recentSave(); }
+  })().finally(() => { recentChecking = null; }));
+}
 async function addRecent(name, src) {
   if (!src || src.demo || !window.indexedDB) return;
-  const e = { name, path: src.path || null, mod: src.mod || null, t: Date.now(), handle: src.handle || null };
+  const e = { name, path: src.path || null, mod: src.mod || null, t: Date.now(), handle: src.handle || null, missing: false };
   const same = async r => {
     if (r.name !== e.name) return false;
     if (r.handle && e.handle) { try { return await r.handle.isSameEntry(e.handle); } catch (_) { return false; } }
@@ -15949,7 +15977,7 @@ async function addRecent(name, src) {
   };
   const keep = []; for (const r of RECENT) if (!(await same(r))) keep.push(r);
   RECENT = [e, ...keep].slice(0, RECENT_N); renderRecent();
-  try { await kvSet('recentSeq', RECENT); } catch (_) { try { await kvSet('recentSeq', RECENT.map(r => ({ ...r, handle: null }))); } catch (_) { } }
+  await recentSave();
 }
 function renderRecent() {
   const html = RECENT.map((r, i) => {
@@ -15957,8 +15985,10 @@ function renderRecent() {
     const dir = r.path && r.path.endsWith(r.name) ? r.path.slice(0, -r.name.length).replace(/[\\/]$/, '') : r.path;
     const seg = dir ? dir.split(/[\\/]/).filter(Boolean) : [], sep = dir && dir.includes('\\') ? '\\' : '/'; // the last two folders (the full path is in the tooltip)
     const sub = [r.mod ? fmtDate(new Date(r.mod)) : null, seg.length > 2 ? '…' + sep + seg.slice(-2).join(sep) : dir].filter(Boolean).join(' · ');
-    const tip = r.handle ? `Open ${r.name} again${r.path ? ` (${r.path})` : ''}` : `${r.path || r.name}: this browser cannot reopen it by itself, choose it in the file dialog`;
-    return `<button class="ritem${r.handle ? '' : ' noreopen'}" data-recent="${i}" title="${esc(tip)}"><b>${esc(r.name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</button>`;
+    const tip = r.missing ? `${r.path || r.name} cannot be read: moved, renamed or deleted (click to try again)`
+      : r.handle ? `Open ${r.name} again${r.path ? ` (${r.path})` : ''}` : `${r.path || r.name}: this browser cannot reopen it by itself, choose it in the file dialog`;
+    const sub2 = r.missing ? ['not found', sub].filter(Boolean).join(' · ') : sub;
+    return `<button class="ritem${r.missing ? ' missing' : r.handle ? '' : ' noreopen'}" data-recent="${i}" title="${esc(tip)}"><b>${esc(r.name)}</b>${sub2 ? `<small>${esc(sub2)}</small>` : ''}</button>`;
   }).join('');
   const clear = RECENT.length ? '<button class="btn link rclear" data-recent-clear="1">Clear list</button>' : '';
   $('#recentList').innerHTML = html + clear; $('#recentEmpty').innerHTML = html;
@@ -15972,14 +16002,18 @@ async function openRecent(i) {
   try {
     if (r.handle.queryPermission && (await r.handle.queryPermission({ mode: 'read' })) !== 'granted' &&
         (await r.handle.requestPermission({ mode: 'read' })) !== 'granted') { fail(`Reading ${r.name} was not allowed`); return; }
-    const f = await r.handle.getFile(); rememberHandle(r.handle); openFile(f, { handle: r.handle });
-  } catch (e) { fail(`Could not open ${r.name} (moved or deleted?): ${e.message}`); }
+    const f = await r.handle.getFile(); if (r.missing) { r.missing = false; renderRecent(); recentSave(); } rememberHandle(r.handle); openFile(f, { handle: r.handle });
+  } catch (e) {
+    if (isGone(e)) { r.missing = true; renderRecent(); recentSave(); fail(`Could not open ${r.name}: it was moved, renamed or deleted. It stays in the recent files, in red.`); }
+    else fail(`Could not open ${r.name}: ${e.message}`);
+  }
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-recent]'); if (b) { openRecent(+b.dataset.recent); return; }
   if (e.target.closest('[data-recent-clear]')) { RECENT = []; renderRecent(); closeRecentPop(); kvSet('recentSeq', []).catch(() => { }); }
 });
-if (window.indexedDB) kvGet('recentSeq').then(v => { if (Array.isArray(v)) { RECENT = v.filter(r => r && typeof r.name === 'string').slice(0, RECENT_N); renderRecent(); } }, () => { });
+if (window.indexedDB) kvGet('recentSeq').then(v => { if (Array.isArray(v)) { RECENT = v.filter(r => r && typeof r.name === 'string').slice(0, RECENT_N); renderRecent(); checkRecent(); } }, () => { });
+$('#recentBtn').addEventListener('click', () => { checkRecent(); });
 $('#fileIn').onchange = e => { openMany([...e.target.files].map(f => ({ file: f }))); e.target.value = ''; };
 $('#demoBtn').onclick = () => load(new TextEncoder().encode($('#demoSeq').textContent), 'seqret_default.seq', { src: { demo: true } });
 let dragDepth = 0;

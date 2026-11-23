@@ -11,6 +11,7 @@ Open a sequence and interactively explore the RF and gradient waveforms, ADC eve
 * Simulation of T1/T2/T2\*, fat, diffusion, noise, susceptibility and eddy-current effects
 * Analytic head and abdomen phantoms
 * Automatic identification of shots and volumes (based on RF and flags)
+* Segmented acquisitions: show only the shots that make one image, with the time between them left out (experimental, based on the SEG label)
 * Visualization of (multiple) slice/slab positions in 3D space
 * Navigate and inspect individual blocks, shots, and volumes
 * 3D k-space trajectory visualization
@@ -18,10 +19,10 @@ Open a sequence and interactively explore the RF and gradient waveforms, ADC eve
 * Concomitant gradients, their k-space shift and the generalized Maxwell index
 * b-value, b-tensor and its eigenvalues per shot, from the actual gradient waveforms
 * Spin- and gradient-echo markers in the sequence diagram and the k-space trajectory
-* Linked browser tabs for comparing sequences
+* Linked browser tabs for comparing sequences; dropping several files opens each in its own linked tab
 * Publication figures: PNG of the diagram, k-space or image at a chosen size, resolution, font and theme
 * Multiple light and dark themes
-* Pulseq formats 1.2–1.5
+* Pulseq formats 1.2–1.5, and Pulseq binary files (`.bin`)
 * Works offline and keeps sequence data local
 * Built-in frame-rate test, and a lower diagram quality for slower computers
 * Development package with sources, tests and design instructions that enable LLM-supported further development (see [Development](#development))
@@ -32,9 +33,11 @@ Download and open `seqret.html` in a modern web browser, then drag and drop a `.
 
 Go to **Display › Shots and volumes** to define how shots and volumes are identified. Click on volume or shot to focus on it. Use the arrow keys to step across volumes, shots or individual blocks.
 
+For segmented acquisitions, where one image is read in several shots that each fill part of k-space (e.g. segmented EPI or TSE), click **Group segments** in the toolbar. The diagram then shows only the shots of one image, side by side, each up to its last event. The time between them (shots of other slices and the TR fill) is left out and marked by a narrow box that says how much time was left out. The **Image** stepper moves to the next image. This is experimental: the images are found from the labels only, as shots with the same SLC (and REP, AVG, SET, PHS) and different SEG values, so it needs a sequence that sets SEG per shot. Mark reversed EPI lines with the REV flag; a sequence that changes SEG within a shot is not grouped. `materials/demoSeq/epi_seg3_2slc.seq` is an example (two slices, each read in three segments).
+
 Use the tabs on the right to view detailed information, view k-space or the simulated image. The shot card in the **Selection** tab gives the shot's b-value, b-tensor and eigenvalues (ms/µm²), computed from all gradients from the excitation to the echo. **Display › Save figure…** saves a PNG for publications.
 
-Go to **Display › Echoes** to mark spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○), in the diagram and on the k-space trajectory. Hovering a marker gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it. By default the markers are drawn only while at most 4 shots are in view.
+Go to **Display › Echo markers** to mark spin echoes (▼), gradient echoes at k = 0 (●) and the other gradient echoes along the readouts (○), in the diagram and on the k-space trajectory. Hovering a marker gives its time after the excitation and, for a spin echo, how far the nearest k = 0 gradient echo is from it. By default the markers are drawn only while at most 4 shots are in view.
 
 Go to **Display › Concomitant** to show the concomitant gradients:
 
