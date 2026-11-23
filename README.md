@@ -57,7 +57,7 @@ If panning or zooming feels sluggish:
 
 ## Development
 
-Seqret is developed with LLM coding assistants. To continue its development, use the development package of the current version, `materials/devResources/seqret-dev-1.41.0.zip`. It holds the sources from which `seqret.html` is built (the build reproduces it byte for byte), the build script, tests and tools, and the instructions for both people and LLMs: `AGENTS.md` (working rules for LLM coding assistants; `CLAUDE.md` points to it) and `DEVELOPMENT.md` (architecture, performance rules, validation and release procedure). Give the unpacked folder to the assistant and ask it to read `AGENTS.md` first. Older packages in the same folder are kept for reference.
+Seqret is developed with LLM coding assistants. To continue its development, use the latest development package, `materials/devResources/seqret-dev-x.xx.x.zip`. It holds the sources from which `seqret.html` is built (the build reproduces it byte for byte), the build script, tests and tools, and the instructions for both human and machine agents: `AGENTS.md` (working rules for LLM coding assistants; `CLAUDE.md` points to it) and `DEVELOPMENT.md` (architecture, performance rules, validation and release procedure). Give the unpacked folder to the assistant and ask it to read `AGENTS.md` first. Older packages in the same folder are kept for reference.
 
 ## Related tools and software
 
