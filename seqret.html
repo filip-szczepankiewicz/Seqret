@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Seqret 1.49.1 (2026-11-23) - Pulseq sequence viewer
+  Seqret 1.49.3 (2026-11-24) - Pulseq sequence viewer
   Designed and coded by Filip Szczepankiewicz (Lund University)
   Coded by Claude (Anthropic)
   Single self-contained file; see "About" in the app for acknowledgements and the changelog.
@@ -33,8 +33,8 @@
 <meta name="author" content="Filip Szczepankiewicz">
 <meta name="copyright" content="Copyright (c) 2026 Filip Szczepankiewicz (MIT License)">
 <meta name="application-name" content="Seqret">
-<meta name="version" content="1.49.1">
-<meta name="description" content="Seqret 1.49.1: Pulseq sequence viewer (Pulseq .seq and .bin files)">
+<meta name="version" content="1.49.3">
+<meta name="description" content="Seqret 1.49.3: Pulseq sequence viewer (Pulseq .seq and .bin files)">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Seqret · Pulseq sequence viewer</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect x=%222%22 y=%222%22 width=%2260%22 height=%2260%22 rx=%2213%22 fill=%22%23FFFFFF%22 stroke=%22%23CFD7DF%22 stroke-width=%222%22/%3E%3Cg transform=%22translate%280 0.0%29%22%3E%3Cpath d=%22M8 36h9l6-18h18l6 18h9%22 fill=%22none%22 stroke=%22%231E6FD9%22 stroke-width=%227%22 stroke-linejoin=%22round%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M10 47h44%22 stroke=%22%23C2185B%22 stroke-width=%225%22 stroke-dasharray=%2210 7%22 stroke-linecap=%22butt%22/%3E%3C/g%3E%3C/svg%3E">
@@ -467,7 +467,7 @@ button.badge{background:none;font:inherit;font-size:12px;cursor:pointer}
   <div class="brand">
     <svg viewBox="0 0 40 28" aria-hidden="true"><path d="M2 20h7l5-13h11l5 13h8" fill="none" stroke="var(--c-gx)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/><path d="M2 25h36" stroke="var(--c-rf)" stroke-width="2" stroke-dasharray="2 3"/></svg>
     Seqret
-    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.49.1</button>
+    <button class="vtag" id="aboutBtn" title="About Seqret, version history and how to cite">v1.49.3</button>
   </div>
   <div class="file"><span class="fname" id="fname"></span><span class="meta num" id="fmeta"></span><span class="fnote" id="fnote" role="status" aria-live="polite"></span></div>
   <div class="hbtns">
@@ -7962,7 +7962,7 @@ num_samples 25
 Type md5
 Hash 3d7221fd121475d66f23c2e50db652d1
 </script>
-<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.49.1", "date": "2026-11-23", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.49.1", "date": "2026-11-23", "notes": ["Fixed: a gradient running on across a zero-duration block (e.g. EPI blips split at the readout blocks, with a label-only block between) was drawn dropping to 0 at the joint, with a slew spike. Zero-duration blocks now play nothing in the diagram.", "Recent files: a file that was moved, renamed or deleted stays in the list, in red (not found), on the start page and under the arrow next to Open .seq; choosing it tries again."]}, {"version": "1.49.0", "date": "2026-11-23", "notes": ["Group segments (experimental, in the toolbar for files whose SEG label takes two or more values): shows only the shots that make one segmented image, side by side, each from its start to its last event. The time between them (other slices' shots and the TR fill) is left out and marked by a narrow box with the time left out; hovering it says what was left out.", "Images are found from the labels only: shots with readouts in the same volume with the same SLC, REP, AVG, SET and PHS, and at least two SEG values. Files that change SEG within a shot are not grouped.", "An Image stepper moves between images, keeping the zoom; the shot stepper goes through the images' shots in turn. Cursor, readout (with image and SEG), clicks, overview, Fit Y and saved figures follow the grouped view.", "Built-in demo: reversed EPI lines are now marked with REV only (it also set SEG, so SEG changed within every shot); signature recomputed, waveforms unchanged.", "Without Group segments the diagram is drawn as before (pixel-identical in the test)."]}, {"version": "1.48.4", "date": "2026-11-20", "notes": ["Fixed: with the ROTATIONS extension, slew spikes (up to ~370 T/m/s) in the diagram and the peak slew of the Sequence tab where one gradient event ended inside a block while another was ramping, e.g. an EPI blip ending during a readout ramp in a rotated stack. An extra vertex 1 ps after the end of an event that was already 0 turned the rounding of the stored gradient into slew. Edge points are now added only where an event steps from a non-zero value.", "Checked on a rotated-stack EPI file (0°, 60°, 120° about y): peak slew 158.7 / 142.3 / 157.4 T/m/s, matching an independent calculation (before 367 T/m/s on z); peak gradients unchanged."]}, {"version": "1.48.3", "date": "2026-11-20", "notes": ["Start page with recent files: the list is in two columns of compact entries, so the drawing, the title and all 8 files fit in the plot area of a laptop screen (1366 × 768). Before, the list pushed the drawing out above the frame.", "Recent files show the date first and the last two folders of the path (the full path is in the tooltip), so a long path no longer hides the date.", "A start page taller than the plot area now scrolls from its top instead of losing its top."]}, {"version": "1.48.2", "date": "2026-11-20", "notes": ["Display panel in two columns: channels on the left; echo markers, view, shots and volumes and saving on the right. About half as tall as before (413 px instead of 756 px), so it fits under the toolbar on a laptop screen. Quality and Peaks share a row, and the units sit next to their channels. One column again in a narrow window.", "Floating panels never reach below the window: in a short window they scroll inside."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
+<script>const APP = {"name": "Seqret", "tagline": "Pulseq sequence viewer", "version": "1.49.3", "date": "2026-11-24", "author": "Filip Szczepankiewicz", "affiliation": "Lund University", "license": "MIT", "url": "https://github.com/filip-szczepankiewicz/Seqret", "changelog": [{"version": "1.49.3", "date": "2026-11-24", "notes": ["Fixed: Fit Y to view took the blocks cut by the edges of the view whole, so a long block reaching into the view (a diffusion lobe, a spoiler, a long readout) set the scale with its part outside, and zoomed inside a block the trace could be squashed to a fraction of the lane. The blocks at the edges are now clipped to the view, for all lanes (gradients, slew, RF, gc, k-vector, kc, k + kc, μ)."]}, {"version": "1.49.2", "date": "2026-11-24", "notes": ["With a shot selected, stepping the volume (Volume stepper or ; and ') now moves by one volume time and selects the shot at the same place in the new volume, instead of selecting the whole volume. The zoom is kept."]}, {"version": "1.49.1", "date": "2026-11-23", "notes": ["Fixed: a gradient running on across a zero-duration block (e.g. EPI blips split at the readout blocks, with a label-only block between) was drawn dropping to 0 at the joint, with a slew spike. Zero-duration blocks now play nothing in the diagram.", "Recent files: a file that was moved, renamed or deleted stays in the list, in red (not found), on the start page and under the arrow next to Open .seq; choosing it tries again."]}, {"version": "1.49.0", "date": "2026-11-23", "notes": ["Group segments (experimental, in the toolbar for files whose SEG label takes two or more values): shows only the shots that make one segmented image, side by side, each from its start to its last event. The time between them (other slices' shots and the TR fill) is left out and marked by a narrow box with the time left out; hovering it says what was left out.", "Images are found from the labels only: shots with readouts in the same volume with the same SLC, REP, AVG, SET and PHS, and at least two SEG values. Files that change SEG within a shot are not grouped.", "An Image stepper moves between images, keeping the zoom; the shot stepper goes through the images' shots in turn. Cursor, readout (with image and SEG), clicks, overview, Fit Y and saved figures follow the grouped view.", "Built-in demo: reversed EPI lines are now marked with REV only (it also set SEG, so SEG changed within every shot); signature recomputed, waveforms unchanged.", "Without Group segments the diagram is drawn as before (pixel-identical in the test)."]}, {"version": "1.48.4", "date": "2026-11-20", "notes": ["Fixed: with the ROTATIONS extension, slew spikes (up to ~370 T/m/s) in the diagram and the peak slew of the Sequence tab where one gradient event ended inside a block while another was ramping, e.g. an EPI blip ending during a readout ramp in a rotated stack. An extra vertex 1 ps after the end of an event that was already 0 turned the rounding of the stored gradient into slew. Edge points are now added only where an event steps from a non-zero value.", "Checked on a rotated-stack EPI file (0°, 60°, 120° about y): peak slew 158.7 / 142.3 / 157.4 T/m/s, matching an independent calculation (before 367 T/m/s on z); peak gradients unchanged."]}, {"version": "1.48.3", "date": "2026-11-20", "notes": ["Start page with recent files: the list is in two columns of compact entries, so the drawing, the title and all 8 files fit in the plot area of a laptop screen (1366 × 768). Before, the list pushed the drawing out above the frame.", "Recent files show the date first and the last two folders of the path (the full path is in the tooltip), so a long path no longer hides the date.", "A start page taller than the plot area now scrolls from its top instead of losing its top."]}], "credits": ["Designed and coded by Filip Szczepankiewicz (Lund University)", "Coded by Claude (Anthropic)"], "copyright": "Copyright (c) 2026 Filip Szczepankiewicz", "licenseText": "MIT License\n\nCopyright (c) 2026 Filip Szczepankiewicz\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."};</script>
 <script id="core">
 /* ===== Seqret core (v2): memory-lean Pulseq model =====
    Nothing is expanded over the whole timeline. The block table is kept as typed columns,
@@ -12366,9 +12366,27 @@ function traceChan(key, t0, t1, x0, w) {
   pts.x0 = x0; pts.r = r; pts.nc = nc; // the column grid (for solidTrace, areaRects)
   return pts;
 }
-function chanRange(key, t0, t1) { // max |value| in [t0, t1] (edge blocks may overestimate slightly)
-  const s = S.seq, o = rangeSummary(s, key, blockAtTime(s, t0), blockAtTime(s, t1), {}, {});
-  return o.has ? Math.max(Math.abs(o.mn), Math.abs(o.mx)) : 0;
+/* max |value| in [t0, t1] (Fit Y to view): blocks wholly inside from the summaries, the blocks cut by t0 or t1 from their
+   vertices clipped to [t0, t1] (the value at each edge interpolated). Up to 1.49.2 the edge blocks were taken whole, so a
+   long block reaching into the view (a diffusion lobe, a spoiler, a long readout) set the scale with its part outside. */
+function chanRange(key, t0, t1) {
+  const s = S.seq, bA = blockAtTime(s, t0), bB = blockAtTime(s, t1); let m = 0;
+  if (bB - bA > 1) { const o = rangeSummary(s, key, bA + 1, bB - 1, {}, {}); if (o.has) m = Math.max(Math.abs(o.mn), Math.abs(o.mx)); }
+  m = Math.max(m, blockClipMax(s, key, bA, t0, t1)); if (bB !== bA) m = Math.max(m, blockClipMax(s, key, bB, t0, t1));
+  return m;
+}
+/* max |value| of block i's drawn vertices within [t0, t1], with the values where its segments cross t0 and t1 */
+function blockClipMax(s, key, i, t0, t1) {
+  let m = 0, pt = NaN, pv = NaN;
+  const add = v => { v = Math.abs(v); if (v > m) m = v; };
+  blockVertices(s, key, i, (t, v) => {
+    if (v === v) {
+      if (t >= t0 && t <= t1) add(v);
+      if (pv === pv && t > pt) for (const e of [t0, t1]) if (pt < e && e < t) add(pv + (v - pv) * (e - pt) / (t - pt));
+    }
+    pt = t; pv = v;
+  });
+  return m;
 }
 function adcAt(t) { const s = S.seq, j = lb(s.adcT1, t); return j < s.adcT0.length && s.adcT0[j] <= t ? j : -1; }
 function trStep(tr) {
@@ -13115,11 +13133,11 @@ function kSeqMax(P) { // whole sequence (Fit Y off)
   return m > 0 ? m * 1.05 : 1;
 }
 function kViewMax(P, t0, t1) { // P: KP_M0 (k-vector), KP_KC (kc), KP_KT (k + kc) or KP_MU (Maxwell index)
-  const s = S.seq, A = m0Active(s), n = A.a.length, per = kSeqPer(P, s), o = {}, tmp = {}; let m = 0;
+  const s = S.seq, A = m0Active(s), n = A.a.length, per = kSeqPer(P, s); let m = 0;
   for (let j = Math.max(0, ub(A.b, t0) - 1); j < n && A.a[j] < t1; j++) {
     const a = Math.max(t0, A.a[j]), b = Math.min(t1, A.b[j]); if (b <= a) continue;
     if (a === A.a[j] && b === A.b[j]) { if (per[j] > m) m = per[j]; } // whole stretch in view: its kept maximum
-    else m = Math.max(m, kStretchMax(P, s, a, b, o, tmp)); // cut by the view's edge
+    else for (const k of P.keys) m = Math.max(m, chanRange(k, a, b)); // cut by the view's edge: clipped to it (1.49.3)
   }
   if (!(m > 0)) for (const k of P.keys) m = Math.max(m, chanRange(k, t0, t1)); // nothing active in view
   return m > 0 ? m * 1.05 : 1;
@@ -13872,7 +13890,27 @@ function stepShot(dir) {
 }
 function stepVol(dir) {
   if (!S.vols.length) return;
-  const cur = S.sel >= 0 ? volOfBlock(S.sel) : volAt(vcT()); gotoItem('vol', cur + dir);
+  const cur = S.sel >= 0 ? volOfBlock(S.sel) : volAt(vcT());
+  if (S.sel >= 0 && S.selKind === 'shot' && !segView() && S.seq.shots.length) { volShiftShot(cur, cur + dir); return; }
+  gotoItem('vol', cur + dir);
+}
+/* 1.49.2: with a shot selected, a volume step moves by one volume time (the distance between the volumes' starts) and
+   selects the shot found at the same time in the new volume, i.e. the same shot of the next volume when the volumes
+   are alike; the view moves by the same distance, keeping the zoom. All selected shots move together. */
+function volShiftShot(cv, nk) {
+  const V = S.vols, sh = S.seq.shots; nk = Math.max(0, Math.min(V.length - 1, nk)); if (nk === cv || !V[cv]) return;
+  const d = V[nk].t0 - V[cv].t0, eps = 1e-9 * Math.max(1, Math.abs(V[nk].t1));
+  const move = k => {
+    let j = shotAt(sh[k].t0 + d + eps);
+    if (sh[j].t0 < V[nk].t0 - eps && j + 1 < sh.length) j++; // stay inside the new volume
+    while (j > 0 && sh[j].t0 >= V[nk].t1 - eps) j--;
+    return j;
+  };
+  const focus = move(shotOfBlock(S.sel));
+  const items = S.selItems.length > 1 ? [...new Set(S.selItems.map(move))].sort((a, b) => a - b) : undefined;
+  const anchor = S.selAnchor >= 0 ? move(S.selAnchor) : focus;
+  selectBlock(sh[focus].b0, { kind: 'shot', items }); if (items) S.selAnchor = anchor;
+  setView(S.t0 + d, S.t1 + d);
 }
 /* toolbar steppers */
 function stepBlock(dir) {

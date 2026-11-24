@@ -2,6 +2,15 @@
 
 All versions, newest first. The About dialog of the page shows the latest 5.
 
+## 1.49.3 (2026-11-24)
+
+- Fixed: Fit Y to view reacted to values outside the view. The scale was the largest value over every block from the one at the left edge to the one at the right edge, each taken whole, so a long block reaching into the view (a diffusion lobe, a spoiler, a long readout or RF pulse) set the scale with its part outside, and zoomed in inside one block the trace could be squashed to a fraction of the lane. The blocks cut by the edges of the view are now clipped to it: their drawn vertices inside the view, plus the values where the trace crosses the edges. Blocks wholly inside still come from the min/max summaries, so the cost is the same. Applies to the gradient, slew, RF and gc lanes and, where an active stretch is cut by the view, to the k-vector, kc, k + kc and μ lanes.
+- Checked on the demo files against a densely sampled reference (480 windows per file, inside and across the longest blocks): the old scale was too large in 79 of 480 windows (sero_v4_test), 42 (epi_seg3_2slc) and 40 (fsz_resQ_cima_v1); the new scale matches the reference to sampling accuracy in all. k-vector lanes: within 0.2 % of the exact curve (the peak of the curve as drawn).
+
+## 1.49.2 (2026-11-24)
+
+- Volume steps with a shot selected: the Volume stepper (‹ ›, or ; and ') moved to the next volume and selected the whole volume. It now moves by one volume time (the distance between the starts of the two volumes) and selects the shot found at the same time in the new volume, so shot 3 of volume 2 goes to shot 3 of volume 3 when the volumes are alike. The selection stays a shot selection (several selected shots move together), and the view moves by the same distance, keeping the zoom. If the new volume is shorter, the shot is kept inside it. With a block or a volume selected, and in Group segments, the volume step works as before.
+
 ## 1.49.1 (2026-11-23)
 
 - Fixed: a gradient that runs on across blocks was drawn dropping to 0 where a block of zero duration sits between them, e.g. EPI blips split at the readout blocks with a label-only block in between (MATLAB Pulseq writes one per readout for the labels). The diagram showed a vertical line to 0 inside each such blip and the slew lane a spike at the joint. A block of zero duration now plays nothing in the diagram: no vertices and no contribution to the min/max summaries. The values at the cursor were already right.
